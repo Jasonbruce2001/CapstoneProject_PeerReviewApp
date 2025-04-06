@@ -7,7 +7,7 @@ namespace PeerReviewApp.Data;
 public class SeedData
 {
     public static async Task Seed(ApplicationDbContext context, IServiceProvider provider)
-    {
+    {/*
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
 
@@ -336,7 +336,7 @@ public class SeedData
                 );
                 await context.SaveChangesAsync();
             }
-        }
+        }*/
     }
 
     //create admin user
