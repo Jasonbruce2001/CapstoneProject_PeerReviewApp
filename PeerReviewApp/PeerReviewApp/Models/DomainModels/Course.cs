@@ -10,7 +10,7 @@ namespace PeerReviewApp.Models
         public string Name { get; set; }
         public AppUser Instructor { get; set; }
         public string Term { get; set; }
-        public virtual ICollection<AppUser> Students { get; set; }
+        public IList<AppUser> Students { get; set; }
     }
 }
 
