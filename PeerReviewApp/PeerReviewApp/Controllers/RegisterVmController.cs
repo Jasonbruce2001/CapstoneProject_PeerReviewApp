@@ -25,7 +25,7 @@ public class RegisterVmController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now};
+            var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -59,6 +59,7 @@ public class RegisterVmController : Controller
         {
             var result = await _signInManager.PasswordSignInAsync
                 (model.Username, model.Password, model.RememberMe, false);
+          
             if (result.Succeeded)
             {
                 if (!string.IsNullOrEmpty(model.ReturnUrl) &&
