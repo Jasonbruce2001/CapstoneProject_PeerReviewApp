@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.register {
+  margin-right: 0.5vw;
+}
+
+.registerInput {
+  margin-bottom: 0.5vw;
+}
+
+.registerForm {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-top: 12vh;
+  padding: 3vw 3vw 1vw 3vw;
+  width: max-content
+}
+
+.loginForm {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-top: 12vh;
+  padding: 3vw 3vw 1vw 3vw;
+  width: 35vw;
+}
