@@ -11,16 +11,16 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public DbSet<Institution> Institution { get; set; } = default!;
-
     // one DbSet for each domain model class
-    public DbSet<Review> Reviews { get; set; }
-    public DbSet<Course> Courses { get; set; }
     public DbSet<Assignment> Assignments { get; set; } = default!;
-    public DbSet<Document> Document { get; set; } = default!;
-    public DbSet<Grade> Grade { get; set; } = default!;
-    public DbSet<AssignmentGroup> AssignmentGroups { get; set; } = default!;
-    public DbSet<PartnerGroup> PartnerGroups { get; set; } = default!;
+    public DbSet<AssignmentVersion> AssignmentVersions { get; set; } = default!;
+    public DbSet<Class> Classes { get; set; } = default!;
+    public DbSet<Course> Courses { get; set; } = default!;
+    public DbSet<Document> Documents { get; set; } = default!;
+    public DbSet<Grade> Grades { get; set; } = default!;
+    public DbSet<Institution> Institutions { get; set; } = default!;
+    public DbSet<Review> Reviews { get; set; } = default!;
+    public DbSet<ReviewGroup> ReviewGroups { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
