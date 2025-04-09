@@ -31,6 +31,7 @@ public class RegisterVmController : Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
+                
                 return RedirectToAction("Index", "Home");
             }
             else
