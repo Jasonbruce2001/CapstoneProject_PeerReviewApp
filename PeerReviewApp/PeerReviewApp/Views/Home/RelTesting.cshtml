@@ -4,6 +4,7 @@
     <div class="col">
         @foreach (AppUser u in Model)
         {
+            <h3>@u.UserName</h3>
             if (u.Classes != null) 
             {
                 foreach (Class c in u.Classes)
