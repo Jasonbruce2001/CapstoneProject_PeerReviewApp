@@ -26,5 +26,23 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configure the one-to-many relationship between Class and Instructor
+        modelBuilder.Entity<Class>()
+            .HasOne(c => c.Instructor) 
+            .WithMany() 
+            .HasForeignKey("InstructorId"); 
+
+        // Configure the many-to-many relationship between Class and Students
+        modelBuilder.Entity<Class>()
+            .HasMany(c => c.Students) 
+            .WithMany(u => u.Classes) 
+            .UsingEntity(j => j.ToTable("ClassStudents")); 
+
+        // Configure a FK for the relationship between Class and ParentCourse
+        modelBuilder.Entity<Class>()
+            .HasOne(c => c.ParentCourse) 
+            .WithMany() 
+            .HasForeignKey("ParentCourseId"); 
+
     }
 }

@@ -1,0 +1,20 @@
+@model IList<AppUser>
+
+<div class="row">
+    <div class="col">
+        @foreach (AppUser u in Model)
+        {
+            if (u.Classes != null) 
+            {
+                foreach (Class c in u.Classes)
+                {
+                    <div class="row"><h4>@c.ParentCourse.Name</h4></div>
+                }
+            }
+            else
+            {
+                <p>No Classes Found</p>
+            }
+        }
+    </div>
+</div>
