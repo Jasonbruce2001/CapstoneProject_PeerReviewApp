@@ -4,28 +4,43 @@ namespace PeerReviewApp.Data;
 
 public class InstitutionRepository : IInstitutionRepository
 {
+    private readonly ApplicationDbContext _context;
+
+    public InstitutionRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+    
     public IList<Institution> GetInstitutions()
     {
-        throw new NotImplementedException();
+        return _context.Institutions.ToList();
     }
 
-    public Institution GetInstitution(int id)
+    public async Task<Institution> GetInstitutionByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var institution = await _context.Institutions.FindAsync(id);
+        
+        return institution ?? throw new InvalidOperationException();
     }
 
-    public Task<int> AddInstitutionAsync(Institution institution)
+    public async Task<int> AddInstitutionAsync(Institution institution)
     {
-        throw new NotImplementedException();
+        await _context.Institutions.AddAsync(institution);
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> UpdateInstitutionAsync(Institution institution)
+    public int UpdateInstitution(Institution institution)
     {
-        throw new NotImplementedException();
+        _context.Institutions.Update(institution); 
+        
+        return _context.SaveChanges();
     }
 
-    public Task<int> DeleteInstitutionAsync(Institution institution)
+    public int DeleteInstitution(int id)
     {
-        throw new NotImplementedException();
+        Institution institution = GetInstitutionByIdAsync(id).Result;
+        
+        _context.Institutions.Remove(institution);
+        return _context.SaveChanges();
     }
 }

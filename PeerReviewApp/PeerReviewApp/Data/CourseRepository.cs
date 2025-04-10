@@ -4,6 +4,12 @@ namespace PeerReviewApp.Data;
 
 public class CourseRepository : ICourseRepository
 {
+    private readonly ApplicationDbContext _context;
+
+    public CourseRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
     public IList<Course> GetCourses()
     {
         throw new NotImplementedException();
