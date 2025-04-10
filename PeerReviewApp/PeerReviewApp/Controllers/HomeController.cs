@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
@@ -23,7 +24,10 @@ public class HomeController : Controller
 
     public IActionResult RelTesting()
     {
-        return View(_userManager.Users.ToList());
+        return View(_userManager.Users
+                                .Include(c => c.Classes)
+                                .ThenInclude(c => c.ParentCourse)
+                                .ToList());
     }
 
     public IActionResult Privacy()
