@@ -5,17 +5,7 @@
         @foreach (AppUser u in Model)
         {
             <h3>@u.UserName</h3>
-            if (u.Classes != null) 
-            {
-                foreach (Class c in u.Classes)
-                {
-                    <div class="row"><h4>@c.ParentCourse.Name</h4></div>
-                }
-            }
-            else
-            {
-                <p>No Classes Found</p>
-            }
+            
         }
     </div>
 </div>

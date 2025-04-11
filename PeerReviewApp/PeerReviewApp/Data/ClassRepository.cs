@@ -16,7 +16,26 @@ public class ClassRepository : IClassRepository
         return _context.Classes.ToList();
     }
 
-    public Class GetClass(int classId)
+    public IList<Class> GetClassesForStudent(AppUser student)
+    {
+        var result = new List<Class>();
+        var classes = _context.Classes.ToList();
+
+        foreach (var c in classes)
+        {
+            foreach (var s in c.Students)
+            {
+                if (s == student)
+                {
+                    result.Add(c);
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    public Class GetClassById(int classId)
     { 
         return _context.Classes.FirstOrDefault(c => c.ClassId == classId) 
                ?? throw new InvalidOperationException();
