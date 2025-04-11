@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data;
@@ -11,15 +12,17 @@ public class ClassRepository : IClassRepository
         _context = context;
     }
     
-    public IList<Class> GetClasses()
+    public async Task<IList<Class>> GetClassesAsync()
     {
-        return _context.Classes.ToList();
+        return await _context.Classes.ToListAsync();
     }
 
-    public IList<Class> GetClassesForStudent(AppUser student)
+    public async Task<IList<Class>> GetClassesForStudentAsync(AppUser student)
     {
         var result = new List<Class>();
-        var classes = _context.Classes.ToList();
+        var classes = await _context.Classes
+                                            .Include(c => c.Students)
+                                            .ToListAsync();
 
         foreach (var c in classes)
         {
@@ -35,24 +38,35 @@ public class ClassRepository : IClassRepository
         return result;
     }
 
-    public Class GetClassById(int classId)
+    public async Task<Class> GetClassByIdAsync(int classId)
     { 
-        return _context.Classes.FirstOrDefault(c => c.ClassId == classId) 
+        return await _context.Classes.FindAsync(classId)
                ?? throw new InvalidOperationException();
     }
 
-    public Task<int> AddClassAsync(Class newClass)
+    public async Task<int> AddClassAsync(Class newClass)
     {
-        throw new NotImplementedException();
+        await _context.Classes.AddAsync(newClass);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> UpdateClassAsync(Class updatedClass)
+    public async Task<int> UpdateClassAsync(Class updatedClass)
     {
-        throw new NotImplementedException();
+        _context.Classes.Update(updatedClass);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> DeleteClassAsync(int classId)
+    public async Task<int> DeleteClassAsync(int classId)
     {
-        throw new NotImplementedException();
+        var classToRemove = await _context.Classes.FindAsync(classId);
+
+        if (classToRemove != null)
+        {
+            _context.Classes.Remove(classToRemove);
+        }
+        
+        return await _context.SaveChangesAsync();
     }
 }

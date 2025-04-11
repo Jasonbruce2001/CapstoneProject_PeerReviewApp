@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data;
@@ -10,28 +11,41 @@ public class CourseRepository : ICourseRepository
     {
         _context = context;
     }
-    public IList<Course> GetCourses()
+    public async Task<IList<Course>> GetCoursesAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Courses
+                            .Include(c => c.Institution)
+                            .ToListAsync();
     }
 
-    public Course GetCourse(int id)
+    public async Task<Course> GetCourseAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Courses.FindAsync(id) ?? throw new InvalidOperationException();
+    }                               
+
+    public async Task<int> AddCourseAsync(Course course)
+    {
+        await _context.Courses.AddAsync(course);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> AddCourseAsync(Course course)
+    public async Task<int> UpdateCourseAsync(Course course)
     {
-        throw new NotImplementedException();
+        _context.Courses.Update(course);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> UpdateCourseAsync(Course course)
+    public async Task<int> DeleteCourseAsync(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<int> DeleteCourseAsync(int id)
-    {
-        throw new NotImplementedException();
+        var course = await _context.Courses.FindAsync(id);
+        
+        if (course != null)
+        {
+            _context.Courses.Remove(course);
+        }
+        
+        return await _context.SaveChangesAsync();
     }
 }
