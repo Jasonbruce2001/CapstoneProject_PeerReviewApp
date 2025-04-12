@@ -7,7 +7,46 @@ namespace PeerReviewApp.Data;
 public class SeedData
 {
     public static async Task Seed(ApplicationDbContext context, IServiceProvider provider)
-    {/*
+    {
+        
+        var userManager = provider
+            .GetRequiredService<UserManager<AppUser>>();
+        
+        DateTime date = DateTime.Now;
+        const string SECRET_PASSWORD = "Pass!123";
+
+        AppUser student = new AppUser { UserName = "Aiden", Email = "testMail@gmail.com", AccountAge = date, Classes = []};
+        AppUser instructor = new AppUser { UserName = "Brian", Email = "testMail2@gmail.com", AccountAge = date , Classes = []};
+
+        if (userManager.Users.ToList().Count == 0)
+        {
+            await userManager.CreateAsync(student, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+
+            IList<AppUser> students = new List<AppUser> { student };
+            
+            Institution inst = new Institution() { Name = "Institute" };
+            context.Institutions.Add(inst);
+            
+            Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
+            context.Courses.Add(course);
+            
+            Class class1 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
+            Class class2 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
+            Class class3 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
+            
+            context.Classes.Add(class1);
+            context.Classes.Add(class2);
+            context.Classes.Add(class3);
+            
+            IList<Class> classes = new List<Class> { class1, class2, class3 };
+            
+            AppUser listStudent = new AppUser { UserName = "RelationshipTest", Email = "UniqueEmail@gmail.com", AccountAge = date, Classes = classes };
+            await userManager.CreateAsync(listStudent, SECRET_PASSWORD);
+            
+            await context.SaveChangesAsync();
+        }
+        /*
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
 

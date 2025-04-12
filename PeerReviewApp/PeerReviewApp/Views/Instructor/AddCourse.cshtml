@@ -1,0 +1,41 @@
+﻿@model AddCourseVM
+@{
+    ViewData["Title"] = "Add Course";
+}
+
+<form asp-action="AddCourse" asp-controller="Instructor" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="Course.Name">Course Name:</label>
+        <span asp-validation-for="Course.Name"></span>
+        <input asp-for="Course.Name" class="form-control p-3" required /><br />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Course.Description">Description:</label>
+        <span asp-validation-for="Course.Description"></span>
+        <input asp-for="Course.Description" class="form-control p-3" required /><br />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="InstId" name="sort">Institution:</label>
+        <span asp-validation-for="InstId"></span>
+        <select asp-for="InstId" class="form-control" 
+            asp-items="@(new SelectList(Model.Institutions, nameof(Institution.Id), nameof(Institution.Name)))">
+            <option>Select Your Institution</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <a href="@Url.Action("Index", "Instructor")" class="btn btn-outline-danger">Cancel</a>
+        <input type="submit" value="Add Course" class="btn btn-primary" />
+    </div>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

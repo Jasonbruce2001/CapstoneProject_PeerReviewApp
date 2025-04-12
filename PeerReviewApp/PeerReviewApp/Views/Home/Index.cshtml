@@ -1,8 +1,15 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUser> signInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @*Buttons to navigate towards testing. They are temporary*@
+    <a href="@Url.Action("Index", "Instructor")" class="btn btn-info mr-2">Instructor Controller</a>
+    
+    
 </div>
+
