@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data;
@@ -10,19 +11,29 @@ public class CourseRepository : ICourseRepository
     {
         _context = context;
     }
-    public IList<Course> GetCourses()
+    public async Task<IList<Course>> GetCoursesAsync()
     {
-        throw new NotImplementedException();
+        return  await _context.Courses
+            .Include(r => r.Institution)
+            .ToListAsync();
     }
 
-    public Course GetCourse(int id)
+    public async Task<Course> GetCourseByIdAsync(int id)
     {
-        throw new NotImplementedException();
+
+        var course = await _context.Courses
+            .Include(r => r.Institution)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        return course;
     }
 
-    public Task<int> AddCourseAsync(Course course)
+    public async Task<int> AddCourseAsync(Course course)
     {
-        throw new NotImplementedException();
+        _context.Courses.Add(course);
+        Task<int> task = _context.SaveChangesAsync();
+        int result = await task;
+        return result;
     }
 
     public Task<int> UpdateCourseAsync(Course course)

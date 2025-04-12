@@ -20,7 +20,7 @@ public class InstitutionRepository : IInstitutionRepository
     {
         var institution = await _context.Institutions.FindAsync(id);
         
-        return institution ?? throw new InvalidOperationException();
+        return institution;
     }
 
     public async Task<int> AddInstitutionAsync(Institution institution)

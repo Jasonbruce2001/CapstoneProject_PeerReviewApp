@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data;
@@ -11,9 +12,33 @@ public class ClassRepository : IClassRepository
         _context = context;
     }
     
-    public IList<Class> GetClasses()
+    public async Task<IList<Class>> GetClassesAsync()
     {
-        return _context.Classes.ToList();
+        var classes = await _context.Classes
+            .Include(r => r.Students)
+            .ToListAsync();
+
+        return classes;
+    }
+
+    public async Task<IList<Class>> GetArchivedClassesAsync()
+    {
+        var classes = await _context.Classes
+            .Include(r => r.Students)
+            .Where(r => r.IsArchived)
+            .ToListAsync();
+
+        return classes;
+    }
+
+    public async Task<IList<Class>> GetCurrentClassesAsync()
+    {
+        var classes = await _context.Classes
+            .Include(r => r.Students)
+            .Where(r => !r.IsArchived)
+            .ToListAsync();
+
+        return classes;
     }
 
     public Class GetClass(int classId)
@@ -22,9 +47,12 @@ public class ClassRepository : IClassRepository
                ?? throw new InvalidOperationException();
     }
 
-    public Task<int> AddClassAsync(Class newClass)
+    public async Task<int> AddClassAsync(Class newClass)
     {
-        throw new NotImplementedException();
+        _context.Classes.Add(newClass);
+        Task<int> task = _context.SaveChangesAsync();
+        int result = await task;
+        return result;
     }
 
     public Task<int> UpdateClassAsync(Class updatedClass)
