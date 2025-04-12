@@ -36,9 +36,12 @@ public class CourseRepository : ICourseRepository
         return result;
     }
 
-    public Task<int> UpdateCourseAsync(Course course)
+    public async Task<int> UpdateCourseAsync(Course course)
     {
-        throw new NotImplementedException();
+        _context.Courses.Update(course);
+        Task<int> task = _context.SaveChangesAsync();
+        int result = await task;
+        return result;
     }
 
     public Task<int> DeleteCourseAsync(int id)

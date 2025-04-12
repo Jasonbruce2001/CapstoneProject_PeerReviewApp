@@ -99,6 +99,36 @@ namespace PeerReviewApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditCourse(int Id)
+        {
+            //Get list of institutions to display for course
+            IList<Institution> inst = _institutionRepo.GetInstitutions();
+            Course course = await _courseRepo.GetCourseByIdAsync(Id);
+            AddCourseVM vm = new AddCourseVM { Institutions = inst, Course = course };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCourse(AddCourseVM model)
+        {
+            //get institution linked to course
+            Institution inst = await _institutionRepo.GetInstitutionByIdAsync(model.InstId);
+            model.Course.Institution = inst;
+
+
+            if (await _courseRepo.UpdateCourseAsync(model.Course) > 0)
+            {
+                return RedirectToAction("ViewClasses");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "There was an error adding the course.";
+                return View();
+            }
+        }
+
         public async Task<IActionResult> AddClass()
         {
             //Get list of Courses to display for class
