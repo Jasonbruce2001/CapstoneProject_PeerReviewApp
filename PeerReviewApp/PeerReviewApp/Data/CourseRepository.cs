@@ -34,16 +34,6 @@ public class CourseRepository : ICourseRepository
         return course;
     }
 
-    public async Task<int> AddCourseAsync(Course course)
-    {
-        _context.Courses.Add(course);
-        
-        Task<int> task = _context.SaveChangesAsync();
-        int result = await task;
-        
-        return result;
-    }
-
     public async Task<int> UpdateCourseAsync(Course course)
     {
         _context.Courses.Update(course);

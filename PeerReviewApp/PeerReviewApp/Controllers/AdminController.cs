@@ -29,11 +29,11 @@ namespace PeerReviewApp.Controllers
             var dashboard = new AdminDashboardVM
 
             {
-                TotalInstitutions = _context.Institution.Count(),
-                ActiveInstructors = _context.Users.Count(u => u.InstructorCode != null),
+                TotalInstitutions = _context.Institutions.Count(),
+                ActiveInstructors = _roleManager.Roles.Where(r => r.Name != "Instructor").Count(),
                 ActiveCourses = _context.Courses.Count(),
                 TotalStudents = _context.Users.Count(),
-                Institutions = _context.Institution.ToList(),
+                Institutions = _context.Institutions.ToList(),
                 RecentActions = new List<string>()
             };
             
@@ -43,11 +43,9 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ManageInstructors()
         { 
-            var instructors = await _context.Users 
-                .Where(u => u.InstructorCode!= null)
-                .ToListAsync();
+            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
 
-            return View(instructors);
+            return View(instructors.ToList());
         }
 
         public IActionResult CreateInstructor()
@@ -67,7 +65,6 @@ namespace PeerReviewApp.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    InstructorCode = instructorCode, 
                     AccountAge = DateTime.Now 
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -130,7 +127,6 @@ namespace PeerReviewApp.Controllers
 
             if (result.Succeeded)
             {
-                user.InstructorCode = newPassword;
                 await _userManager.UpdateAsync(user);
 
                 TempData["Message"] = "Password has been reset successfully.";

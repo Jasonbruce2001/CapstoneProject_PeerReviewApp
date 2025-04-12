@@ -67,7 +67,7 @@ public class RegisterVmController : Controller
                     // if username doesn't exist, create it and add it to role
                     if (await _userManager.FindByNameAsync(username) == null)
                     {
-                        user = new AppUser { UserName = username, AccountAge = DateTime.Now, Email = model.Email, InstructorCode = null };
+                        user = new AppUser { UserName = username, AccountAge = DateTime.Now, Email = model.Email, RoleNames = new List<string> { roleName } };
                         result = await _userManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
                         {

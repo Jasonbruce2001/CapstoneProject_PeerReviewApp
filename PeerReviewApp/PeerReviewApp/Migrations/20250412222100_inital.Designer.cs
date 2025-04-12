@@ -12,8 +12,8 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250409223712_testRelationships")]
-    partial class testRelationships
+    [Migration("20250412222100_inital")]
+    partial class inital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,8 +185,8 @@ namespace PeerReviewApp.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("InstructorCode")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("InstitutionId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -229,6 +229,8 @@ namespace PeerReviewApp.Migrations
                     b.HasIndex("AssignmentVersionId");
 
                     b.HasIndex("ClassId");
+
+                    b.HasIndex("InstitutionId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -307,13 +309,15 @@ namespace PeerReviewApp.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ClassId"));
 
                     b.Property<string>("InstructorId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("ParentCourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("term")
+                    b.Property<string>("Term")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -411,6 +415,10 @@ namespace PeerReviewApp.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -537,6 +545,10 @@ namespace PeerReviewApp.Migrations
                         .WithMany("Students")
                         .HasForeignKey("ClassId");
 
+                    b.HasOne("PeerReviewApp.Models.Institution", null)
+                        .WithMany("Instructors")
+                        .HasForeignKey("InstitutionId");
+
                     b.HasOne("PeerReviewApp.Models.ReviewGroup", null)
                         .WithMany("Students")
                         .HasForeignKey("ReviewGroupId");
@@ -575,10 +587,8 @@ namespace PeerReviewApp.Migrations
             modelBuilder.Entity("PeerReviewApp.Models.Class", b =>
                 {
                     b.HasOne("PeerReviewApp.Models.AppUser", "Instructor")
-                        .WithMany("Classes")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("InstructorId");
 
                     b.HasOne("PeerReviewApp.Models.Course", "ParentCourse")
                         .WithMany()
@@ -663,11 +673,6 @@ namespace PeerReviewApp.Migrations
                     b.Navigation("Reviewer");
                 });
 
-            modelBuilder.Entity("PeerReviewApp.Models.AppUser", b =>
-                {
-                    b.Navigation("Classes");
-                });
-
             modelBuilder.Entity("PeerReviewApp.Models.AssignmentVersion", b =>
                 {
                     b.Navigation("Students");
@@ -676,6 +681,11 @@ namespace PeerReviewApp.Migrations
             modelBuilder.Entity("PeerReviewApp.Models.Class", b =>
                 {
                     b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("PeerReviewApp.Models.Institution", b =>
+                {
+                    b.Navigation("Instructors");
                 });
 
             modelBuilder.Entity("PeerReviewApp.Models.ReviewGroup", b =>

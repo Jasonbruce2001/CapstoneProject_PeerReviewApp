@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PeerReviewApp.Migrations
 {
     /// <inheritdoc />
-    public partial class newmigration : Migration
+    public partial class inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +35,24 @@ namespace PeerReviewApp.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Institution",
+                name: "Institutions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Code = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Institutions", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ReviewGroups",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -45,7 +62,7 @@ namespace PeerReviewApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Institution", x => x.Id);
+                    table.PrimaryKey("PK_ReviewGroups", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -75,30 +92,49 @@ namespace PeerReviewApp.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AppUserAssignmentGroup",
+                name: "Courses",
                 columns: table => new
                 {
-                    AssignmentGroupsId = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    InstitutionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUserAssignmentGroup", x => new { x.AssignmentGroupsId, x.StudentId });
+                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_Institutions_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institutions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AppUserPartnerGroup",
+                name: "Assignments",
                 columns: table => new
                 {
-                    PartnerGroupsId = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Title = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUserPartnerGroup", x => new { x.PartnerGroupsId, x.StudentId });
+                    table.PrimaryKey("PK_Assignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Assignments_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -167,10 +203,11 @@ namespace PeerReviewApp.Migrations
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InstructorCode = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     AccountAge = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: true),
+                    AssignmentVersionId = table.Column<int>(type: "int", nullable: true),
+                    ClassId = table.Column<int>(type: "int", nullable: true),
+                    InstitutionId = table.Column<int>(type: "int", nullable: true),
+                    ReviewGroupId = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -197,6 +234,16 @@ namespace PeerReviewApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Institutions_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institutions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_ReviewGroups_ReviewGroupId",
+                        column: x => x.ReviewGroupId,
+                        principalTable: "ReviewGroups",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -226,45 +273,53 @@ namespace PeerReviewApp.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Courses",
+                name: "Classes",
+                columns: table => new
+                {
+                    ClassId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Term = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsArchived = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    InstructorId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ParentCourseId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Classes", x => x.ClassId);
+                    table.ForeignKey(
+                        name: "FK_Classes_AspNetUsers_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Classes_Courses_ParentCourseId",
+                        column: x => x.ParentCourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Documents",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    InstructorId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Term = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Courses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Courses_AspNetUsers_InstructorId",
-                        column: x => x.InstructorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Document",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UploaderId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FilePath = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UploaderId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Document", x => x.Id);
+                    table.PrimaryKey("PK_Documents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Document_AspNetUsers_UploaderId",
+                        name: "FK_Documents_AspNetUsers_UploaderId",
                         column: x => x.UploaderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -272,99 +327,59 @@ namespace PeerReviewApp.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AssignmentGroups",
+                name: "Grades",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CourseId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AssignmentGroups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AssignmentGroups_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Assignments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Title = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FilePath = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Assignments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Assignments_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "PartnerGroups",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CourseId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PartnerGroups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PartnerGroups_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Grade",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Value = table.Column<int>(type: "int", nullable: false),
                     StudentId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AssignmentId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<int>(type: "int", nullable: false)
+                    AssignmentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Grade", x => x.Id);
+                    table.PrimaryKey("PK_Grades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Grade_AspNetUsers_StudentId",
+                        name: "FK_Grades_AspNetUsers_StudentId",
                         column: x => x.StudentId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Grade_Assignments_AssignmentId",
+                        name: "FK_Grades_Assignments_AssignmentId",
                         column: x => x.AssignmentId,
                         principalTable: "Assignments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AssignmentVersions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    TextInstructions = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    InstructionsId = table.Column<int>(type: "int", nullable: false),
+                    ReviewFormId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssignmentVersions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AssignmentVersions_Documents_InstructionsId",
+                        column: x => x.InstructionsId,
+                        principalTable: "Documents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AssignmentVersions_Documents_ReviewFormId",
+                        column: x => x.ReviewFormId,
+                        principalTable: "Documents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -380,7 +395,9 @@ namespace PeerReviewApp.Migrations
                     ReviewerId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RevieweeId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ReviewDocumentId = table.Column<int>(type: "int", nullable: false),
+                    ReviewGroupId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -401,18 +418,19 @@ namespace PeerReviewApp.Migrations
                         principalTable: "Assignments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Documents_ReviewDocumentId",
+                        column: x => x.ReviewDocumentId,
+                        principalTable: "Documents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reviews_ReviewGroups_ReviewGroupId",
+                        column: x => x.ReviewGroupId,
+                        principalTable: "ReviewGroups",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppUserAssignmentGroup_StudentId",
-                table: "AppUserAssignmentGroup",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppUserPartnerGroup_StudentId",
-                table: "AppUserPartnerGroup",
-                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -446,9 +464,24 @@ namespace PeerReviewApp.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_CourseId",
+                name: "IX_AspNetUsers_AssignmentVersionId",
                 table: "AspNetUsers",
-                column: "CourseId");
+                column: "AssignmentVersionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ClassId",
+                table: "AspNetUsers",
+                column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_InstitutionId",
+                table: "AspNetUsers",
+                column: "InstitutionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ReviewGroupId",
+                table: "AspNetUsers",
+                column: "ReviewGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -457,44 +490,59 @@ namespace PeerReviewApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssignmentGroups_CourseId",
-                table: "AssignmentGroups",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Assignments_CourseId",
                 table: "Assignments",
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Courses_InstructorId",
-                table: "Courses",
+                name: "IX_AssignmentVersions_InstructionsId",
+                table: "AssignmentVersions",
+                column: "InstructionsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssignmentVersions_ReviewFormId",
+                table: "AssignmentVersions",
+                column: "ReviewFormId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Classes_InstructorId",
+                table: "Classes",
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Document_UploaderId",
-                table: "Document",
+                name: "IX_Classes_ParentCourseId",
+                table: "Classes",
+                column: "ParentCourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_InstitutionId",
+                table: "Courses",
+                column: "InstitutionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Documents_UploaderId",
+                table: "Documents",
                 column: "UploaderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Grade_AssignmentId",
-                table: "Grade",
+                name: "IX_Grades_AssignmentId",
+                table: "Grades",
                 column: "AssignmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Grade_StudentId",
-                table: "Grade",
+                name: "IX_Grades_StudentId",
+                table: "Grades",
                 column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PartnerGroups_CourseId",
-                table: "PartnerGroups",
-                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_AssignmentId",
                 table: "Reviews",
                 column: "AssignmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ReviewDocumentId",
+                table: "Reviews",
+                column: "ReviewDocumentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_RevieweeId",
@@ -506,37 +554,10 @@ namespace PeerReviewApp.Migrations
                 table: "Reviews",
                 column: "ReviewerId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_AppUserAssignmentGroup_AspNetUsers_StudentId",
-                table: "AppUserAssignmentGroup",
-                column: "StudentId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AppUserAssignmentGroup_AssignmentGroups_AssignmentGroupsId",
-                table: "AppUserAssignmentGroup",
-                column: "AssignmentGroupsId",
-                principalTable: "AssignmentGroups",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AppUserPartnerGroup_AspNetUsers_StudentId",
-                table: "AppUserPartnerGroup",
-                column: "StudentId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AppUserPartnerGroup_PartnerGroups_PartnerGroupsId",
-                table: "AppUserPartnerGroup",
-                column: "PartnerGroupsId",
-                principalTable: "PartnerGroups",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ReviewGroupId",
+                table: "Reviews",
+                column: "ReviewGroupId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -563,25 +584,30 @@ namespace PeerReviewApp.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Courses_CourseId",
+                name: "FK_AspNetUsers_AssignmentVersions_AssignmentVersionId",
                 table: "AspNetUsers",
-                column: "CourseId",
-                principalTable: "Courses",
+                column: "AssignmentVersionId",
+                principalTable: "AssignmentVersions",
                 principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Classes_ClassId",
+                table: "AspNetUsers",
+                column: "ClassId",
+                principalTable: "Classes",
+                principalColumn: "ClassId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Courses_AspNetUsers_InstructorId",
-                table: "Courses");
+                name: "FK_Classes_AspNetUsers_InstructorId",
+                table: "Classes");
 
-            migrationBuilder.DropTable(
-                name: "AppUserAssignmentGroup");
-
-            migrationBuilder.DropTable(
-                name: "AppUserPartnerGroup");
+            migrationBuilder.DropForeignKey(
+                name: "FK_Documents_AspNetUsers_UploaderId",
+                table: "Documents");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -599,22 +625,10 @@ namespace PeerReviewApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Document");
-
-            migrationBuilder.DropTable(
-                name: "Grade");
-
-            migrationBuilder.DropTable(
-                name: "Institution");
+                name: "Grades");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
-
-            migrationBuilder.DropTable(
-                name: "AssignmentGroups");
-
-            migrationBuilder.DropTable(
-                name: "PartnerGroups");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -626,7 +640,22 @@ namespace PeerReviewApp.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "AssignmentVersions");
+
+            migrationBuilder.DropTable(
+                name: "Classes");
+
+            migrationBuilder.DropTable(
+                name: "ReviewGroups");
+
+            migrationBuilder.DropTable(
+                name: "Documents");
+
+            migrationBuilder.DropTable(
                 name: "Courses");
+
+            migrationBuilder.DropTable(
+                name: "Institutions");
         }
     }
 }

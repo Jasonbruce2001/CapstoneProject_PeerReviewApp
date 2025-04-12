@@ -95,7 +95,7 @@ namespace PeerReviewApp.Controllers
         public IActionResult AddCourse()
         {
             //Get list of institutions to display for course
-            IList<Institution> inst = _institutionRepo.GetInstitutions();
+            IList<Institution> inst = _institutionRepo.GetInstitutionsAsync().Result;
             AddCourseVM vm = new AddCourseVM { Institutions=inst};
 
             return View(vm);
@@ -129,7 +129,7 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> EditCourse(int Id)
         {
             //Get list of institutions to display for course
-            IList<Institution> inst = _institutionRepo.GetInstitutions();
+            IList<Institution> inst = _institutionRepo.GetInstitutionsAsync().Result;
             Course course = await _courseRepo.GetCourseByIdAsync(Id);
             AddCourseVM vm = new AddCourseVM { Institutions = inst, Course = course };
 

@@ -23,7 +23,6 @@
             <tr>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Instructor Code</th>
                 <th>Account Age</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -35,7 +34,6 @@
                 <tr>
                     <td>@instructor.UserName</td>
                     <td>@instructor.Email</td>
-                    <td>@instructor.InstructorCode</td>
                     <td>@instructor.AccountAge.ToString("MM/dd/yyyy")</td>
                     <td>
                         @if (instructor.LockoutEnd != null && instructor.LockoutEnd > DateTimeOffset.Now)

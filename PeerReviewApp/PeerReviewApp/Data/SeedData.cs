@@ -25,7 +25,7 @@ public class SeedData
 
             IList<AppUser> students = new List<AppUser> { student };
             
-            Institution inst = new Institution() { Name = "Institute" };
+            Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
             context.Institutions.Add(inst);
             
             Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
@@ -400,7 +400,7 @@ public class SeedData
         // if username doesn't exist, create it and add it to role
         if (await userManager.FindByNameAsync(username) == null)
         {
-            AppUser user = new AppUser { UserName = username, AccountAge = date, Email = email, InstructorCode = null };
+            AppUser user = new AppUser { UserName = username, AccountAge = date, Email = email };
             var result = await userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
