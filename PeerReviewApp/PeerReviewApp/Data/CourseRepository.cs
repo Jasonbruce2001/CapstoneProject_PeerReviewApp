@@ -16,18 +16,32 @@ public class CourseRepository : ICourseRepository
         return await _context.Courses
                             .Include(c => c.Institution)
                             .ToListAsync();
-    }
-
-    public async Task<Course> GetCourseAsync(int id)
-    {
-        return await _context.Courses.FindAsync(id) ?? throw new InvalidOperationException();
-    }                               
+    }                            
 
     public async Task<int> AddCourseAsync(Course course)
     {
         await _context.Courses.AddAsync(course);
         
         return await _context.SaveChangesAsync();
+    }
+
+    public async Task<Course> GetCourseByIdAsync(int id)
+    {
+        var course = await _context.Courses
+            .Include(r => r.Institution)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        return course;
+    }
+
+    public async Task<int> AddCourseAsync(Course course)
+    {
+        _context.Courses.Add(course);
+        
+        Task<int> task = _context.SaveChangesAsync();
+        int result = await task;
+        
+        return result;
     }
 
     public async Task<int> UpdateCourseAsync(Course course)

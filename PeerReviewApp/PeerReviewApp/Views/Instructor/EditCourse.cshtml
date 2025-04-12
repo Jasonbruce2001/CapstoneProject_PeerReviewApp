@@ -1,0 +1,44 @@
+﻿@model AddCourseVM
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<form asp-action="EditCourse" asp-controller="Instructor" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="Course.Name">Course Name:</label>
+        <span asp-validation-for="Course.Name"></span>
+        <input asp-for="Course.Name" value="@Model.Course.Name" class="form-control p-3" required /><br />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Course.Description">Description:</label>
+        <span asp-validation-for="Course.Description"></span>
+        <input asp-for="Course.Description" value="@Model.Course.Description" class="form-control p-3" required /><br />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="InstId" name="sort">Institution:</label>
+        <span asp-validation-for="InstId"></span>
+        <select asp-for="InstId" class="form-control"
+                asp-items="@(new SelectList(Model.Institutions, nameof(Institution.Id), nameof(Institution.Name)))">
+            <option>Select Your Institution</option>
+        </select>
+    </div>
+    <div>
+        <input type="hidden" asp-for="Course.Id" value="@Model.Course.Id"/>
+    </div>
+
+    <div class="form-group">
+        <a href="@Url.Action("ViewClasses", "Instructor")" class="btn btn-outline-danger">Cancel</a>
+        <input type="submit" value="Edit Course" class="btn btn-primary" />
+    </div>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

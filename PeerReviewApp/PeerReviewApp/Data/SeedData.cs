@@ -31,9 +31,9 @@ public class SeedData
             Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
             context.Courses.Add(course);
             
-            Class class1 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, term = "Spring"};
-            Class class2 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, term = "Spring"};
-            Class class3 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, term = "Spring"};
+            Class class1 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
+            Class class2 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
+            Class class3 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
             
             context.Classes.Add(class1);
             context.Classes.Add(class2);

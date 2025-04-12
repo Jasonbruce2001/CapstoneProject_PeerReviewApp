@@ -1,0 +1,26 @@
+﻿@model IList<Class>
+@{
+}
+
+<h1 class="text-center fw-bolder">Your Classes</h1>
+@foreach (var cls in Model)
+{
+    <div class="mt-5 border border-secondary fw-bold">
+        @cls.ParentCourse.Name <span class="fw-lighter">@cls.Term</span>
+
+        <form class="justify-content-end" method="post" asp-action="ArchiveClass"
+              asp-route-classId="@cls.ClassId">
+            <button type="submit" class="btn btn-primary">
+                @(cls.IsArchived ? "Open Class" : "Archive Class")
+            </button>
+        </form>
+
+        <form class="justify-content-end" method="get" asp-action="EditCourse"
+              asp-route-Id="@cls.ParentCourse.Id">
+            <button type="submit" class="btn btn-primary">
+                Edit Course Details
+            </button>
+        </form>
+
+    </div>
+}
