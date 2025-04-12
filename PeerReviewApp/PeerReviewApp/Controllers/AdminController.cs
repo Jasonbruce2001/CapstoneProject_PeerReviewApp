@@ -89,6 +89,64 @@ namespace PeerReviewApp.Controllers
 
 
 
+        [HttpPost]
+        public async Task<IActionResult> DeactivateInstructor(string id)
+        {
+            var instructor = await _userManager.FindByIdAsync(id);
+            if (instructor != null)
+            {
+                var result = await _userManager.DeleteAsync(instructor);
+
+                if (result.Succeeded)
+                {
+                    TempData["Message"] = "Instructor Deleted Sucussfully.";
+                }
+
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return RedirectToAction("ManageInstructors");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetInstructorPassword(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            string newPassword = GenerateRandomCode(10);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (result.Succeeded)
+            {
+                user.InstructorCode = newPassword;
+                await _userManager.UpdateAsync(user);
+
+                TempData["Message"] = "Password has been reset successfully.";
+
+                return RedirectToAction("ManageInstructors");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return RedirectToAction("ManageInstructors");
+        }
+
+
         private string GenerateRandomCode(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
