@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeerReviewApp.Data;
 
@@ -11,9 +12,11 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250411005457_DropClassList")]
+    partial class DropClassList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,13 +309,10 @@ namespace PeerReviewApp.Migrations
                     b.Property<string>("InstructorId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<int>("ParentCourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Term")
+                    b.Property<string>("term")
                         .IsRequired()
                         .HasColumnType("longtext");
 

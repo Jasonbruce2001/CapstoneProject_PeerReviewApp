@@ -25,8 +25,6 @@ public class HomeController : Controller
     public IActionResult RelTesting()
     {
         return View(_userManager.Users
-                                .Include(c => c.Classes)
-                                .ThenInclude(c => c.ParentCourse)
                                 .ToList());
     }
 

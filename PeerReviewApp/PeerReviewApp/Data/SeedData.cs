@@ -15,8 +15,8 @@ public class SeedData
         DateTime date = DateTime.Now;
         const string SECRET_PASSWORD = "Pass!123";
 
-        AppUser student = new AppUser { UserName = "Aiden", Email = "testMail@gmail.com", AccountAge = date, Classes = []};
-        AppUser instructor = new AppUser { UserName = "Brian", Email = "testMail2@gmail.com", AccountAge = date , Classes = []};
+        AppUser student = new AppUser { UserName = "Aiden", Email = "testMail@gmail.com", AccountAge = date };
+        AppUser instructor = new AppUser { UserName = "Brian", Email = "testMail2@gmail.com", AccountAge = date };
 
         if (userManager.Users.ToList().Count == 0)
         {
@@ -41,7 +41,7 @@ public class SeedData
             
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             
-            AppUser listStudent = new AppUser { UserName = "RelationshipTest", Email = "UniqueEmail@gmail.com", AccountAge = date, Classes = classes };
+            AppUser listStudent = new AppUser { UserName = "RelationshipTest", Email = "UniqueEmail@gmail.com", AccountAge = date };
             await userManager.CreateAsync(listStudent, SECRET_PASSWORD);
             
             await context.SaveChangesAsync();

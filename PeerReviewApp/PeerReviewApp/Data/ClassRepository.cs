@@ -22,6 +22,8 @@ public class ClassRepository : IClassRepository
 
         return classes;
     }
+    
+    //overloaded for getting classes by instructor by id
     public async Task<IList<Class>> GetClassesAsync(string id)
     {
         var classes = await _context.Classes
@@ -97,28 +99,57 @@ public class ClassRepository : IClassRepository
         return result;
     }
 
-    public Class GetClass(int classId)
+    public async Task<IList<Class>> GetClassesForStudentAsync(AppUser student)
+    {
+        var result = new List<Class>();
+        var classes = await _context.Classes
+                                            .Include(c => c.Students)
+                                            .ToListAsync();
+
+        foreach (var c in classes)
+        {
+            foreach (var s in c.Students)
+            {
+                if (s == student)
+                {
+                    result.Add(c);
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    public async Task<Class> GetClassByIdAsync(int classId)
     { 
-        return _context.Classes.FirstOrDefault(c => c.ClassId == classId) 
+        return await _context.Classes.FindAsync(classId)
                ?? throw new InvalidOperationException();
     }
 
     public async Task<int> AddClassAsync(Class newClass)
     {
-        _context.Classes.Add(newClass);
-        Task<int> task = _context.SaveChangesAsync();
-        int result = await task;
-        return result;
+        await _context.Classes.AddAsync(newClass);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> UpdateClassAsync(Class updatedClass)
+    public async Task<int> UpdateClassAsync(Class updatedClass)
     {
-        throw new NotImplementedException();
+        _context.Classes.Update(updatedClass);
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> DeleteClassAsync(int classId)
+    public async Task<int> DeleteClassAsync(int classId)
     {
-        throw new NotImplementedException();
+        var classToRemove = await _context.Classes.FindAsync(classId);
+
+        if (classToRemove != null)
+        {
+            _context.Classes.Remove(classToRemove);
+        }
+        
+        return await _context.SaveChangesAsync();
     }
 
     public async Task<int> DeleteStudentFromClassAsync(int classId, string studentId)

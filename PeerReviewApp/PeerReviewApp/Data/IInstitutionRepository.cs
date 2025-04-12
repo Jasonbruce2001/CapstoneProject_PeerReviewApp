@@ -4,10 +4,11 @@ namespace PeerReviewApp.Data;
 
 public interface IInstitutionRepository
 {
-    public IList<Institution> GetInstitutions();
+    public Task<IList<Institution>> GetInstitutionsAsync();
     public Task<Institution> GetInstitutionByIdAsync(int id);
-    public int UpdateInstitution(Institution institution);  
-    public int DeleteInstitution(int id);
     public Task<int> AddInstitutionAsync(Institution institution);
+    public Task<int> UpdateInstitutionAsync(Institution institution);  
+    public Task<int> DeleteInstitutionAsync(int id);
+    
     
 }

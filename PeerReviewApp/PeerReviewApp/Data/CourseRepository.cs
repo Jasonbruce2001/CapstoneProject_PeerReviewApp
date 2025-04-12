@@ -13,14 +13,20 @@ public class CourseRepository : ICourseRepository
     }
     public async Task<IList<Course>> GetCoursesAsync()
     {
-        return  await _context.Courses
-            .Include(r => r.Institution)
-            .ToListAsync();
+        return await _context.Courses
+                            .Include(c => c.Institution)
+                            .ToListAsync();
+    }                            
+
+    public async Task<int> AddCourseAsync(Course course)
+    {
+        await _context.Courses.AddAsync(course);
+        
+        return await _context.SaveChangesAsync();
     }
 
     public async Task<Course> GetCourseByIdAsync(int id)
     {
-
         var course = await _context.Courses
             .Include(r => r.Institution)
             .FirstOrDefaultAsync(r => r.Id == id);
@@ -31,21 +37,29 @@ public class CourseRepository : ICourseRepository
     public async Task<int> AddCourseAsync(Course course)
     {
         _context.Courses.Add(course);
+        
         Task<int> task = _context.SaveChangesAsync();
         int result = await task;
+        
         return result;
     }
 
     public async Task<int> UpdateCourseAsync(Course course)
     {
         _context.Courses.Update(course);
-        Task<int> task = _context.SaveChangesAsync();
-        int result = await task;
-        return result;
+        
+        return await _context.SaveChangesAsync();
     }
 
-    public Task<int> DeleteCourseAsync(int id)
+    public async Task<int> DeleteCourseAsync(int id)
     {
-        throw new NotImplementedException();
+        var course = await _context.Courses.FindAsync(id);
+        
+        if (course != null)
+        {
+            _context.Courses.Remove(course);
+        }
+        
+        return await _context.SaveChangesAsync();
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data;
@@ -11,9 +12,9 @@ public class InstitutionRepository : IInstitutionRepository
         _context = context;
     }
     
-    public IList<Institution> GetInstitutions()
+    public async Task<IList<Institution>> GetInstitutionsAsync()
     {
-        return _context.Institutions.ToList();
+        return await _context.Institutions.ToListAsync();
     }
 
     public async Task<Institution> GetInstitutionByIdAsync(int id)
@@ -26,21 +27,26 @@ public class InstitutionRepository : IInstitutionRepository
     public async Task<int> AddInstitutionAsync(Institution institution)
     {
         await _context.Institutions.AddAsync(institution);
+        
         return await _context.SaveChangesAsync();
     }
 
-    public int UpdateInstitution(Institution institution)
+    public async Task<int> UpdateInstitutionAsync(Institution institution)
     {
         _context.Institutions.Update(institution); 
         
-        return _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 
-    public int DeleteInstitution(int id)
+    public async Task<int> DeleteInstitutionAsync(int id)
     {
-        Institution institution = GetInstitutionByIdAsync(id).Result;
+        Institution institution = await _context.Institutions.FindAsync(id);
+
+        if (institution != null)
+        {
+            _context.Institutions.Remove(institution);
+        }
         
-        _context.Institutions.Remove(institution);
-        return _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 }
