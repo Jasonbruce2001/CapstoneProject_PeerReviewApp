@@ -1,0 +1,11 @@
+@model IList<AppUser>
+
+<div class="row">
+    <div class="col">
+        @foreach (AppUser u in Model)
+        {
+            <h3>@u.UserName</h3>
+            
+        }
+    </div>
+</div>

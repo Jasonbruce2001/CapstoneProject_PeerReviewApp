@@ -6,11 +6,16 @@ using PeerReviewApp.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
+                .AddTransient<ICourseRepository, CourseRepository>()
+                .AddTransient<IClassRepository, ClassRepository>();
 
 //add Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()

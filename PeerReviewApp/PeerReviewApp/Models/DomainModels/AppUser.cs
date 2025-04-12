@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace PeerReviewApp.Models
 {
@@ -9,6 +11,5 @@ namespace PeerReviewApp.Models
             public IList<string> RoleNames { get; set; } = null!;
             public string? InstructorCode { get; set; }
             public DateTime AccountAge { get; set; }
-            public IList<Class>? Classes { get; set; } = new List<Class>();
         }
 }

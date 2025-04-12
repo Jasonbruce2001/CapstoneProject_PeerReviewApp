@@ -1,16 +1,22 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PeerReviewApp.Data;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
 public class RegisterVmController : Controller
 {
-    private UserManager<AppUser> _userManager; 
-    private SignInManager<AppUser> _signInManager;
-    public RegisterVmController(UserManager<AppUser> userMngr, SignInManager<AppUser> signInMngr)
+    private readonly UserManager<AppUser> _userManager; 
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IInstitutionRepository _institutionRepository;
+    public RegisterVmController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IInstitutionRepository institutionRepository, RoleManager<IdentityRole> roleManager)
     {
-        _userManager = userMngr; _signInManager = signInMngr;
+        _userManager = userManager; 
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+        _institutionRepository = institutionRepository;
     } 
     
     // GET
@@ -25,20 +31,63 @@ public class RegisterVmController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            if (model.InstructorCode == null) //if instructor code is null, signing up as student
+            {
+                var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now, Email = model.Email };
+                var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                foreach (var error in result.Errors)
+                if (result.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            else //signing up as instructor
+            {
+                if (ValidateInstructorCode(model.InstructorCode))
+                {
+                    var roleName = "Instructor";
+                    var username = model.Username;
+                    var user = new AppUser();
+                    var result = IdentityResult.Failed();
+                    
+                    // if role doesn't exist, create it
+                    if (await _roleManager.FindByNameAsync(roleName) == null)
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(roleName));
+                    }
+                    // if username doesn't exist, create it and add it to role
+                    if (await _userManager.FindByNameAsync(username) == null)
+                    {
+                        user = new AppUser { UserName = username, AccountAge = DateTime.Now, Email = model.Email, InstructorCode = null };
+                        result = await _userManager.CreateAsync(user, model.Password);
+                        if (result.Succeeded)
+                        {
+                            await _userManager.AddToRoleAsync(user, roleName);
+                        }
+                    }
+
+                    if (result.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
                 }
             }
         }
@@ -84,5 +133,20 @@ public class RegisterVmController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
+    }
+
+    public bool ValidateInstructorCode(string code)
+    {
+        var result = false;
+        var codes = new List<string>();
+
+        foreach (var i in _institutionRepository.GetInstitutionsAsync().Result)
+        {
+            codes.Add(i.Code);
+        }
+        
+        if (codes.Contains(code)) result = true;
+        
+        return result;
     }
 }
