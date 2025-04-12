@@ -13,6 +13,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
+                .AddTransient<ICourseRepository, CourseRepository>()
+                .AddTransient<IClassRepository, ClassRepository>();
+
 //add Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
