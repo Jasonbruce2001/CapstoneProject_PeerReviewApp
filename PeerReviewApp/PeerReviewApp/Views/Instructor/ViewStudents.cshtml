@@ -1,5 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IList<Class>
 @{
+}
+
+<h1 class="text-center fw-bolder">Your Students</h1>
+@foreach(Class cls in Model)
+{
+    <div class="border border-secondary">
+        <h3 class=" fw-bolder">@cls.ParentCourse.Name - @cls.Term</h3>
+        @foreach(AppUser student in cls.Students)
+        {
+            <div class="border border-bottom border-secondary">
+                @student.UserName
+                <form class="justify-content-end" method="post" asp-action="DeleteStudent"
+                      asp-route-studentId="@student.Id" asp-route-classId="@cls.ClassId">
+                    <button type="submit" class="btn btn-outline-danger">
+                        Remove Student
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
 }

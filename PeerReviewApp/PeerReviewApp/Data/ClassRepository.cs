@@ -120,4 +120,20 @@ public class ClassRepository : IClassRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<int> DeleteStudentFromClassAsync(int classId, string studentId)
+    {
+        var cls = await _context.Classes
+            .Include(r => r.Students)
+            .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+        cls.Students.Remove(cls.Students.Where(r => r.Id == studentId).FirstOrDefault());
+
+        Task<int> task =_context.SaveChangesAsync();
+        int result = await task;
+
+        return result;
+
+
+    }
 }

@@ -61,9 +61,35 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public IActionResult ViewStudents()
+        public async Task<IActionResult> ViewStudents()
         {
-            return View();
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //get classes for current instructor
+            var classes = await _classRepo.GetCurrentClassesAsync(user.Id);
+
+            return View(classes);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteStudent(string studentId, int classId)
+        {
+            if (await _classRepo.DeleteStudentFromClassAsync(classId, studentId) > 0)
+            {
+                return RedirectToAction("ViewStudents");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "There was an error adding the course.";
+                return RedirectToAction("ViewStudents");
+            }
+
+            
         }
 
         public IActionResult AddCourse()
@@ -170,5 +196,7 @@ namespace PeerReviewApp.Controllers
                 return View();
             }
         }
+
+        
     }
 }

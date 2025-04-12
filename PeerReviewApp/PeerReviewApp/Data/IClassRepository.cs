@@ -15,4 +15,6 @@ public interface IClassRepository
     public Task<int> AddClassAsync(Class newClass);
     public Task<int> UpdateClassAsync(Class updatedClass);
     public Task<int> DeleteClassAsync(int classId);
+    public Task<int> DeleteStudentFromClassAsync(int classId, string studentId);
+
 }
