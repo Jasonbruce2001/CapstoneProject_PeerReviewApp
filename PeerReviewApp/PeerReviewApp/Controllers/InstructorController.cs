@@ -7,6 +7,7 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers
 {
+    [Authorize]
     public class InstructorController : Controller
     {
         //Need to add role restriction to instructors here
@@ -28,12 +29,36 @@ namespace PeerReviewApp.Controllers
         }
         public IActionResult Index()
         {
+            // send user to login if not logged in
+            if (!_signInManager.IsSignedIn(User))
+            {
+                var returnURL = Request.GetEncodedUrl();
+                return RedirectToAction("Login", "Account", returnURL);
+            }
+
             return View();
         }
 
-        public IActionResult ViewClasses()
+        public async Task<IActionResult> ViewClasses()
         {
-            return View();
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //get classes for current instructor
+            var classes = await _classRepo.GetClassesAsync(user.Id);
+
+            return View(classes);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ArchiveClass(int classId)
+        {
+            int result = await _classRepo.Archive(classId);
+            return RedirectToAction("ViewClasses");
         }
 
         public IActionResult ViewStudents()
@@ -41,7 +66,6 @@ namespace PeerReviewApp.Controllers
             return View();
         }
 
-        [Authorize]
         public IActionResult AddCourse()
         {
             //Get list of institutions to display for course
@@ -51,7 +75,6 @@ namespace PeerReviewApp.Controllers
             return View(vm);
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddCourse(AddCourseVM model)
         {
@@ -76,7 +99,6 @@ namespace PeerReviewApp.Controllers
             }
         }
 
-        [Authorize]
         public async Task<IActionResult> AddClass()
         {
             //Get list of Courses to display for class
@@ -86,7 +108,6 @@ namespace PeerReviewApp.Controllers
             return View(vm);
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddClass(AddClassVM model)
         {

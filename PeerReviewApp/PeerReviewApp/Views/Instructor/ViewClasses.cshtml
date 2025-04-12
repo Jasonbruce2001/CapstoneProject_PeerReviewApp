@@ -1,5 +1,19 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IList<Class>
 @{
+}
+
+<h1 class="text-center fw-bolder">Your Classes</h1>
+@foreach (var cls in Model)
+{
+    <div class="mt-5 border border-secondary fw-bold">
+        @cls.ParentCourse.Name <span class="fw-lighter">@cls.Term</span>
+
+        <form method="post" asp-action="ArchiveClass"
+              asp-route-classId="@cls.ClassId">
+            <button type="submit" class="justify-content-end btn btn-primary">
+                @(cls.IsArchived ? "Open Class" : "Archive Class")
+            </button>
+        </form>
+
+    </div>
 }
