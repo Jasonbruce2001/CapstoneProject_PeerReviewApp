@@ -71,14 +71,15 @@ public class RegisterVmController : Controller
                         result = await _userManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
                         {
-                            await _userManager.AddToRoleAsync(user, roleName);
+                            await _userManager.AddToRoleAsync(user, roleName); //add user to isntructor role
+                            await _institutionRepository.AddInstructorToInstitutionAsync(model.InstructorCode, user.Id); //add user to added institution
                         }
                     }
 
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                
+                        
                         return RedirectToAction("Index", "Home");
                     }
                     else

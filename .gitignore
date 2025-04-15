@@ -397,3 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /PeerReviewApp/PeerReviewApp/appsettings.Development.json
+/PeerReviewApp/UnitTests/UnitTests.csproj
+/PeerReviewApp/UnitTests/UnitTest1.cs

@@ -15,11 +15,13 @@ namespace PeerReviewApp.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly IInstitutionRepository _institutionRepository;
 
-        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IInstitutionRepository institutionRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _institutionRepository = institutionRepository;
             _context = context;
         }
 
@@ -27,7 +29,6 @@ namespace PeerReviewApp.Controllers
         public IActionResult Index()
         {
             var dashboard = new AdminDashboardVM
-
             {
                 TotalInstitutions = _context.Institutions.Count(),
                 ActiveInstructors = _roleManager.Roles.Where(r => r.Name != "Instructor").Count(),
@@ -151,6 +152,28 @@ namespace PeerReviewApp.Controllers
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
+        public IActionResult ManageInstitutions()
+        {
+            var institutions = _institutionRepository.GetInstitutionsAsync().Result.ToList();
+            return View(institutions);
+        }
+
+        public IActionResult ViewInstructors(int institutionId)
+        {
+            var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
+            var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
+            
+            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = users};
+            
+            return View(vm);
+        }
+
+        public IActionResult AssignInstructor(int institutionId, string instructorId)
+        {
+            _institutionRepository.AddInstructorToInstitutionByIdAsync(institutionId, instructorId);
+            
+            return RedirectToAction("ViewInstructors");
+        }
     }
 
 }
