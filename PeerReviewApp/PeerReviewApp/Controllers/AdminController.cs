@@ -43,14 +43,22 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ManageInstructors()
         {
-            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
+            var instructorRole = await _roleManager.FindByNameAsync("Instructor");
+            var instructors = new List<AppUser>();
 
-            return View(instructors.ToList());
+            if (instructorRole != null)
+            {
+                instructors = (await _userManager.GetUsersInRoleAsync(instructorRole.Name)).ToList();
+            }
+
+            return View(instructors);
+            
         }
 
         public IActionResult CreateInstructor()
         {
-            return View();
+            var model = new CreateInstructorVM();
+            return View(model);
         }
 
         [HttpPost]
@@ -58,6 +66,14 @@ namespace PeerReviewApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var institution = await _context.Institutions
+                    .FirstOrDefaultAsync(i => i.Code == model.InstitutionCode);
+
+                if (institution == null)
+                {
+                    ModelState.AddModelError("InstitutionCode", "Invalid institution code");
+                    return View(model);
+                }
 
 
                 var user = new AppUser
@@ -71,9 +87,14 @@ namespace PeerReviewApp.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Instructor");
+
+                    institution.Instructors.Add(user);
+                    await _context.SaveChangesAsync();
+
+
+
                     return RedirectToAction("ManageInstructors");
                 }
-
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

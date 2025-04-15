@@ -13,12 +13,9 @@ namespace PeerReviewApp.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Institutiion Code Is required")]
-        [Display(Name = "Institution")]
-        public int InstitutionId { get; set; }
-
-
-        public IList<Institution> Institutions { get; set; } = new List<Institution>(); 
+        [Required(ErrorMessage = "Institution Code is required")]
+        [Display(Name = "Institution Code")]
+        public string InstitutionCode { get; set; }
     }
 }
 
