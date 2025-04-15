@@ -10,8 +10,9 @@
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
-        <th>Instructor ID</th>
+        <th>Email</th>
         <th>Name</th>
+        <th>Account Age</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -19,9 +20,10 @@
     @foreach (AppUser i in Model.institution.Instructors)
     {
         <tr>
-            <td>@i.Id</td>
+            <td>@i.Email</td>
             <td>@i.UserName</td>
-            <td>@i.Id</td>
+            <td>@i.AccountAge</td>
+            <td>Action</td>
         </tr>
     }
     </tbody>
@@ -35,16 +37,18 @@
     <tr>
         <th>Instructor ID</th>
         <th>Name</th>
+        <th>Account Age</th>
         <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    @foreach (AppUser i in Model.institution.Instructors)
+    @foreach (AppUser i in Model.allInstructors)
     {
         <tr>
             <td>@i.Id</td>
             <td>@i.UserName</td>
-            <td><a asp-action="AssignInstructor" asp-route-institutionId="@Model.institution.Id" asp-route-instructorId="@i.Id"></a></td>
+            <td>@i.AccountAge</td>
+            <td><a asp-action="AssignInstructor" asp-route-institutionId="@Model.institution.Id" asp-route-instructorId="@i.Id" class="btn btn-primary">Assign</a></td>
         </tr>
     }
     </tbody>

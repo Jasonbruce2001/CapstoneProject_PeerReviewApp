@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using PeerReviewApp.Models;
 using PeerReviewApp.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace PeerReviewApp.Controllers
@@ -157,13 +154,39 @@ namespace PeerReviewApp.Controllers
             var institutions = _institutionRepository.GetInstitutionsAsync().Result.ToList();
             return View(institutions);
         }
-
+        
+        public IActionResult CreateInstitution()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateInstitution(Institution institution)
+        {
+            institution.Code = GenerateRandomCode(6);
+            
+            await _institutionRepository.AddInstitutionAsync(institution);
+            
+            return RedirectToAction("ManageInstitutions");
+        }
+        
+        
         public IActionResult ViewInstructors(int institutionId)
         {
             var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
             var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
+
+            var notActive = new List<AppUser>();
+
+            foreach (AppUser u in users)
+            {
+                if (!institution.Instructors.Contains(u))
+                {
+                    notActive.Add(u);
+                }
+            }
             
-            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = users};
+            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
             
             return View(vm);
         }
