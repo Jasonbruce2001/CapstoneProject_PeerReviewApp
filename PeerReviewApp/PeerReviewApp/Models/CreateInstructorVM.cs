@@ -12,6 +12,13 @@ namespace PeerReviewApp.Models
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Institutiion Code Is required")]
+        [Display(Name = "Institution")]
+        public int InstitutionId { get; set; }
+
+
+        public IList<Institution> Institutions { get; set; } = new List<Institution>(); 
     }
 }
 
