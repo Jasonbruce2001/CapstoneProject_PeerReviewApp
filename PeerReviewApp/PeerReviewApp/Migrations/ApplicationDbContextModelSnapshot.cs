@@ -22,6 +22,21 @@ namespace PeerReviewApp.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("AppUserClass", b =>
+                {
+                    b.Property<int>("ClassesClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentsId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("ClassesClassId", "StudentsId");
+
+                    b.HasIndex("StudentsId");
+
+                    b.ToTable("ClassStudents", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -168,9 +183,6 @@ namespace PeerReviewApp.Migrations
                     b.Property<int?>("AssignmentVersionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClassId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -224,8 +236,6 @@ namespace PeerReviewApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AssignmentVersionId");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("InstitutionId");
 
@@ -306,6 +316,7 @@ namespace PeerReviewApp.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ClassId"));
 
                     b.Property<string>("InstructorId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsArchived")
@@ -481,6 +492,21 @@ namespace PeerReviewApp.Migrations
                     b.ToTable("ReviewGroups");
                 });
 
+            modelBuilder.Entity("AppUserClass", b =>
+                {
+                    b.HasOne("PeerReviewApp.Models.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeerReviewApp.Models.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("StudentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -538,10 +564,6 @@ namespace PeerReviewApp.Migrations
                         .WithMany("Students")
                         .HasForeignKey("AssignmentVersionId");
 
-                    b.HasOne("PeerReviewApp.Models.Class", null)
-                        .WithMany("Students")
-                        .HasForeignKey("ClassId");
-
                     b.HasOne("PeerReviewApp.Models.Institution", null)
                         .WithMany("Instructors")
                         .HasForeignKey("InstitutionId");
@@ -585,7 +607,9 @@ namespace PeerReviewApp.Migrations
                 {
                     b.HasOne("PeerReviewApp.Models.AppUser", "Instructor")
                         .WithMany()
-                        .HasForeignKey("InstructorId");
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PeerReviewApp.Models.Course", "ParentCourse")
                         .WithMany()
@@ -671,11 +695,6 @@ namespace PeerReviewApp.Migrations
                 });
 
             modelBuilder.Entity("PeerReviewApp.Models.AssignmentVersion", b =>
-                {
-                    b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("PeerReviewApp.Models.Class", b =>
                 {
                     b.Navigation("Students");
                 });
