@@ -1,0 +1,55 @@
+@model ViewInstructorsVM
+
+@{
+    ViewData["Title"] = "Institution Instructors";
+}
+
+<div class="row mb-2">
+    <div class="col"><h1>@Model.institution.Name - Active Instructors</h1></div>
+</div>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Account Age</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (AppUser i in Model.institution.Instructors)
+    {
+        <tr>
+            <td>@i.Email</td>
+            <td>@i.UserName</td>
+            <td>@i.AccountAge</td>
+            <td>Action</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="row mb-2">
+    <div class="col"><h1>@Model.institution.Name - Available Instructors</h1></div>
+</div>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Instructor ID</th>
+        <th>Name</th>
+        <th>Account Age</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (AppUser i in Model.allInstructors)
+    {
+        <tr>
+            <td>@i.Id</td>
+            <td>@i.UserName</td>
+            <td>@i.AccountAge</td>
+            <td><a asp-action="AssignInstructor" asp-route-institutionId="@Model.institution.Id" asp-route-instructorId="@i.Id" class="btn btn-primary">Assign</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

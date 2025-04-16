@@ -18,7 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Course> Courses { get; set; } = default!;
     public DbSet<Document> Documents { get; set; } = default!;
     public DbSet<Grade> Grades { get; set; } = default!;
-    public DbSet<Institution> Institutions { get; set; } = default!;
+    public DbSet<Institution> Institutions { get; set; }
     public DbSet<Review> Reviews { get; set; } = default!;
     public DbSet<ReviewGroup> ReviewGroups { get; set; } = default!;
 

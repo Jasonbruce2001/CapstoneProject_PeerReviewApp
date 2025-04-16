@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using PeerReviewApp.Models;
 using PeerReviewApp.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace PeerReviewApp.Controllers
@@ -15,11 +12,13 @@ namespace PeerReviewApp.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly IInstitutionRepository _institutionRepository;
 
-        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IInstitutionRepository institutionRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _institutionRepository = institutionRepository;
             _context = context;
         }
 
@@ -27,7 +26,6 @@ namespace PeerReviewApp.Controllers
         public IActionResult Index()
         {
             var dashboard = new AdminDashboardVM
-
             {
                 TotalInstitutions = _context.Institutions.Count(),
                 ActiveInstructors = _roleManager.Roles.Where(r => r.Name != "Instructor").Count(),
@@ -183,5 +181,68 @@ namespace PeerReviewApp.Controllers
 
         }
 
+        public IActionResult ManageInstitutions()
+        {
+            var institutions = _institutionRepository.GetInstitutionsAsync().Result.ToList();
+            return View(institutions);
+        }
+        
+        public IActionResult CreateInstitution()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateInstitution(Institution institution)
+        {
+            institution.Code = GenerateRandomCode(6);
+            
+            await _institutionRepository.AddInstitutionAsync(institution);
+            
+            return RedirectToAction("ManageInstitutions");
+        }
+        
+        
+        public IActionResult ViewInstructors(int institutionId)
+        {
+            var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
+            var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
+
+            var notActive = new List<AppUser>();
+
+            foreach (AppUser u in users)
+            {
+                if (!institution.Instructors.Contains(u))
+                {
+                    notActive.Add(u);
+                }
+            }
+            
+            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
+            
+            return View(vm);
+        }
+
+        public async Task<IActionResult> AssignInstructor(int institutionId, string instructorId)
+        {
+            await _institutionRepository.AddInstructorToInstitutionByIdAsync(institutionId, instructorId);
+            
+            var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
+            var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
+
+            var notActive = new List<AppUser>();
+
+            foreach (AppUser u in users)
+            {
+                if (!institution.Instructors.Contains(u))
+                {
+                    notActive.Add(u);
+                }
+            }
+            
+            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
+            
+            return View("ViewInstructors", vm);
+        }
     }
 }
