@@ -36,21 +36,29 @@ namespace PeerReviewApp.Controllers
                 Institutions = _context.Institutions.ToList(),
                 RecentActions = new List<string>()
             };
-            
+
             return View(dashboard);
         }
 
 
         public async Task<IActionResult> ManageInstructors()
-        { 
-            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
+        {
+            var instructorRole = await _roleManager.FindByNameAsync("Instructor");
+            var instructors = new List<AppUser>();
 
-            return View(instructors.ToList());
+            if (instructorRole != null)
+            {
+                instructors = (await _userManager.GetUsersInRoleAsync(instructorRole.Name)).ToList();
+            }
+
+            return View(instructors);
+            
         }
 
         public IActionResult CreateInstructor()
-        { 
-            return View(); 
+        {
+            var model = new CreateInstructorVM();
+            return View(model);
         }
 
         [HttpPost]
@@ -58,23 +66,35 @@ namespace PeerReviewApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //Generate a random instructorcode 
-                string instructorCode = GenerateRandomCode(6);
+                var institution = await _context.Institutions
+                    .FirstOrDefaultAsync(i => i.Code == model.InstitutionCode);
+
+                if (institution == null)
+                {
+                    ModelState.AddModelError("InstitutionCode", "Invalid institution code");
+                    return View(model);
+                }
+
 
                 var user = new AppUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    AccountAge = DateTime.Now 
+                    AccountAge = DateTime.Now
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded) 
+                if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Instructor");
-                    return RedirectToAction("ManageInstructors");   
-                }
 
+                    institution.Instructors.Add(user);
+                    await _context.SaveChangesAsync();
+
+
+
+                    return RedirectToAction("ManageInstructors");
+                }
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -110,7 +130,7 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ManageInstructors");
         }
 
-        [HttpPost]
+
         public async Task<IActionResult> ResetInstructorPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -120,17 +140,37 @@ namespace PeerReviewApp.Controllers
                 return NotFound();
             }
 
-            string newPassword = GenerateRandomCode(10);
+            var model = new ResetInstructorPasswordVM
+            {
+                InstructorId = id
+            };
+
+            return View(model);
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetInstructorPassword(ResetInstructorPasswordVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.InstructorId);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
 
             if (result.Succeeded)
             {
-                await _userManager.UpdateAsync(user);
-
                 TempData["Message"] = "Password has been reset successfully.";
-
                 return RedirectToAction("ManageInstructors");
             }
 
@@ -139,18 +179,9 @@ namespace PeerReviewApp.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return RedirectToAction("ManageInstructors");
-        }
+            return View(model);
 
-
-        private string GenerateRandomCode(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
     }
-
 }

@@ -18,6 +18,11 @@
                     <input asp-for="Password" class="form-control" type="password" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
+                <div class="form-group mb-3">
+                    <label for="InstitutionCode" class="control-label">Institution Code</label>
+                    <input asp-for="InstitutionCode" class="form-control" />
+                    <span asp-validation-for="InstitutionCode" class="text-danger"></span>
+                </div>
                 <div class="form-group mt-3">
                     <input type="submit" value="Create" class="btn btn-primary" />
                     <a asp-controller="Admin" asp-action="ManageInstructors" class="btn btn-secondary">Back to List</a>
