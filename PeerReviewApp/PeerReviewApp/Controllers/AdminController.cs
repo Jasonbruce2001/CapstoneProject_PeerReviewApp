@@ -191,11 +191,26 @@ namespace PeerReviewApp.Controllers
             return View(vm);
         }
 
-        public IActionResult AssignInstructor(int institutionId, string instructorId)
+        public async Task<IActionResult> AssignInstructor(int institutionId, string instructorId)
         {
-            _institutionRepository.AddInstructorToInstitutionByIdAsync(institutionId, instructorId);
+            await _institutionRepository.AddInstructorToInstitutionByIdAsync(institutionId, instructorId);
             
-            return RedirectToAction("ViewInstructors");
+            var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
+            var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
+
+            var notActive = new List<AppUser>();
+
+            foreach (AppUser u in users)
+            {
+                if (!institution.Instructors.Contains(u))
+                {
+                    notActive.Add(u);
+                }
+            }
+            
+            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
+            
+            return View("ViewInstructors", vm);
         }
     }
 
