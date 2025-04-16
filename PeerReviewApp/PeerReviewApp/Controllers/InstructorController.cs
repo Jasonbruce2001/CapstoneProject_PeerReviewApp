@@ -95,7 +95,7 @@ namespace PeerReviewApp.Controllers
         public IActionResult AddCourse()
         {
             //Get list of institutions to display for course
-            IList<Institution> inst = _institutionRepo.GetInstitutionsAsync().Result;
+            IList<Institution> inst =  _institutionRepo.GetInstitutionsAsync().Result;
             AddCourseVM vm = new AddCourseVM { Institutions=inst};
 
             return View(vm);
@@ -108,21 +108,18 @@ namespace PeerReviewApp.Controllers
             Institution inst = await _institutionRepo.GetInstitutionByIdAsync(model.InstId);
             model.Course.Institution = inst;
 
-            if (ModelState.IsValid) { 
-                if (await _courseRepo.AddCourseAsync(model.Course) > 0)
+                if (model.Course.Institution != null)
                 {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    ViewBag.ErrorMessage = "There was an error adding the course.";
-                    return View();
-                }
-            }
-            else 
-            { 
-                return RedirectToAction("AddCourse"); 
-            }
+                    if (await _courseRepo.AddCourseAsync(model.Course) > 0)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "There was an error adding the course.";
+                        return View();
+                    }
+                }else{ return RedirectToAction("AddCourse"); }
         }
 
         [HttpGet]
