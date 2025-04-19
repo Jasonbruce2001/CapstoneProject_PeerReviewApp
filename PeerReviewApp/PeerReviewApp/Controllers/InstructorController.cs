@@ -194,6 +194,28 @@ namespace PeerReviewApp.Controllers
             }
         }
 
-        
+        public async Task<IActionResult> AddAssignment(int classId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
+
+            if (class_ == null || class_.Instructor.Id != user.Id)
+            {
+                return NotFound();
+            }
+
+            var model = new AddAssignmentVM
+            {
+                ClassId = classId,
+                ClassName = class_.ParentCourse.Name,
+                Term = class_.Term,
+                DueDate = DateTime.Now.AddDays(7) 
+            };
+
+            return View(model);
+        }
+    }
+
+
     }
 }
