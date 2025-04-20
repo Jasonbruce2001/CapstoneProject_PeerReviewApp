@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using PeerReviewApp.Models;
 using PeerReviewApp.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace PeerReviewApp.Controllers
 {
@@ -245,6 +246,14 @@ namespace PeerReviewApp.Controllers
             return View("ViewInstructors", vm);
         }
 
+
+        private string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
     }
 }
