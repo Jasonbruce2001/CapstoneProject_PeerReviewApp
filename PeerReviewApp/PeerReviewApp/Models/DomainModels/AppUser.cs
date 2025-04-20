@@ -11,5 +11,5 @@ namespace PeerReviewApp.Models
             public IList<string> RoleNames { get; set; } = null!;
             public DateTime AccountAge { get; set; }
             public IList<Class> Classes { get; set; }
-    }
+        }
 }

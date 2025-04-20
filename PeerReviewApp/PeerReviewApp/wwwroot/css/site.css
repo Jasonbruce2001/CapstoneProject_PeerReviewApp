@@ -18,7 +18,17 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+  padding:0;
+  margin: 0 0 0 0;
+  background-color: #cccccc;
+}
+
+footer {
+  background-color: white;
 }
 
 .register {
@@ -42,3 +52,20 @@ body {
   padding: 3vw 3vw 1vw 3vw;
   width: 35vw;
 }
+
+.homeBackground {
+
+}
+
+.homeList {
+  list-style: none;
+}
+
+.homeTitle {
+  font-size: 5vh;
+}
+
+.mt-c {
+  margin-top: 15vh;
+}
+
