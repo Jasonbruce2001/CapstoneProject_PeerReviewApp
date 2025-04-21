@@ -30,7 +30,7 @@
         </div>
         @foreach (Class c in classes)
         {
-            <div class="row courseListEntry">
+            <div class="row courseListEntry mb-2">
                 <div class="col">
                     <h4>@c.ParentCourse.Name</h4>
                     <h5>@c.Students.Count() Students Enrolled</h5>
@@ -44,5 +44,12 @@
             </div>
         }
     </div>
-    <div class="row"></div>
+    <div class="row courseList mt-2 mb-4">
+        <div class="col">
+            <h3>View All Submissions</h3>
+        </div>
+        <div class="col">
+            <h3>Manage Reviews</h3>
+        </div>
+    </div>
 </div>
