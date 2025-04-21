@@ -18,13 +18,12 @@ html {
 }
 
 body {
-  
+  background-color: whitesmoke;
   background-size: cover;
   height: 100vh;
   width: 100vw;
   padding:0;
   margin: 0 0 0 0;
-  background-color: #cccccc;
 }
 
 footer {
@@ -69,3 +68,46 @@ footer {
   margin-top: 15vh;
 }
 
+.dashboardWidget {
+  text-align: center;
+  padding: 1vw;
+  display: inline-block;
+  position: relative;
+  width: 25%;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.dashboardWidget:hover {
+  background-color: darkgrey;
+  color: white;
+}
+
+.dashboardWidget:after {
+  content: '';
+  display: block;
+  margin-top: 35%;
+}
+
+.sizeWrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 10%;
+}
+
+.courseList {
+  background-color: white;
+  border-radius: 4px;
+  padding:4vh 4vh 7vh 4vh;
+}
+
+.courseListEntry {
+  border-bottom: black solid 1px;
+}
+
+.spacingRight {
+  margin-right: 3px;
+}

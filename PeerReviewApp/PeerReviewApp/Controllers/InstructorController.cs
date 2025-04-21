@@ -27,16 +27,22 @@ namespace PeerReviewApp.Controllers
             _institutionRepo = instRepo;
             _classRepo = classRepo;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = _userManager.GetUserAsync(User).Result;
+            var courses = await _classRepo.GetCoursesForInstructorAsync(user);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+            
             // send user to login if not logged in
             if (!_signInManager.IsSignedIn(User))
             {
                 var returnURL = Request.GetEncodedUrl();
                 return RedirectToAction("Login", "Account", returnURL);
             }
-
-            return View();
+            
+            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses };
+            
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> ViewClasses()
