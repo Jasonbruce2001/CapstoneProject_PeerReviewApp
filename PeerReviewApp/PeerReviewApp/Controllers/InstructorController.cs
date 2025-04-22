@@ -30,8 +30,6 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> Index()
         {
             var user = _userManager.GetUserAsync(User).Result;
-            var courses = await _classRepo.GetCoursesForInstructorAsync(user);
-            var classes = await _classRepo.GetClassesForInstructorAsync(user);
             
             // send user to login if not logged in
             if (!_signInManager.IsSignedIn(User))
@@ -40,7 +38,16 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction("Login", "Account", returnURL);
             }
             
-            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses };
+            var courses = await _classRepo.GetCoursesForInstructorAsync(user);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+            var students = new List<AppUser>();
+
+            foreach (Class c in classes) //add all students from instructor's classes to one list
+            {
+                students.AddRange(c.Students);
+            }
+            
+            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students };
             
             return View("Index", viewModel);
         }
@@ -67,19 +74,12 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents()
+        public async Task<IActionResult> ViewStudents(AppUser instructor)
         {
-            // get appuser for current user
-            var user = _userManager.GetUserAsync(User).Result;
-            if (_userManager != null)
-            {
-                user = await _userManager.GetUserAsync(User);
-            }
-
             //get classes for current instructor
-            var classes = await _classRepo.GetCurrentClassesAsync(user.Id);
-
-            return View(classes);
+            var classes = await _classRepo.GetClassesForInstructorAsync(instructor);
+            
+            return View("ViewStudents", classes);
         }
 
         [HttpPost]

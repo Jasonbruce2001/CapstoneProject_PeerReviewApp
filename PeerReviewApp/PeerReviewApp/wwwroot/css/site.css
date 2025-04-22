@@ -1,5 +1,28 @@
 html {
   font-size: 14px;
+  min-height: 100vh; 
+}
+
+body {
+  background-color: whitesmoke;
+  background-size: cover;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+html, body {
+  height: 100%;
+}
+
+footer {
+  background-color: white;
+  padding-top: 15px;
+  height: 8vh;
+}
+
+.content {
+  flex: 1 0 auto;
 }
 
 @media (min-width: 768px) {
@@ -10,32 +33,6 @@ html {
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  background-color: whitesmoke;
-  background-size: cover;
-  height: 100%;
-  width: 100%;
-  padding:0;
-  margin: 0 0 0 0;
-}
-
-footer {
-  position: sticky !important;
-  bottom: 0;
-  background-color: white;
-}
-
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 .register {
@@ -60,16 +57,16 @@ footer {
   width: 35vw;
 }
 
-.homeBackground {
-
-}
-
 .homeList {
   list-style: none;
 }
 
 .homeTitle {
   font-size: 5vh;
+}
+
+.homeBackground {
+  height: 100%;
 }
 
 .mt-c {
@@ -84,10 +81,15 @@ footer {
   width: 25%;
   border-radius: 4px;
   background-color: white;
+  text-decoration: none;
+}
+
+.dashboardWidget > a > div {
+  color: black;
 }
 
 .dashboardWidget:hover {
-  background-color: darkgrey;
+  background-color: darkgray;
   color: white; 
 }
 
@@ -95,6 +97,10 @@ footer {
   content: '';
   display: block;
   margin-top: 35%;
+}
+
+.limit-height{
+  height: 10vh;
 }
 
 .sizeWrapper {
@@ -118,4 +124,8 @@ footer {
 
 .spacingRight {
   margin-right: 3px;
+}
+
+.spacer {
+  height: 10vh;
 }
