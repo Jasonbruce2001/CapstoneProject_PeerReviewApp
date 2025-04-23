@@ -20,7 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Grade> Grades { get; set; } = default!;
     public DbSet<Institution> Institutions { get; set; }
     public DbSet<Review> Reviews { get; set; } = default!;
-    public DbSet<ReviewGroup> ReviewGroups { get; set; } = default!;
+    public DbSet<ReviewGroup> ReviewGroups { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

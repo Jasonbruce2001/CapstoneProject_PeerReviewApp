@@ -79,8 +79,19 @@ public class RegisterVmController : Controller
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        
-                        return RedirectToAction("Index", "Home");
+
+                        if (User.IsInRole("Admin"))
+                        {
+                            return RedirectToAction("Index", "Admin");
+                        }
+                        else if (User.IsInRole("Instructor"))
+                        {
+                            return RedirectToAction("Index", "Instructor");
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                     else
                     {
@@ -120,7 +131,18 @@ public class RegisterVmController : Controller
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    if (User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+                    else if (User.IsInRole("Instructor"))
+                    {
+                        return RedirectToAction("Index", "Instructor");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
             }
         }
