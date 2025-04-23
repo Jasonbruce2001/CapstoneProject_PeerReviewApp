@@ -18,9 +18,11 @@ namespace PeerReviewApp.Controllers
         private ICourseRepository _courseRepo;
         private IInstitutionRepository _institutionRepo;
         private IClassRepository _classRepo;
+        private IAssignmentRepository _assignmentRepo;
         private ApplicationDbContext _context;
+   
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, ApplicationDbContext context)
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentRepository assignmentRepo, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -29,6 +31,7 @@ namespace PeerReviewApp.Controllers
             _institutionRepo = instRepo;
             _classRepo = classRepo;
             _context = context;
+            _assignmentRepo = assignmentRepo;
         }
         public IActionResult Index()
         {
@@ -249,8 +252,7 @@ namespace PeerReviewApp.Controllers
                 Course = class_.ParentCourse
             };
 
-            _context.Assignments.Add(assignment);
-            await _context.SaveChangesAsync();
+            await _assignmentRepo.AddAssignmentAsync(assignment);
 
             TempData["Message"] = "Assignment added successfully.";
             return RedirectToAction("ViewAssignments", new { classId = model.ClassId });
@@ -273,10 +275,7 @@ namespace PeerReviewApp.Controllers
             }
 
 
-                 var assignments = await _context.Assignments
-                .Where(a => a.Course.Id == class_.ParentCourse.Id)
-                .ToListAsync();
-
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
             ViewBag.ClassId = classId;
             ViewBag.ClassName = class_.ParentCourse.Name;
             ViewBag.Term = class_.Term;
@@ -284,6 +283,19 @@ namespace PeerReviewApp.Controllers
             return View(assignments);
         }
 
+        /*
+        public async Task<IActionResult> AddStudents(int classId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var class_ = await _context.Classes
+                .Include(c => c.ParentCourse)
+                .Include(c => c.Instructor)
+                .Include(c => c.Students)
+                .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+        }
+        */
 
     }
 }

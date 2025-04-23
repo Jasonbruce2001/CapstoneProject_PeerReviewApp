@@ -15,7 +15,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
                 .AddTransient<ICourseRepository, CourseRepository>()
-                .AddTransient<IClassRepository, ClassRepository>();
+                .AddTransient<IClassRepository, ClassRepository>()
+                .AddTransient<IAssignmentRepository, AssignmentRepository>();
 
 //add Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
