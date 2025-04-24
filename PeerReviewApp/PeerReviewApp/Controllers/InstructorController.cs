@@ -7,16 +7,16 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     public class InstructorController : Controller
     {
         //Need to add role restriction to instructors here
         private readonly ILogger<InstructorController> _logger;
         private readonly UserManager<AppUser> _userManager;
-        private SignInManager<AppUser> _signInManager;
-        private ICourseRepository _courseRepo;
-        private IInstitutionRepository _institutionRepo;
-        private IClassRepository _classRepo;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ICourseRepository _courseRepo;
+        private readonly IInstitutionRepository _institutionRepo;
+        private readonly IClassRepository _classRepo;
 
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr)
         {

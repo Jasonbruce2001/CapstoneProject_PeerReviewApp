@@ -119,6 +119,7 @@ footer {
   background-color: white;
   border-radius: 4px;
   padding:4vh 4vh 7vh 4vh;
+  min-height: 50vh;
 }
 
 .courseListEntry {

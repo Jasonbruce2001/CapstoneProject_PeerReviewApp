@@ -90,7 +90,7 @@ public class RegisterVmController : Controller
                         }
                         else
                         {
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Index", "Student");
                         }
                     }
                     else
@@ -141,7 +141,7 @@ public class RegisterVmController : Controller
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Student");
                     }
                 }
             }
