@@ -1,12 +1,10 @@
 ﻿@model IList<Class>
-@{
-}
 
 <h1 class="text-center fw-bolder">Your Students</h1>
 @foreach(Class cls in Model)
 {
     <div class="border border-secondary">
-        <h3 class=" fw-bolder">@cls.ParentCourse.Name - @cls.Term</h3>
+        <h3 class="fw-bolder">Current Students</h3>
         @foreach(AppUser student in cls.Students)
         {
             <div class="border border-bottom border-secondary">

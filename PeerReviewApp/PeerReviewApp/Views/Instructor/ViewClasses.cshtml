@@ -21,6 +21,16 @@
                 Edit Course Details
             </button>
         </form>
+        <a asp-action="ViewAssignments" asp-route-classId="@cls.ClassId" class="btn btn-primary">
+            Manage Assignments
+        </a>
+    
 
+        <form class="justify-content-end" method="get" asp-action="AddAssignmentVersion"
+              asp-route-Id="@cls.ParentCourse.Id">
+            <button type="submit" class="btn btn-primary">
+                Add Assignment Version
+            </button>
+        </form>
     </div>
 }

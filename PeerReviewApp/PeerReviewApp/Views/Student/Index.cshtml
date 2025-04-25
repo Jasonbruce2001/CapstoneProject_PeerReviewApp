@@ -1,0 +1,58 @@
+@model StudentDashVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var user = Model.User;
+    var classes = Model.Classes;
+}
+
+<div class="container-fluid mb-5">
+    <div class="row">
+        <h3>Welcome, @user.UserName</h3>
+    </div>
+    <!-- Dashboard buttons -->
+    <div class="row mb-2">
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Reviews to do 0</div></a>
+        </div>
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Reviews received</div></a>
+        </div>
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">My Grades</div></a>
+        </div>
+        <div class="col dashboardWidget">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Due Soon</div></a>
+        </div>
+    </div>
+    <div class="row courseList">
+        <div class="row mb-2">
+            <h3><b>My Current Classes</b></h3>
+        </div>
+        @if(classes.Any())
+        {
+            @foreach (Class c in classes)
+            {
+                <div class="row courseListEntry mb-2">
+                    <div class="col">
+                        <h4>@c.ParentCourse.Name</h4>
+                        <h5>@c.Students.Count() Students Enrolled</h5>
+                    </div>
+                    <div class="col text-end">
+                        <p>Active Reviews 0</p>
+                    </div>
+                    <div class="col text-end">
+                        <p><a asp-action="" class="courseButton">View Assignments</a></p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="container-fluid text-center">
+                <h3>No classes found.</h3>
+            </div>
+        }
+    </div>
+    <div class="spacer"></div>
+</div>
