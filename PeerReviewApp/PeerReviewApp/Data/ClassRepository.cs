@@ -22,20 +22,22 @@ public class ClassRepository : IClassRepository
 
         return classes;
     }
-    
+
+
     //overloaded for getting classes by instructor by id
     public async Task<IList<Class>> GetClassesAsync(string id)
     {
         var classes = await _context.Classes
             .Include(r => r.Students)
-            .Include(r => r.ParentCourse)
             .Include(r => r.Instructor)
+            .Include(r => r.ParentCourse)
             .Where (r => r.Instructor.Id == id)
             .OrderBy(r => r.IsArchived)
             .ToListAsync();
 
         return classes;
     }
+
 
     public async Task<IList<Class>> GetArchivedClassesAsync()
     {
