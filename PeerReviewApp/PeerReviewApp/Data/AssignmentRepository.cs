@@ -14,6 +14,7 @@ namespace PeerReviewApp.Data
 
 
 
+
         public async Task<IList<Assignment>> GetAssignmentsAsync()
         { 
             return await _context.Assignments
@@ -56,6 +57,7 @@ namespace PeerReviewApp.Data
                 _context.Assignments.Remove(assignment);
             }
             return await _context.SaveChangesAsync();
+
         }
     }
 }

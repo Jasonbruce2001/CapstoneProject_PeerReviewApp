@@ -9,36 +9,95 @@
     <title>@ViewData["Title"] - PeerReviewApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/PeerReviewApp.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/PeerReviewApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css" integrity="sha-long-hash_code" crossorigin="anonymous" />
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PeerReviewApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
-            </div>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary  border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">PeerReviewApp</a>
+                <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav text-white">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Admin" asp-action="Index">
+                                    <span class="fas fa-cog"></span>&nbsp;Admin
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                @* Code to be implemented after adding a separate instructor role  VVVVV
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @if (User.IsInRole("Instructor"))
+                    {
+                        <ul class="navbar-nav flex-grow-1 text-white">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="Groups">Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="ViewClasses">Courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="Reviews">Reviews</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="ViewStudents">Students</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Instructor" asp-action="Documents">Documents</a>
+                            </li>
+                        </ul>
+                    } else if (signInManager.IsSignedIn(User)){
+                        <ul class="navbar-nav flex-grow-1 text-white">
+                            <li class="nav-item">
+                                <!-- No page or controller created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Student" asp-action="Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page or controller created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Student" asp-action="Privacy">Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page or controller created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Student" asp-action="Reviews">Reviews</a>
+                            </li>
+                            <li class="nav-item">
+                                <!-- No page or controller created for this yet -->
+                                <a class="nav-link text-white" asp-area="" asp-controller="Student" asp-action="Documents">Documents</a>
+                            </li>
+                        </ul>
+                    }
+                </div>*@
+
 
             <!-- Log-in/log-out -->
-            <ul class="nav navbar navbar-right">
+            <ul class="nav navbar navbar-right ">
                 @if (signInManager.IsSignedIn(User))
                 {
                     <li class="nav-item">
                         <form method="post" asp-action="Logout" asp-controller="RegisterVm">
-                            <span class="text-dark LogOut">@User.Identity.Name</span>
-                            <input type="submit" value="Log Out" class="btn btn-outline-dark"/>
+                            <span class="text-white LogOut">@User.Identity.Name</span>
+                            <input type="submit" value="Log Out" class="btn btn-outline-light"/>
                         </form>
                     </li>
                 }
@@ -48,11 +107,11 @@
                     var action = ViewContext.RouteData.Values["action"]?.ToString();
                     // anonymous user - Register link and Log In button
                     <li class="nav-item">
-                        <a class="btn btn-outline-dark register" asp-controller="RegisterVm" asp-action="Register">
+                        <a class="nav-link text-white" asp-controller="RegisterVm" asp-action="Register">
                             <span class="fas fa-edit"></span> &nbsp; Register </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-dark" asp-action="LogIn" asp-controller="RegisterVm">
+                        <a class="btn btn-outline-light" asp-action="LogIn" asp-controller="RegisterVm">
                             Log In
                         </a>
                     </li>

@@ -8,4 +8,5 @@ public class AssignmentVersion
     public Document Instructions { get; set; }
     public Document ReviewForm { get; set; }
     public IList<AppUser> Students { get; set; } = new List<AppUser>();
+    public Assignment ParentAssignment { get; set; }
 }
