@@ -1,5 +1,28 @@
 html {
   font-size: 14px;
+  min-height: 100vh; 
+}
+
+body {
+  background-color: whitesmoke;
+  background-size: cover;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+html, body {
+  height: 100%;
+}
+
+footer {
+  background-color: white;
+  padding-top: 15px;
+  height: 8vh;
+}
+
+.content {
+  flex: 1 0 auto;
 }
 
 @media (min-width: 768px) {
@@ -10,15 +33,6 @@ html {
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
 }
 
 .register {
@@ -41,4 +55,81 @@ body {
   margin-top: 12vh;
   padding: 3vw 3vw 1vw 3vw;
   width: 35vw;
+}
+
+.homeList {
+  list-style: none;
+}
+
+.homeTitle {
+  font-size: 5vh;
+}
+
+.homeBackground {
+  height: 100%;
+}
+
+.mt-c {
+  margin-top: 15vh;
+}
+
+.dashboardWidget {
+  text-align: center;
+  padding: 1vw;
+  display: inline-block;
+  position: relative;
+  width: 25%;
+  border-radius: 4px;
+  background-color: white;
+  text-decoration: none;
+}
+
+.dashboardWidget > a > div {
+  color: black;
+}
+
+.dashboardWidget:hover {
+  background-color: darkgray;
+  color: white; 
+}
+
+.dashboardWidget:after {
+  content: '';
+  display: block;
+  margin-top: 35%;
+}
+
+.limit-height{
+  height: 10vh;
+}
+
+.sizeWrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 10%;
+    padding-top: 10px;
+    font-size: 2vh;
+    font-weight: bold;
+}
+
+.courseList {
+  background-color: white;
+  border-radius: 4px;
+  padding:4vh 4vh 7vh 4vh;
+  min-height: 50vh;
+}
+
+.courseListEntry {
+  border-bottom: black solid 1px;
+}
+
+.spacingRight {
+  margin-right: 3px;
+}
+
+.spacer {
+  height: 10vh;
 }

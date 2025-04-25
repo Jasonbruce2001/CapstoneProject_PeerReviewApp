@@ -121,6 +121,42 @@ public class ClassRepository : IClassRepository
         
         return result;
     }
+    
+    public async Task<IList<Class>> GetClassesForInstructorAsync(AppUser instructor)
+    {
+        var result = new List<Class>();
+        var classes = await _context.Classes
+            .Include(c => c.Students)
+            .ToListAsync();
+
+        foreach (var c in classes)
+        {
+            if (c.Instructor == instructor)
+            {
+                result.Add(c);
+            }
+        }
+        
+        return result;
+    }
+
+    public async Task<IList<Course>> GetCoursesForInstructorAsync(AppUser instructor)
+    {
+        var result = new List<Course>();
+        var allClasses = await _context.Classes
+                                            .Include(c => c.Instructor)
+                                            .Include(c => c.ParentCourse).ToListAsync();
+
+        foreach(Class c in allClasses)
+        {
+            if (c.Instructor == instructor)
+            {
+                result.Add(c.ParentCourse);
+            }
+        }
+        
+        return result;
+    }
 
     public async Task<Class> GetClassByIdAsync(int classId)
     { 
@@ -166,7 +202,7 @@ public class ClassRepository : IClassRepository
         int result = await task;
 
         return result;
-
-
     }
+    
+    
 }

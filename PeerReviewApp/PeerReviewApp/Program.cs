@@ -14,6 +14,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
+    .AddTransient<ICourseRepository, CourseRepository>()
+    .AddTransient<IClassRepository, ClassRepository>()
+    .AddTransient<IReviewGroupRepository, ReviewGroupRepository>();
+
 
 //add Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PeerReviewApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     public class InstructorController : Controller
     {
         //Need to add role restriction to instructors here
@@ -25,6 +25,7 @@ namespace PeerReviewApp.Controllers
 
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context)
 
+
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -37,16 +38,29 @@ namespace PeerReviewApp.Controllers
             _documentRepo = documentRepository;
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = _userManager.GetUserAsync(User).Result;
+            
             // send user to login if not logged in
             if (!_signInManager.IsSignedIn(User))
             {
                 var returnURL = Request.GetEncodedUrl();
                 return RedirectToAction("Login", "Account", returnURL);
             }
+            
+            var courses = await _classRepo.GetCoursesForInstructorAsync(user);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+            var students = new List<AppUser>();
 
-            return View();
+            foreach (Class c in classes) //add all students from instructor's classes to one list
+            {
+                students.AddRange(c.Students);
+            }
+            
+            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students };
+            
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> ViewClasses()
@@ -71,19 +85,12 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents()
+        public async Task<IActionResult> ViewStudents(AppUser instructor)
         {
-            // get appuser for current user
-            var user = _userManager.GetUserAsync(User).Result;
-            if (_userManager != null)
-            {
-                user = await _userManager.GetUserAsync(User);
-            }
-
             //get classes for current instructor
-            var classes = await _classRepo.GetCurrentClassesAsync(user.Id);
-
-            return View(classes);
+            var classes = await _classRepo.GetClassesForInstructorAsync(instructor);
+            
+            return View("ViewStudents", classes);
         }
 
         [HttpPost]

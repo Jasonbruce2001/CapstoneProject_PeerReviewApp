@@ -102,9 +102,7 @@ namespace PeerReviewApp.Controllers
 
             return View(model);
         }
-
-
-
+        
         [HttpPost]
         public async Task<IActionResult> DeactivateInstructor(string id)
         {
@@ -128,8 +126,7 @@ namespace PeerReviewApp.Controllers
             }
             return RedirectToAction("ManageInstructors");
         }
-
-
+        
         public async Task<IActionResult> ResetInstructorPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -145,10 +142,7 @@ namespace PeerReviewApp.Controllers
             };
 
             return View(model);
-
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> ResetInstructorPassword(ResetInstructorPasswordVM model)
@@ -179,7 +173,6 @@ namespace PeerReviewApp.Controllers
             }
 
             return View(model);
-
         }
 
         public IActionResult ManageInstitutions()
