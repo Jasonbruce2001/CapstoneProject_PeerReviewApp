@@ -17,8 +17,11 @@ namespace PeerReviewApp.Controllers
         private ICourseRepository _courseRepo;
         private IInstitutionRepository _institutionRepo;
         private IClassRepository _classRepo;
+        private IAssignmentRepository _assignmentRepo;
+        private IAssignmentVersionRepository _assignmentVersionRepo;
+        private IDocumentRepository _documentRepo;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr)
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository)
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -26,6 +29,9 @@ namespace PeerReviewApp.Controllers
             _courseRepo = courseRepo;
             _institutionRepo = instRepo;
             _classRepo = classRepo;
+            _assignmentVersionRepo = assignmentVersionRepo;
+            _assignmentRepo = assignmentRepository;
+            _documentRepo = documentRepository;
         }
         public IActionResult Index()
         {
@@ -194,6 +200,73 @@ namespace PeerReviewApp.Controllers
             }
         }
 
-        
+        public async Task<IActionResult> AddAssignmentVersion(int id)
+        {
+            // send user to login if not logged in
+            if (!_signInManager.IsSignedIn(User))
+            {
+                var returnURL = Request.GetEncodedUrl();
+                return RedirectToAction("Login", "Account", returnURL);
+            }
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //Get list of Assignments and Documents to display for class
+            IList<Document> documents = new List<Document>();
+            IList<Assignment> assignments = new List<Assignment>();
+            documents = await _documentRepo.GetDocumentsAsync(user.Id);
+            assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(id);
+
+            if (documents != null)
+            {
+                AssignmentVersionVM vm = new AssignmentVersionVM { Assignments = assignments, Documents = documents };
+
+                return View(vm);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+            
+            
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAssignmentVersion(AssignmentVersionVM model)
+        {
+            
+            //get Assignment linked to version
+            Assignment assignment = await _assignmentRepo.GetAssignmentByIdAsync(model.AssignmentId);
+            Document instruction = await _documentRepo.GetDocumentByIdAsync(model.InstructionsId);
+            Document reviewForm = await _documentRepo.GetDocumentByIdAsync(model.ReviewFormId);
+            model.AssnVersion.ParentAssignment = assignment;
+            model.AssnVersion.ReviewForm = reviewForm;
+            model.AssnVersion.Instructions = instruction;
+
+            // send user to login if not logged in
+            if (!_signInManager.IsSignedIn(User))
+            {
+                var returnURL = Request.GetEncodedUrl();
+                return RedirectToAction("Login", "Account", returnURL);
+            }
+
+
+            //Add AssignmentVersion to database
+            if (await _assignmentVersionRepo.AddAssignmentVersionAsync(model.AssnVersion) > 0)
+            {
+                return RedirectToAction("ViewClasses");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "There was an error adding the course.";
+                return RedirectToAction("AddAssignmentVersion");
+            }
+        }
+
     }
 }
