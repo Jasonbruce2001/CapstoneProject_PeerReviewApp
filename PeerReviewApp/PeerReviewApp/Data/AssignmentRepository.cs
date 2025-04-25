@@ -11,48 +11,53 @@ namespace PeerReviewApp.Data
         {
             _context = context;
         }
+
+
+
+
         public async Task<IList<Assignment>> GetAssignmentsAsync()
-        {
-            var assignments = await _context.Assignments
-            .Include(r => r.Course)
-            .ToListAsync();
-
-            return assignments;
+        { 
+            return await _context.Assignments
+                .Include(a => a.Course)
+                .ToListAsync();
         }
 
-        public async Task<IList<Assignment>> GetAssignmentsByCourseAsync(int id)
-        {
-            var assignments = await _context.Assignments
-            .Include(r => r.Course)
-            .Where(r => r.Course.Id == id)
-            .ToListAsync();
-
-            return assignments;
+        public async Task<IList<Assignment>> GetAssignmentsByCourseAsync(int courseId)
+        { 
+            return await _context.Assignments
+                .Include(a => a.Course)
+                .Where(a => a.Course.Id == courseId)
+                .ToListAsync();
         }
+
         public async Task<Assignment> GetAssignmentByIdAsync(int id)
-        {
-
-            var assignment = await _context.Assignments
-            .Include(r => r.Course)
-            .Where(r => r.Id == id)
-            .FirstOrDefaultAsync();
-
-            return assignment;
+        { 
+            return await _context.Assignments
+                .Include(a => a.Course)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
-        public Task<int> AddAssignmentAsync(Assignment assignment)
-        {
 
-            throw new NotImplementedException();
+        public async Task<int> AddAssignmentAsync(Assignment assignment)
+        {
+            await _context.Assignments.AddAsync(assignment);
+            return await _context.SaveChangesAsync();
         }
-        public Task<int> UpdateAssignmentAsync(Assignment assignment)
-        {
 
-            throw new NotImplementedException();
+        public async Task<int> UpdateAssignmentAsync(Assignment assignment)
+        {
+            _context.Assignments.Update(assignment);
+            return await _context.SaveChangesAsync();
         }
-        public Task<int> DeleteAssignmentAsync(int id)
-        {
 
-            throw new NotImplementedException();
+        public async Task<int> DeleteAssignmentAsync(int id)
+        {
+            var assignment = await _context.Assignments.FindAsync(id);
+            if (assignment != null)
+            {
+                _context.Assignments.Remove(assignment);
+            }
+            return await _context.SaveChangesAsync();
+
         }
     }
 }

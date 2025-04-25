@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace PeerReviewApp.Controllers
 {
@@ -20,8 +21,10 @@ namespace PeerReviewApp.Controllers
         private IAssignmentRepository _assignmentRepo;
         private IAssignmentVersionRepository _assignmentVersionRepo;
         private IDocumentRepository _documentRepo;
+        private ApplicationDbContext _context;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository)
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context)
+
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -32,6 +35,7 @@ namespace PeerReviewApp.Controllers
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
             _documentRepo = documentRepository;
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -95,14 +99,14 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction("ViewStudents");
             }
 
-            
+
         }
 
         public IActionResult AddCourse()
         {
             //Get list of institutions to display for course
-            IList<Institution> inst =  _institutionRepo.GetInstitutionsAsync().Result;
-            AddCourseVM vm = new AddCourseVM { Institutions=inst};
+            IList<Institution> inst = _institutionRepo.GetInstitutionsAsync().Result;
+            AddCourseVM vm = new AddCourseVM { Institutions = inst };
 
             return View(vm);
         }
@@ -114,18 +118,19 @@ namespace PeerReviewApp.Controllers
             Institution inst = await _institutionRepo.GetInstitutionByIdAsync(model.InstId);
             model.Course.Institution = inst;
 
-                if (model.Course.Institution != null)
+            if (model.Course.Institution != null)
+            {
+                if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
-                    if (await _courseRepo.AddCourseAsync(model.Course) > 0)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        ViewBag.ErrorMessage = "There was an error adding the course.";
-                        return View();
-                    }
-                }else{ return RedirectToAction("AddCourse"); }
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "There was an error adding the course.";
+                    return View();
+                }
+            }
+            else { return RedirectToAction("AddCourse"); }
         }
 
         [HttpGet]
@@ -200,6 +205,101 @@ namespace PeerReviewApp.Controllers
             }
         }
 
+        public async Task<IActionResult> AddAssignment(int classId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var class_ = await _context.Classes
+                .Include(c => c.ParentCourse)
+                .Include(c => c.Instructor)
+                .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+            if (class_ == null || class_.Instructor.Id != user.Id)
+            {
+                return NotFound();
+            }
+
+            var model = new AddAssignmentVM
+            {
+                ClassId = classId,
+                ClassName = class_.ParentCourse.Name,
+                Term = class_.Term,
+                DueDate = DateTime.Now.AddDays(7)
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddAssignment(AddAssignmentVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var class_ = await _context.Classes
+                .Include(c => c.ParentCourse)
+                .Include(c => c.Instructor)
+                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
+
+            if (class_ == null || class_.Instructor.Id != user.Id)
+            {
+                return NotFound();
+            }
+
+            var assignment = new Assignment
+            {
+                Title = model.Title,
+                DueDate = model.DueDate,
+                Course = class_.ParentCourse
+            };
+
+            await _assignmentRepo.AddAssignmentAsync(assignment);
+
+            TempData["Message"] = "Assignment added successfully.";
+            return RedirectToAction("ViewAssignments", new { classId = model.ClassId });
+        }
+
+
+
+        public async Task<IActionResult> ViewAssignments(int classId)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+            var class_ = await _context.Classes 
+                .Include(c => c.ParentCourse)
+                .Include(c => c.Instructor)
+                .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+            if (class_ == null || class_.Instructor.Id != user.Id)
+            {
+                return NotFound();
+            }
+
+
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
+            ViewBag.ClassId = classId;
+            ViewBag.ClassName = class_.ParentCourse.Name;
+            ViewBag.Term = class_.Term;
+
+            return View(assignments);
+        }
+
+        /*
+        public async Task<IActionResult> AddStudents(int classId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var class_ = await _context.Classes
+                .Include(c => c.ParentCourse)
+                .Include(c => c.Instructor)
+                .Include(c => c.Students)
+                .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+        }
+        */
         public async Task<IActionResult> AddAssignmentVersion(int id)
         {
             // send user to login if not logged in
@@ -270,3 +370,4 @@ namespace PeerReviewApp.Controllers
 
     }
 }
+

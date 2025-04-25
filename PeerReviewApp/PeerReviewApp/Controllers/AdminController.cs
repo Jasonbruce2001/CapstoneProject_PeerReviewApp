@@ -245,7 +245,7 @@ namespace PeerReviewApp.Controllers
             
             return View("ViewInstructors", vm);
         }
-
+        
         private string GenerateRandomCode(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
