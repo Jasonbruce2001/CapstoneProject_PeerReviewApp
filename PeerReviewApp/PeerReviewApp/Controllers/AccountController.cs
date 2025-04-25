@@ -5,13 +5,13 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
-public class RegisterVmController : Controller
+public class AccountController : Controller
 {
     private readonly UserManager<AppUser> _userManager; 
     private readonly SignInManager<AppUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IInstitutionRepository _institutionRepository;
-    public RegisterVmController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IInstitutionRepository institutionRepository, RoleManager<IdentityRole> roleManager)
+    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IInstitutionRepository institutionRepository, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager; 
         _signInManager = signInManager;
@@ -156,6 +156,11 @@ public class RegisterVmController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 
     public bool ValidateInstructorCode(string code)

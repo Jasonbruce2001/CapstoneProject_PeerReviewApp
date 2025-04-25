@@ -338,9 +338,6 @@ namespace PeerReviewApp.Controllers
             {
                 return RedirectToAction("Index");
             }
-            
-            
-
         }
 
         [HttpPost]
