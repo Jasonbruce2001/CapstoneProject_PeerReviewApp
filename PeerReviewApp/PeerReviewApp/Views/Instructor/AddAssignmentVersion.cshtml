@@ -1,0 +1,57 @@
+﻿@model AssignmentVersionVM
+@{
+    ViewData["Title"] = "Add Assignment Version";
+}
+
+<form asp-action="AddAssignmentVersion" asp-controller="Instructor" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="AssignmentId">Parent Assignment:</label>
+        <span asp-validation-for="AssignmentId"></span>
+        <select asp-for="AssignmentId" class="form-control"
+                asp-items="@(new SelectList(Model.Assignments, nameof(Assignment.Id), nameof(Assignment.Title)))">
+        </select>
+    </div>
+        
+    <div class="form-group">
+        <label asp-for="AssnVersion.Name">Version Name</label>
+        <span asp-validation-for="AssnVersion.Name"></span>
+        <input asp-for="AssnVersion.Name" class="form-control p-3" required>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AssnVersion.TextInstructions">Written instructions</label>
+        <span asp-validation-for="AssnVersion.TextInstructions"></span>
+        <input asp-for="AssnVersion.TextInstructions" class="form-control p-3" required>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="InstructionsId">Instructions file:</label>
+        <span asp-validation-for="InstructionsId"></span>
+        <select asp-for="InstructionsId" class="form-control"
+                asp-items="@(new SelectList(Model.Documents, nameof(Document.Id), nameof(Document.Name)))">
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ReviewFormId">Instructions file:</label>
+        <span asp-validation-for="ReviewFormId"></span>
+        <select asp-for="ReviewFormId" class="form-control"
+                asp-items="@(new SelectList(Model.Documents, nameof(Document.Id), nameof(Document.Name)))">
+        </select>
+    </div>
+    
+
+    <div class="form-group">
+        <a href="@Url.Action("Index", "Instructor")" class="btn btn-outline-danger">Cancel</a>
+        <input type="submit" value="Add Course" class="btn btn-primary" />
+    </div>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

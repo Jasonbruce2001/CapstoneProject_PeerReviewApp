@@ -9,6 +9,8 @@ namespace PeerReviewApp.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public Institution Institution { get; set; }
+        public IList<Assignment> Assignments { get; set; }
+        public IList<Class> Subclasses { get; set; }
     }
 }
 

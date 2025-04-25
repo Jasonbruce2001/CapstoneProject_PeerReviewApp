@@ -16,7 +16,7 @@ public class CourseRepository : ICourseRepository
         return await _context.Courses
                             .Include(c => c.Institution)
                             .ToListAsync();
-    }                            
+    }
 
     public async Task<int> AddCourseAsync(Course course)
     {

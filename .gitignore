@@ -399,3 +399,4 @@ FodyWeavers.xsd
 /PeerReviewApp/PeerReviewApp/appsettings.Development.json
 /PeerReviewApp/UnitTests/UnitTests.csproj
 /PeerReviewApp/UnitTests/UnitTest1.cs
+/PeerReviewApp/PeerReviewApp/appsettings.Production.json

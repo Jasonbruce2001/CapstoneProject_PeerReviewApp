@@ -5,11 +5,40 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    @*Buttons to navigate towards testing. They are temporary*@
-    <a href="@Url.Action("Index", "Instructor")" class="btn btn-info mr-2">Instructor Controller</a>
-    
-    
+<!-- Setting seperate from rest of style sheet to prevent pages other than home from receiving background gif-->
+<style>
+    body { 
+        background-image: url(../images/PeerCoverArt.gif);
+    }
+</style>
+
+<div class="container-fluid text-center text-white homeBackground">
+    <div class="row mt-c">
+        <h1 class="homeTitle">Simplify Your Peer Review Process</h1>
+    </div>
+    <div class="row mt-c">
+        <div class="col">
+            <h4 class="border-bottom border-white">For Teachers:</h4>
+            <ul class="homeList">
+                <li>Automatically assign students partners</li>
+                <li>Create groups for alternate assignment versions</li>
+                <li>Integration with Moodle tools</li>
+                <li>View analytics on student performance</li>
+            </ul>
+        </div>
+        <div class="col-1"></div>
+        <div class="col">
+            <h4 class="border-bottom border-white">For Students:</h4>
+            <ul class="homeList">
+                <li>Simple to understand, dedicated review system</li>
+                <li>No more waiting for partners to be ready</li>
+                <li>Quickly get feedback on labs</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <h4>Register or log-in to get started</h4>
+    </div>
 </div>
 
+<a href="@Url.Action("Index", "Instructor")" class="btn btn-info mr-2">Instructor Controller</a>

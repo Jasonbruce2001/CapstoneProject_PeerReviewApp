@@ -14,8 +14,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
-                .AddTransient<ICourseRepository, CourseRepository>()
-                .AddTransient<IClassRepository, ClassRepository>();
+    .AddTransient<ICourseRepository, CourseRepository>()
+    .AddTransient<IClassRepository, ClassRepository>()
+    .AddTransient<IReviewGroupRepository, ReviewGroupRepository>()
+    .AddTransient<IAssignmentRepository, AssignmentRepository>()
+    .AddTransient<IAssignmentVersionRepository, AssignmentVersionRepository>()
+    .AddTransient<IDocumentRepository, DocumentRepository>();
+
 
 //add Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -49,15 +54,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider
-        .GetRequiredService<ApplicationDbContext>();
-    await SeedData.Seed(context, scope.ServiceProvider);
-    await SeedData.CreateAdminUser(scope.ServiceProvider);
-}
-
-
 // Create roles if they don't exist - added in program.cs for simplicity, ideally it should be in apuusercontroller to test if roles exist prior to assigning them
 using (var scope = app.Services.CreateScope())
 {
@@ -73,5 +69,15 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+    await SeedData.Seed(context, scope.ServiceProvider);
+    await SeedData.CreateAdminUser(scope.ServiceProvider);
+}
+
+
 
 app.Run();

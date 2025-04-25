@@ -1,7 +1,11 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model InstructorDashVM
+
 @{
+    ViewData["Title"] = "Dashboard";
+    var instructor = Model.Instructor;
+    var classes = Model.Classes;
+    var courses = Model.Courses;
+    var students = Model.Students;
 }
 
 @*Buttons to navigate towards testing. They are temporary*@
@@ -9,3 +13,56 @@
 <a href="@Url.Action("AddClass", "Instructor")" class="btn btn-info mr-2">Add Class</a>
 <a href="@Url.Action("ViewClasses", "Instructor")" class="btn btn-info mr-2">View Classes</a>
 <a href="@Url.Action("ViewStudents", "Instructor")" class="btn btn-info mr-2">View Students</a>
+
+<div class="container-fluid mb-5">
+    <div class="row">
+        <h3>Welcome, @instructor.UserName</h3>
+    </div>
+    <div class="row mb-5">
+        <div class="col"><a asp-action="ViewClasses" class="btn btn-primary px-3">Manage Classes</a></div>
+    </div>
+    <!-- Dashboard buttons -->
+    <div class="row mb-2">
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Active Reviews 0</div></a>
+        </div>
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Total Students @students.Count()</div></a>
+        </div>
+        <div class="col dashboardWidget spacingRight">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Ready for Grading 0</div></a>
+        </div>
+        <div class="col dashboardWidget">
+            <a asp-action="ViewStudents"><div class="sizeWrapper">Upcoming Deadlines 0</div></a>
+        </div>
+    </div>
+    <div class="row courseList">
+        <div class="row mb-2">
+            <h3><b>Recently Accessed</b></h3>
+        </div>
+        @foreach (Class c in classes)
+        {
+            <div class="row courseListEntry mb-2">
+                <div class="col">
+                    <h4>@c.ParentCourse.Name</h4>
+                    <h5>@c.Students.Count() Students Enrolled</h5>
+                </div>
+                <div class="col text-end">
+                    <p>Active Reviews 0</p>
+                </div>
+                <div class="col text-end">
+                    <p><a asp-action="" class="courseButton">Assignments</a>|<a asp-action="" class="courseButton">Reviews</a></p>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row mt-2 mb-5">
+        <div class="col dashboardWidget limit-height me-2">
+            <h3>View All Submissions</h3>
+        </div>
+        <div class="col dashboardWidget limit-height">
+            <h3>Manage Groups</h3>
+        </div>
+    </div>
+    <div class="spacer"></div>
+</div>

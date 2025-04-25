@@ -1,6 +1,7 @@
 using PeerReviewApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PeerReviewApp.Data;
 
@@ -11,7 +12,7 @@ public class SeedData
         
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
-        
+
         DateTime date = DateTime.Now;
         const string SECRET_PASSWORD = "Pass!123";
 
@@ -21,7 +22,11 @@ public class SeedData
         if (userManager.Users.ToList().Count == 0)
         {
             await userManager.CreateAsync(student, SECRET_PASSWORD);
-            await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+            var result = await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(instructor, "Instructor");
+            }
 
             IList<AppUser> students = new List<AppUser> { student };
             
@@ -38,7 +43,17 @@ public class SeedData
             context.Classes.Add(class1);
             context.Classes.Add(class2);
             context.Classes.Add(class3);
-            
+
+            Document doc1 = new Document() { Uploader = instructor, FilePath = "PlaceHolderValue", Name = "Instructions1" };
+            Document doc2 = new Document() { Uploader = instructor, FilePath = "PlaceHolderValue", Name = "ReviewForm1" };
+
+            context.Documents.Add(doc1);
+            context.Documents.Add(doc2);
+
+            Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
+
+            context.Assignments.Add(assignment1);
+
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             
             AppUser listStudent = new AppUser { UserName = "RelationshipTest", Email = "UniqueEmail@gmail.com", AccountAge = date };
