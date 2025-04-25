@@ -12,7 +12,7 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250425101756_Initial")]
+    [Migration("20250425111804_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

@@ -1,6 +1,7 @@
 using PeerReviewApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PeerReviewApp.Data;
 
@@ -11,7 +12,7 @@ public class SeedData
         
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
-        
+
         DateTime date = DateTime.Now;
         const string SECRET_PASSWORD = "Pass!123";
 
@@ -21,7 +22,11 @@ public class SeedData
         if (userManager.Users.ToList().Count == 0)
         {
             await userManager.CreateAsync(student, SECRET_PASSWORD);
-            await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+            var result = await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(instructor, "Instructor");
+            }
 
             IList<AppUser> students = new List<AppUser> { student };
             
