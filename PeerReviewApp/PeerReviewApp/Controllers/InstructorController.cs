@@ -14,14 +14,14 @@ namespace PeerReviewApp.Controllers
         //Need to add role restriction to instructors here
         private readonly ILogger<InstructorController> _logger;
         private readonly UserManager<AppUser> _userManager;
-        private SignInManager<AppUser> _signInManager;
-        private ICourseRepository _courseRepo;
-        private IInstitutionRepository _institutionRepo;
-        private IClassRepository _classRepo;
-        private IAssignmentRepository _assignmentRepo;
-        private IAssignmentVersionRepository _assignmentVersionRepo;
-        private IDocumentRepository _documentRepo;
-        private ApplicationDbContext _context;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ICourseRepository _courseRepo;
+        private readonly IInstitutionRepository _institutionRepo;
+        private readonly IClassRepository _classRepo;
+        private readonly IAssignmentRepository _assignmentRepo;
+        private readonly IAssignmentVersionRepository _assignmentVersionRepo;
+        private readonly IDocumentRepository _documentRepo;
+        private readonly ApplicationDbContext _context;
 
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context)
 
