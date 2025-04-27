@@ -12,8 +12,8 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250425111804_Initial")]
-    partial class Initial
+    [Migration("20250426213618_newmigration")]
+    partial class newmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -31,82 +31,39 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            if (model.InstructorCode == null) //if instructor code is null, signing up as student
-            {
-                var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+            var user = new AppUser() { UserName = model.Username, AccountAge = DateTime.Now, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
+            if (result.Succeeded)
+            {
+                if (model.InstructorCode == null) //if instructor code is null, assign "Student" role
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                
-                    return RedirectToAction("Index", "Home");
+                    await _userManager.AddToRoleAsync(user, "Student");
                 }
-                else
+                else //if instructor code is provided, assign "Instructor" role
                 {
-                    foreach (var error in result.Errors)
+                    if (ValidateInstructorCode(model.InstructorCode))
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        await _userManager.AddToRoleAsync(user, "Instructor");
+                        await _institutionRepository.AddInstructorToInstitutionAsync(model.InstructorCode, user.Id);
                     }
                 }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Home");
             }
-            else //signing up as instructor
+            else
             {
-                if (ValidateInstructorCode(model.InstructorCode))
+                foreach (var error in result.Errors)
                 {
-                    var roleName = "Instructor";
-                    var username = model.Username;
-                    var user = new AppUser();
-                    var result = IdentityResult.Failed();
-                    
-                    // if role doesn't exist, create it
-                    if (await _roleManager.FindByNameAsync(roleName) == null)
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(roleName));
-                    }
-                    // if username doesn't exist, create it and add it to role
-                    if (await _userManager.FindByNameAsync(username) == null)
-                    {
-                        user = new AppUser { UserName = username, AccountAge = DateTime.Now, Email = model.Email, RoleNames = new List<string> { roleName } };
-                        result = await _userManager.CreateAsync(user, model.Password);
-                        if (result.Succeeded)
-                        {
-                            await _userManager.AddToRoleAsync(user, roleName); //add user to isntructor role
-                            await _institutionRepository.AddInstructorToInstitutionAsync(model.InstructorCode, user.Id); //add user to added institution
-                        }
-                    }
-
-                    if (result.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        if (User.IsInRole("Admin"))
-                        {
-                            return RedirectToAction("Index", "Admin");
-                        }
-                        else if (User.IsInRole("Instructor"))
-                        {
-                            return RedirectToAction("Index", "Instructor");
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Student");
-                        }
-                    }
-                    else
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                    }
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
         }
-        
+
         return View(model);
     }
-    
+
     [HttpGet]
     public IActionResult LogIn(string returnURL = "")
     {
