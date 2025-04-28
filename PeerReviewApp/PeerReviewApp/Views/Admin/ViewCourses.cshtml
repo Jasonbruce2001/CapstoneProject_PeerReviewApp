@@ -42,31 +42,33 @@
     </div>
     
     <!-- Filters -->
-    <div class="row formHidden" id="filters">
+    <div class="row">
         <div class="col-6"></div>
         <div class="col">
-            <form method="post" action="/Admin/filterCourses" class="form-inline">
-                <label for="nameSearch">Class Name</label>
-                <input name="nameSearch" id="nameSearch"/>
+            <div class="row formHidden" id="filters">
+                <form method="post" action="/Admin/filterCourses" class="form-inline">
+                    <label for="nameSearch">Class Name</label>
+                    <input name="nameSearch" id="nameSearch"/>
 
-                <label for="institutionName">Institution</label>
-                <select name="institutionName" id="institutionName">
-                    @foreach (var i in institutions)
-                    {
-                        <option value="@i.Id">@i.Name</option>
-                    }
-                </select>
+                    <label for="institutionName">Institution</label>
+                    <select name="institutionName" id="institutionName">
+                        @foreach (var i in institutions)
+                        {
+                            <option value="@i.Id">@i.Name</option>
+                        }
+                    </select>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="row mb-5 me-4 mt-2">
+                <button class="btn btn-secondary btn-sm btn-thin" onclick="toggleFilters()">Toggle Filters</button>
+            </div>
         </div>
-    </div>
-    <div class="row mb-5">
-        <button class="btn btn-secondary btn-sm btn-thin" onclick="toggleFilters()">Toggle Filters</button>
     </div>
     
     <div class="row">
-        <table>
+        <table class="table table-bordered table-striped">
             <thead>
                 <th>Name</th>
                 <th>Description</th>
