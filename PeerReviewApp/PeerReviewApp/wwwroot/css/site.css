@@ -130,6 +130,60 @@ footer {
   margin-right: 3px;
 }
 
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.form-inline label {
+  margin: 5px 10px 5px 0;
+}
+
+.form-inline input {
+  vertical-align: middle;
+  margin: 5px 10px 5px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.form-inline select {
+  vertical-align: middle;
+  margin: 5px 10px 5px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+@media (max-width: 800px) {
+  .form-inline input {
+    margin: 10px 0;
+  }
+
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.align-end {
+  margin-left: auto;
+  margin-right: 0;
+}
+
 .spacer {
   height: 10vh;
+}
+
+.formHidden {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+.btn-thin {
+  margin-left: auto;
+  margin-right: 2vw;
+  width: 10vw;
 }

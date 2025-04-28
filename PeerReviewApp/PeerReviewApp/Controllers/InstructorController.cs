@@ -236,7 +236,6 @@ namespace PeerReviewApp.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> AddAssignment(AddAssignmentVM model)
         {
@@ -371,7 +370,6 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction("AddAssignmentVersion");
             }
         }
-
     }
 }
 
