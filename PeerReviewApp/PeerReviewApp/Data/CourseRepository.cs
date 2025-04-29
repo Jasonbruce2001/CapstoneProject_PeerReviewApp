@@ -15,6 +15,8 @@ public class CourseRepository : ICourseRepository
     {
         return await _context.Courses
                             .Include(c => c.Institution)
+                            .Include(c => c.Assignments)
+                            .Include(c => c.Subclasses)
                             .ToListAsync();
     }
 
@@ -29,6 +31,8 @@ public class CourseRepository : ICourseRepository
     {
         var course = await _context.Courses
             .Include(r => r.Institution)
+            .Include(c => c.Assignments)
+            .Include(c => c.Subclasses)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         return course;

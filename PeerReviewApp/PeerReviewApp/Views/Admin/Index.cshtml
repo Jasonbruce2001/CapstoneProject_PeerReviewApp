@@ -1,6 +1,5 @@
 ﻿@using PeerReviewApp.Models;
 
-
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
@@ -43,10 +42,12 @@
         </div>
         <div class="col-md-3">
             <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Active Courses</h5>
-                    <p class="card-text">@Model.ActiveCourses</p>
-                </div>
+                <a asp-action="ViewCourses">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Courses</h5>
+                        <p class="card-text">@Model.ActiveCourses</p>
+                    </div>
+                </a>
             </div>
         </div>
         <div class="col-md-3">

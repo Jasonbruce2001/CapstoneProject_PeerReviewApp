@@ -28,7 +28,53 @@ public class SeedData
                 await userManager.AddToRoleAsync(instructor, "Instructor");
             }
 
-            IList<AppUser> students = new List<AppUser> { student };
+            // Adding a whole class of students
+            AppUser student1 = new AppUser { UserName = "User1", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student2 = new AppUser { UserName = "User2", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student3 = new AppUser { UserName = "User3", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student4 = new AppUser { UserName = "User4", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student5 = new AppUser { UserName = "User5", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student6 = new AppUser { UserName = "User6", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student7 = new AppUser { UserName = "User7", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student8 = new AppUser { UserName = "User8", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student9 = new AppUser { UserName = "User9", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student0 = new AppUser { UserName = "User0", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student11 = new AppUser { UserName = "User11", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student12 = new AppUser { UserName = "User12", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student13 = new AppUser { UserName = "User13", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student14 = new AppUser { UserName = "User14", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student15 = new AppUser { UserName = "User15", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student16 = new AppUser { UserName = "User16", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student17 = new AppUser { UserName = "User17", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student18 = new AppUser { UserName = "User18", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student19 = new AppUser { UserName = "User19", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student10 = new AppUser { UserName = "User10", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student21 = new AppUser { UserName = "User21", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student22 = new AppUser { UserName = "User22", Email = "testMail@gmail.com", AccountAge = date };
+            await userManager.CreateAsync(student1, SECRET_PASSWORD);
+            await userManager.CreateAsync(student2, SECRET_PASSWORD);
+            await userManager.CreateAsync(student3, SECRET_PASSWORD);
+            await userManager.CreateAsync(student4, SECRET_PASSWORD);
+            await userManager.CreateAsync(student5, SECRET_PASSWORD);
+            await userManager.CreateAsync(student6, SECRET_PASSWORD);
+            await userManager.CreateAsync(student7, SECRET_PASSWORD);
+            await userManager.CreateAsync(student8, SECRET_PASSWORD);
+            await userManager.CreateAsync(student9, SECRET_PASSWORD);
+            await userManager.CreateAsync(student10, SECRET_PASSWORD);
+            await userManager.CreateAsync(student11, SECRET_PASSWORD);
+            await userManager.CreateAsync(student12, SECRET_PASSWORD);
+            await userManager.CreateAsync(student13, SECRET_PASSWORD);
+            await userManager.CreateAsync(student14, SECRET_PASSWORD);
+            await userManager.CreateAsync(student15, SECRET_PASSWORD);
+            await userManager.CreateAsync(student16, SECRET_PASSWORD);
+            await userManager.CreateAsync(student17, SECRET_PASSWORD);
+            await userManager.CreateAsync(student18, SECRET_PASSWORD);
+            await userManager.CreateAsync(student19, SECRET_PASSWORD);
+            await userManager.CreateAsync(student10, SECRET_PASSWORD);
+            await userManager.CreateAsync(student21, SECRET_PASSWORD);
+            await userManager.CreateAsync(student22, SECRET_PASSWORD);
+
+            IList<AppUser> students = new List<AppUser> { student, student1, student2, student3, student4, student5, student6, student7, student8, student9, student0, student11, student12, student13, student14, student15, student16, student17, student18, student19, student10, student21, student22};
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
             context.Institutions.Add(inst);
@@ -53,6 +99,16 @@ public class SeedData
             Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
 
             context.Assignments.Add(assignment1);
+
+            AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student, student1, student2, student3, student4, student5 } };
+            AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student0 } };
+            AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
+            AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
+
+            context.AssignmentVersions.Add(assignmentVersion1);
+            context.AssignmentVersions.Add(assignmentVersion2);
+            context.AssignmentVersions.Add(assignmentVersion3);
+            context.AssignmentVersions.Add(assignmentVersion4);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             
