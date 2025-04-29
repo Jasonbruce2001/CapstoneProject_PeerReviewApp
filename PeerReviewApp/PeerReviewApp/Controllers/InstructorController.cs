@@ -370,6 +370,28 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction("AddAssignmentVersion");
             }
         }
+
+        public async Task<IActionResult> ViewGroups(int classId)
+        {
+            Class cls = await _classRepo.GetClassByIdAsync(classId);
+            IList<AppUser> students = cls.Students;
+            IList<Assignment> assignments = cls.ParentCourse.Assignments;
+            ViewGroupsVM vm = new ViewGroupsVM() { Assignments = assignments, Students = students, Class = cls };
+
+            return View(vm);
+
+        }
+
+        public async Task<IActionResult> SortGroup(int classId, int assignmentId)
+        {
+            Class cls = await _classRepo.GetClassByIdAsync(classId);
+            IList<AppUser> students = cls.Students;
+            await _assignmentVersionRepo.DeleteStudentsFromAssignmentVersionAsync(students, assignmentId);
+            await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
+
+            return RedirectToAction("ViewClasses");
+
+        }
     }
 }
 

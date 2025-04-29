@@ -6,4 +6,5 @@ public class Assignment
     public Course Course { get; set; }
     public DateTime DueDate { get; set; }
     public string Title { get; set; }
+    public IList<AssignmentVersion> Versions { get; set; }
 }
