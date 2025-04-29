@@ -85,10 +85,19 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents(AppUser instructor)
+        public async Task<IActionResult> ViewStudents()
         {
+            var user = _userManager.GetUserAsync(User).Result;
+
+            // send user to login if not logged in
+            if (!_signInManager.IsSignedIn(User))
+            {
+                var returnURL = Request.GetEncodedUrl();
+                return RedirectToAction("Login", "Account", returnURL);
+            }
+
             //get classes for current instructor
-            var classes = await _classRepo.GetClassesForInstructorAsync(instructor);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
             
             return View("ViewStudents", classes);
         }
