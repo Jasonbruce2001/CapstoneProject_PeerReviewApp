@@ -106,6 +106,7 @@ public class ClassRepository : IClassRepository
         var result = new List<Class>();
         var classes = await _context.Classes
                                             .Include(c => c.Students)
+                                            .Include(c => c.ParentCourse)
                                             .ToListAsync();
 
         foreach (var c in classes)

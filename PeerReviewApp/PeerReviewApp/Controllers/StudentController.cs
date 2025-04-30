@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PeerReviewApp.Data;
@@ -5,6 +6,7 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
+[Authorize(Roles = "Student")]
 public class StudentController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
@@ -24,9 +26,9 @@ public class StudentController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        //temp change to repo calls
+        
         var classes = await _classRepository.GetClassesForStudentAsync(user);
-        var reviewGroups = new List<ReviewGroup>(); 
+        var reviewGroups = new List<ReviewGroup>(); //temp change to repo calls
         var documents = new List<Document>();
         
         var model = new StudentDashVM(){ Classes = classes, User = user, ReviewGroups = reviewGroups, Documents = documents };
