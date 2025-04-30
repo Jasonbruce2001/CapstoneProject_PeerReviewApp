@@ -9,9 +9,10 @@ public class SeedData
 {
     public static async Task Seed(ApplicationDbContext context, IServiceProvider provider)
     {
-        
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
+        RoleManager<IdentityRole> roleManager =
+            provider.GetRequiredService<RoleManager<IdentityRole>>();
 
         DateTime date = DateTime.Now;
         const string SECRET_PASSWORD = "Pass!123";
@@ -29,28 +30,29 @@ public class SeedData
             }
 
             // Adding a whole class of students
-            AppUser student1 = new AppUser { UserName = "User1", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student2 = new AppUser { UserName = "User2", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student3 = new AppUser { UserName = "User3", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student4 = new AppUser { UserName = "User4", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student5 = new AppUser { UserName = "User5", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student6 = new AppUser { UserName = "User6", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student7 = new AppUser { UserName = "User7", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student8 = new AppUser { UserName = "User8", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student9 = new AppUser { UserName = "User9", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student0 = new AppUser { UserName = "User0", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student11 = new AppUser { UserName = "User11", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student12 = new AppUser { UserName = "User12", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student13 = new AppUser { UserName = "User13", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student14 = new AppUser { UserName = "User14", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student15 = new AppUser { UserName = "User15", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student16 = new AppUser { UserName = "User16", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student17 = new AppUser { UserName = "User17", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student18 = new AppUser { UserName = "User18", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student19 = new AppUser { UserName = "User19", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student10 = new AppUser { UserName = "User10", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student21 = new AppUser { UserName = "User21", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student22 = new AppUser { UserName = "User22", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student1 = new AppUser { UserName = "User1", Email = "testMail1@gmail.com", AccountAge = date };
+            AppUser student2 = new AppUser { UserName = "User2", Email = "testMail2@gmail.com", AccountAge = date };
+            AppUser student3 = new AppUser { UserName = "User3", Email = "testMail3@gmail.com", AccountAge = date };
+            AppUser student4 = new AppUser { UserName = "User4", Email = "testMail4@gmail.com", AccountAge = date };
+            AppUser student5 = new AppUser { UserName = "User5", Email = "testMail5@gmail.com", AccountAge = date };
+            AppUser student6 = new AppUser { UserName = "User6", Email = "testMail6@gmail.com", AccountAge = date };
+            AppUser student7 = new AppUser { UserName = "User7", Email = "testMail7@gmail.com", AccountAge = date };
+            AppUser student8 = new AppUser { UserName = "User8", Email = "testMail8@gmail.com", AccountAge = date };
+            AppUser student9 = new AppUser { UserName = "User9", Email = "testMail9@gmail.com", AccountAge = date };
+            AppUser student10 = new AppUser { UserName = "User10", Email = "testMail10@gmail.com", AccountAge = date };
+            AppUser student11 = new AppUser { UserName = "User11", Email = "testMail11@gmail.com", AccountAge = date };
+            AppUser student12 = new AppUser { UserName = "User12", Email = "testMail12@gmail.com", AccountAge = date };
+            AppUser student13 = new AppUser { UserName = "User13", Email = "testMail13@gmail.com", AccountAge = date };
+            AppUser student14 = new AppUser { UserName = "User14", Email = "testMail14@gmail.com", AccountAge = date };
+            AppUser student15 = new AppUser { UserName = "User15", Email = "testMail15@gmail.com", AccountAge = date };
+            AppUser student16 = new AppUser { UserName = "User16", Email = "testMail16@gmail.com", AccountAge = date };
+            AppUser student17 = new AppUser { UserName = "User17", Email = "testMail17@gmail.com", AccountAge = date };
+            AppUser student18 = new AppUser { UserName = "User18", Email = "testMail18@gmail.com", AccountAge = date };
+            AppUser student19 = new AppUser { UserName = "User19", Email = "testMail19@gmail.com", AccountAge = date };
+            AppUser student20 = new AppUser { UserName = "User10", Email = "testMail20@gmail.com", AccountAge = date };
+            AppUser student21 = new AppUser { UserName = "User21", Email = "testMail21@gmail.com", AccountAge = date };
+            AppUser student22 = new AppUser { UserName = "User22", Email = "testMail22@gmail.com", AccountAge = date };
+            
             await userManager.CreateAsync(student1, SECRET_PASSWORD);
             await userManager.CreateAsync(student2, SECRET_PASSWORD);
             await userManager.CreateAsync(student3, SECRET_PASSWORD);
@@ -70,11 +72,21 @@ public class SeedData
             await userManager.CreateAsync(student17, SECRET_PASSWORD);
             await userManager.CreateAsync(student18, SECRET_PASSWORD);
             await userManager.CreateAsync(student19, SECRET_PASSWORD);
-            await userManager.CreateAsync(student10, SECRET_PASSWORD);
+            await userManager.CreateAsync(student20, SECRET_PASSWORD);
             await userManager.CreateAsync(student21, SECRET_PASSWORD);
             await userManager.CreateAsync(student22, SECRET_PASSWORD);
 
-            IList<AppUser> students = new List<AppUser> { student, student1, student2, student3, student4, student5, student6, student7, student8, student9, student0, student11, student12, student13, student14, student15, student16, student17, student18, student19, student10, student21, student22};
+            IList<AppUser> students = new List<AppUser> { student, student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22};
+            
+            /*if (await roleManager.FindByNameAsync("Student") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("Student"));
+            }
+
+            foreach (var s in students)
+            {
+                await userManager.AddToRoleAsync(s, "Student");
+            }*/
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
             context.Institutions.Add(inst);
@@ -101,7 +113,7 @@ public class SeedData
             context.Assignments.Add(assignment1);
 
             AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student, student1, student2, student3, student4, student5 } };
-            AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student0 } };
+            AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
             AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
             AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
 
@@ -117,7 +129,41 @@ public class SeedData
             
             await context.SaveChangesAsync();
         }
-        /*
+    }
+
+    //create admin user
+    public static async Task CreateAdminUser(IServiceProvider serviceProvider)
+    {
+        UserManager<AppUser> userManager =
+            serviceProvider.GetRequiredService<UserManager<AppUser>>();
+        RoleManager<IdentityRole> roleManager =
+            serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string username = "Administrator";
+        string email = "admin@admin.com";
+        string password = "Pass1234!";
+        string roleName = "Admin";
+        DateTime date = DateTime.Now;
+
+        // if role doesn't exist, create it
+        if (await roleManager.FindByNameAsync(roleName) == null)
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+        // if username doesn't exist, create it and add it to role
+        if (await userManager.FindByNameAsync(username) == null)
+        {
+            AppUser user = new AppUser { UserName = username, AccountAge = date, Email = email };
+            var result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, roleName);
+            }
+        }
+    }
+}
+
+/*
         var userManager = provider
             .GetRequiredService<UserManager<AppUser>>();
 
@@ -447,36 +493,3 @@ public class SeedData
                 await context.SaveChangesAsync();
             }
         }*/
-    }
-
-    //create admin user
-    public static async Task CreateAdminUser(IServiceProvider serviceProvider)
-    {
-        UserManager<AppUser> userManager =
-            serviceProvider.GetRequiredService<UserManager<AppUser>>();
-        RoleManager<IdentityRole> roleManager =
-            serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        string username = "Administrator";
-        string email = "admin@admin.com";
-        string password = "Pass1234!";
-        string roleName = "Admin";
-        DateTime date = DateTime.Now;
-
-        // if role doesn't exist, create it
-        if (await roleManager.FindByNameAsync(roleName) == null)
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-        // if username doesn't exist, create it and add it to role
-        if (await userManager.FindByNameAsync(username) == null)
-        {
-            AppUser user = new AppUser { UserName = username, AccountAge = date, Email = email };
-            var result = await userManager.CreateAsync(user, password);
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, roleName);
-            }
-        }
-    }
-}

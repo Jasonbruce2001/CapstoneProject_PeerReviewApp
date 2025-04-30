@@ -6,7 +6,7 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
-[Authorize(Roles = "Student")]
+//[Authorize(Roles = "Student")]
 public class StudentController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
