@@ -1,0 +1,71 @@
+﻿@model AddStudentsVM
+@{
+    ViewData["Title"] = "Add Students";
+}
+
+<h1 class="text-center fw-bolder">Add Students to Class</h1>
+<h4 class="text-center">@Model.ClassName - @Model.Term</h4>
+
+<div class="mb-3">
+    <a asp-action="ViewStudents" asp-route-instructor="@User.Identity.Name" class="btn btn-secondary">Back to Student List</a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="AddStudents" method="post">
+    <input type="hidden" asp-for="ClassId" />
+    <input type="hidden" asp-for="ClassName" />
+    <input type="hidden" asp-for="Term" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Available Students</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.AvailableStudents.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model.AvailableStudents)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="SelectedStudentIds" value="@student.Id" class="form-check-input" />
+                                    </td>
+                                    <td>@student.UserName</td>
+                                    <td>@student.Email</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No available students found. All students may already be enrolled in this class.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <a asp-action="ViewStudents" asp-route-instructor="@User.Identity.Name" class="btn btn-secondary">Cancel</a>
+        <input type="submit" value="Add Selected Students" class="btn btn-primary" />
+    </div>
+</form>

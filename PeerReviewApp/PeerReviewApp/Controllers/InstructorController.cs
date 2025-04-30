@@ -302,19 +302,190 @@ namespace PeerReviewApp.Controllers
             return View(assignments);
         }
 
-        /*
+        public async Task<IActionResult> EditAssignment(int assignmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var assignment = await _assignmentRepo.GetAssignmentByIdAsync(assignmentId);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+           
+            var classes = await _classRepo.GetClassesAsync(user.Id);
+            bool hasAccess = classes.Any(c => c.ParentCourse.Id == assignment.Course.Id);
+
+            if (!hasAccess)
+            {
+                return Forbid();
+            }
+
+            var model = new EditAssignmentVM
+            {
+                Id = assignment.Id,
+                Title = assignment.Title,
+                DueDate = assignment.DueDate,
+                ClassId = classes.First(c => c.ParentCourse.Id == assignment.Course.Id).ClassId
+            };
+
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditAssignment(EditAssignmentVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var assignment = await _assignmentRepo.GetAssignmentByIdAsync(model.Id);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            // Update assignment properties
+            assignment.Title = model.Title;
+            assignment.DueDate = model.DueDate;
+
+            await _assignmentRepo.UpdateAssignmentAsync(assignment);
+
+           
+            return RedirectToAction("ViewAssignments", new { classId = model.ClassId });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAssignment(int assignmentId, int classId)
+        {
+            var assignment = await _assignmentRepo.GetAssignmentByIdAsync(assignmentId);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            await _assignmentRepo.DeleteAssignmentAsync(assignmentId);
+
+            
+            return RedirectToAction("ViewAssignments", new { classId });
+        }
+
+
+        public async Task<IActionResult> ViewSubmissions(int assignmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var assignment = await _assignmentRepo.GetAssignmentByIdAsync(assignmentId);
+
+            if (assignment == null)
+                return NotFound();
+
+            // Find a class that this instructor teaches with this assignment's course
+            var classes = await _classRepo.GetClassesAsync(user.Id);
+            var classForCourse = classes.FirstOrDefault(c => c.ParentCourse.Id == assignment.Course.Id);
+
+            if (classForCourse == null)
+                return Forbid();
+
+            // Retrieve reviews that have this assignment
+            var reviews = await _context.Reviews
+                .Include(r => r.Assignment)
+                .Include(r => r.Reviewer)
+                .Include(r => r.ReviewDocument)
+                .Where(r => r.Assignment.Id == assignmentId)
+                .ToListAsync();
+
+            // Extract documents from reviews
+            var submissions = reviews
+                .Where(r => r.ReviewDocument != null)
+                .Select(r => r.ReviewDocument)
+                .ToList();
+
+            ViewBag.AssignmentTitle = assignment.Title;
+            ViewBag.DueDate = assignment.DueDate;
+            ViewBag.ClassId = classForCourse.ClassId;
+
+            return View(submissions);
+        }
+
+
         public async Task<IActionResult> AddStudents(int classId)
         {
             var user = await _userManager.GetUserAsync(User);
 
+            // Get the class with its related entities
             var class_ = await _context.Classes
                 .Include(c => c.ParentCourse)
                 .Include(c => c.Instructor)
                 .Include(c => c.Students)
                 .FirstOrDefaultAsync(c => c.ClassId == classId);
 
+            if (class_ == null || class_.Instructor.Id != user.Id)
+            {
+                return NotFound();
+            }
+
+            // Get IDs of students already in the class
+            var existingStudentIds = class_.Students.Select(s => s.Id).ToList();
+
+            // Get all users who aren't already in the class
+            var availableStudents = await _userManager.GetUsersInRoleAsync("Student");
+            availableStudents = availableStudents.Where(u => !existingStudentIds.Contains(u.Id)).ToList();
+
+
+            var model = new AddStudentsVM
+            {
+                ClassId = classId,
+                ClassName = class_.ParentCourse.Name,
+                Term = class_.Term,
+                AvailableStudents = availableStudents.ToList(),
+                SelectedStudentIds = new List<string>()
+            };
+
+            return View(model);
         }
-        */
+
+        [HttpPost]
+        public async Task<IActionResult> AddStudents(AddStudentsVM model)
+        {
+            if (!ModelState.IsValid || model.SelectedStudentIds == null || !model.SelectedStudentIds.Any())
+            {
+                TempData["ErrorMessage"] = "Please select at least one student to add.";
+                return RedirectToAction(nameof(AddStudents), new { classId = model.ClassId });
+            }
+
+            // Get the class with its students
+            var class_ = await _context.Classes
+                .Include(c => c.Students)
+                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
+
+            if (class_ == null)
+            {
+                return NotFound();
+            }
+
+            // Add selected students to class
+            foreach (var studentId in model.SelectedStudentIds)
+            {
+                var student = await _userManager.FindByIdAsync(studentId);
+                if (student != null && !class_.Students.Any(s => s.Id == studentId))
+                {
+                    class_.Students.Add(student);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            
+            return RedirectToAction("ViewStudents", new { instructor = await _userManager.GetUserAsync(User) });
+        }
+
+
         public async Task<IActionResult> AddAssignmentVersion(int id)
         {
             // send user to login if not logged in
