@@ -247,6 +247,38 @@ namespace PeerReviewApp.Controllers
             var courses = await _courseRepository.GetCoursesAsync();
             return View(courses);
         }
+
+        public async Task<IActionResult> Filter(string search, string institutionId) //must parse institutionId as int when querying
+        {
+            var result = new List<Course>();
+            int parsedId = 0;
+
+            
+            if (institutionId == "All")
+            {   //no institution selected
+                if (string.IsNullOrEmpty(search))
+                {
+
+                }
+                //only search term is entered
+                
+            }
+            else
+            {   //if an institution is selected
+                parsedId = int.Parse(institutionId);
+                
+                
+                if (search != "")
+                {
+                    //institution is selected, but no search term entered
+                    
+                } 
+                //both institution selected and search term are entered
+                
+            }
+            
+            return View("ViewCourses", result);
+        }
         
         private string GenerateRandomCode(int length)
         {
