@@ -85,10 +85,19 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents(AppUser instructor)
+        public async Task<IActionResult> ViewStudents()
         {
+            var user = _userManager.GetUserAsync(User).Result;
+
+            // send user to login if not logged in
+            if (!_signInManager.IsSignedIn(User))
+            {
+                var returnURL = Request.GetEncodedUrl();
+                return RedirectToAction("Login", "Account", returnURL);
+            }
+
             //get classes for current instructor
-            var classes = await _classRepo.GetClassesForInstructorAsync(instructor);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
             
             return View("ViewStudents", classes);
         }
@@ -236,7 +245,6 @@ namespace PeerReviewApp.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> AddAssignment(AddAssignmentVM model)
         {
@@ -372,6 +380,27 @@ namespace PeerReviewApp.Controllers
             }
         }
 
+        public async Task<IActionResult> ViewGroups(int classId)
+        {
+            Class cls = await _classRepo.GetClassByIdAsync(classId);
+            IList<AppUser> students = cls.Students;
+            IList<Assignment> assignments = cls.ParentCourse.Assignments;
+            ViewGroupsVM vm = new ViewGroupsVM() { Assignments = assignments, Students = students, Class = cls };
+
+            return View(vm);
+
+        }
+
+        public async Task<IActionResult> SortGroup(int classId, int assignmentId)
+        {
+            Class cls = await _classRepo.GetClassByIdAsync(classId);
+            IList<AppUser> students = cls.Students;
+            await _assignmentVersionRepo.DeleteStudentsFromAssignmentVersionAsync(students, assignmentId);
+            await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
+
+            return RedirectToAction("ViewClasses");
+
+        }
     }
 }
 

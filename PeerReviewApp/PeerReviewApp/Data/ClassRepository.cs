@@ -127,6 +127,7 @@ public class ClassRepository : IClassRepository
         var result = new List<Class>();
         var classes = await _context.Classes
             .Include(c => c.Students)
+            .Include(c => c.ParentCourse)
             .ToListAsync();
 
         foreach (var c in classes)
@@ -159,9 +160,15 @@ public class ClassRepository : IClassRepository
     }
 
     public async Task<Class> GetClassByIdAsync(int classId)
-    { 
-        return await _context.Classes.FindAsync(classId)
-               ?? throw new InvalidOperationException();
+    {
+        return await _context.Classes
+            .Include(c => c.Students)
+            .Include(c => c.ParentCourse)
+            .ThenInclude(c => c.Assignments)
+            .ThenInclude(c => c.Versions)
+            .ThenInclude(c => c.Students)
+            .FirstOrDefaultAsync(c => c.ClassId == classId);
+               
     }
 
     public async Task<int> AddClassAsync(Class newClass)

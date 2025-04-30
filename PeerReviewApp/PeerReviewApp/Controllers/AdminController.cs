@@ -14,13 +14,16 @@ namespace PeerReviewApp.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly IInstitutionRepository _institutionRepository;
+        private readonly ICourseRepository _courseRepository;
 
-        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IInstitutionRepository institutionRepository)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, 
+                                IInstitutionRepository institutionRepository, ICourseRepository courseRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _institutionRepository = institutionRepository;
             _context = context;
+            _courseRepository = courseRepository;
         }
 
 
@@ -237,6 +240,12 @@ namespace PeerReviewApp.Controllers
             var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
             
             return View("ViewInstructors", vm);
+        }
+        
+        public async Task<IActionResult> ViewCourses()
+        {
+            var courses = await _courseRepository.GetCoursesAsync();
+            return View(courses);
         }
         
         private string GenerateRandomCode(int length)
