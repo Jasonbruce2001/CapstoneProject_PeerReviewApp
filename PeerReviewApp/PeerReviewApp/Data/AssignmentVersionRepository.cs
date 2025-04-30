@@ -21,6 +21,28 @@ namespace PeerReviewApp.Data
 
             throw new NotImplementedException();
         }
+
+        public async Task<IList<AssignmentVersion>> GetAssignmentVersionsForStudentAsync(AppUser user)
+        {
+            var allAssignments = await _context.AssignmentVersions
+                                                                    .Include(a => a.Students)
+                                                                    .Include(a => a.Instructions)
+                                                                    .Include(a => a.ReviewForm)
+                                                                    .Include(a => a.ParentAssignment)
+                                                                    .ToListAsync();
+            var assignments = new List<AssignmentVersion>();
+
+            foreach (var a in allAssignments)
+            {
+                if (a.Students.Contains(user))
+                {
+                    assignments.Add(a);
+                }
+            }
+            
+            return assignments;
+        }
+
         public async Task<int> AddAssignmentVersionAsync(AssignmentVersion model)
         {
             await _context.AssignmentVersions.AddAsync(model);

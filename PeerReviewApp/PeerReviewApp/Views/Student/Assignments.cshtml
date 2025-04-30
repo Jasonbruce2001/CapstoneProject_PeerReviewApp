@@ -1,0 +1,40 @@
+@model IList<AssignmentVersion>
+
+@{
+    ViewData["Title"] = "Assignments";
+}
+
+<div class="container-fluid">
+    <div class="row mb-5">
+        <h1>My Assignments</h1>
+    </div>
+    
+    @if (Model.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <th>Title</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>@a.Name</td>
+                            <td>@a.ParentAssignment.Course</td>
+                            <td>@a.ParentAssignment.DueDate</td>
+                            <td>View</td>
+                        </tr>
+                    }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="row text-center">
+            <h2>No Assignments - Relax!</h2>
+        </div>
+    }
+</div>

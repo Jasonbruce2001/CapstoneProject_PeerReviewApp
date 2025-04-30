@@ -10,12 +10,14 @@ public class StudentController : Controller
     private readonly UserManager<AppUser> _userManager;
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
+    private readonly IAssignmentVersionRepository _assignmentVersionRepository;
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager, IAssignmentVersionRepository assignmentVersionRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
+        _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
     }
 
@@ -23,12 +25,20 @@ public class StudentController : Controller
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
         //temp change to repo calls
-        var classes = new List<Class>();
+        var classes = await _classRepository.GetClassesForStudentAsync(user);
         var reviewGroups = new List<ReviewGroup>(); 
         var documents = new List<Document>();
         
         var model = new StudentDashVM(){ Classes = classes, User = user, ReviewGroups = reviewGroups, Documents = documents };
         
         return View(model);
+    }
+
+    public async Task<IActionResult> Assignments()
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var assignments = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(user);
+        
+        return View(assignments);
     }
 }
