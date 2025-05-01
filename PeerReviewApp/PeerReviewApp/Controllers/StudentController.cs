@@ -6,7 +6,7 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
-//[Authorize(Roles = "Student")]
+
 public class StudentController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
@@ -39,6 +39,8 @@ public class StudentController : Controller
     public async Task<IActionResult> Assignments()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
+        
+        
         var assignments = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(user);
         
         return View(assignments);

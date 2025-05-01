@@ -17,17 +17,17 @@
     {
         <table class="table table-striped">
             <thead>
-            <th>Title</th>
-            <th>Course</th>
-            <th>Due Date</th>
-            <th>Actions</th>
+                <th>Title</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th>Actions</th>
             </thead>
             <tbody>
             @foreach (var a in Model)
             {
                 <tr>
                     <td>@a.Name</td>
-                    <td>@a.ParentAssignment.Course</td>
+                    <td>FIX ME</td> <!-- course name, must query -->
                     <td>@a.ParentAssignment.DueDate</td>
                     <td>View</td>
                 </tr>

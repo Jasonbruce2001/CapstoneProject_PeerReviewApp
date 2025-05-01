@@ -25,19 +25,35 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav text-white">
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="fa-solid fa-house"></i>&nbsp;Home
+                            </a>
                         </li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-controller="Admin" asp-action="Index">
-                                    <span class="fas fa-cog"></span>&nbsp;Admin
+                                    <i class="fas fa-cog"></i>&nbsp;Admin
                                 </a>
                             </li>
                         }
+                        @if (User.IsInRole("Instructor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Instructor" asp-action="Index">
+                                    <i class="fa-solid fa-display"></i>&nbsp;Dashboard
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Student" asp-action="Index">
+                                    <i class="fa-solid fa-display"></i>&nbsp;Dashboard
+                                </a>
+                            </li>
+                        }
+                        
                     </ul>
                 </div>
                 @* Code to be implemented after adding a separate instructor role  VVVVV

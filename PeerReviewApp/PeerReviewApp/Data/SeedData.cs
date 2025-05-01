@@ -17,16 +17,22 @@ public class SeedData
         DateTime date = DateTime.Now;
         const string SECRET_PASSWORD = "Pass!123";
 
-        AppUser student = new AppUser { UserName = "Aiden", Email = "testMail@gmail.com", AccountAge = date };
+        //AppUser student = new AppUser { UserName = "Aiden", Email = "testMail@gmail.com", AccountAge = date };
         AppUser instructor = new AppUser { UserName = "Brian", Email = "testMail2@gmail.com", AccountAge = date };
 
         if (userManager.Users.ToList().Count == 0)
         {
-            await userManager.CreateAsync(student, SECRET_PASSWORD);
             var result = await userManager.CreateAsync(instructor, SECRET_PASSWORD);
+            
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(instructor, "Instructor");
+            }
+            
+            //create student role if doesn't exist
+            if (await roleManager.FindByNameAsync("Student") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("Student"));
             }
 
             // Adding a whole class of students
@@ -49,7 +55,7 @@ public class SeedData
             AppUser student17 = new AppUser { UserName = "User17", Email = "testMail17@gmail.com", AccountAge = date };
             AppUser student18 = new AppUser { UserName = "User18", Email = "testMail18@gmail.com", AccountAge = date };
             AppUser student19 = new AppUser { UserName = "User19", Email = "testMail19@gmail.com", AccountAge = date };
-            AppUser student20 = new AppUser { UserName = "User10", Email = "testMail20@gmail.com", AccountAge = date };
+            AppUser student20 = new AppUser { UserName = "User20", Email = "testMail20@gmail.com", AccountAge = date };
             AppUser student21 = new AppUser { UserName = "User21", Email = "testMail21@gmail.com", AccountAge = date };
             AppUser student22 = new AppUser { UserName = "User22", Email = "testMail22@gmail.com", AccountAge = date };
             
@@ -76,17 +82,15 @@ public class SeedData
             await userManager.CreateAsync(student21, SECRET_PASSWORD);
             await userManager.CreateAsync(student22, SECRET_PASSWORD);
 
-            IList<AppUser> students = new List<AppUser> { student, student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22};
-            
-            /*if (await roleManager.FindByNameAsync("Student") == null)
-            {
-                await roleManager.CreateAsync(new IdentityRole("Student"));
-            }
+            IList<AppUser> students = new List<AppUser> { student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22};
 
             foreach (var s in students)
             {
-                await userManager.AddToRoleAsync(s, "Student");
-            }*/
+                if (s.NormalizedUserName != null)
+                {
+                    await userManager.AddToRoleAsync(s, "Student");
+                }
+            }
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
             context.Institutions.Add(inst);
@@ -112,7 +116,7 @@ public class SeedData
 
             context.Assignments.Add(assignment1);
 
-            AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student, student1, student2, student3, student4, student5 } };
+            AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5 } };
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
             AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
             AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
