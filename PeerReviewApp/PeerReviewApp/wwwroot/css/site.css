@@ -187,3 +187,7 @@ footer {
   margin-right: 0;
   width: 10vw;
 }
+
+.nav-item a:hover {
+  font-weight: bold;
+}

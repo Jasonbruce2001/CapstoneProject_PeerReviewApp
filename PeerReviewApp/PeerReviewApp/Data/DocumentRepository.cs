@@ -40,6 +40,17 @@ namespace PeerReviewApp.Data
 
             return document;
         }
+
+        public async Task<IList<Document>> GetDocumentsByUserAsync(AppUser user)
+        {
+            var documents = await _context.Documents
+                .Include(d => d.Uploader)
+                .Where(d => d.Uploader.Id == user.Id)
+                .ToListAsync();
+                
+            return documents;
+        }
+        
         public Task<int> AddDocumentAsync(Document model)
         {
 

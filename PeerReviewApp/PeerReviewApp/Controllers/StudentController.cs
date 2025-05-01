@@ -13,14 +13,16 @@ public class StudentController : Controller
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
+    private readonly IDocumentRepository _documentRepository;
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
-        UserManager<AppUser> userManager, IAssignmentVersionRepository assignmentVersionRepository)
+        UserManager<AppUser> userManager, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
+        _documentRepository = documentRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -39,7 +41,6 @@ public class StudentController : Controller
     public async Task<IActionResult> Assignments()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        
         
         var assignments = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(user);
         
