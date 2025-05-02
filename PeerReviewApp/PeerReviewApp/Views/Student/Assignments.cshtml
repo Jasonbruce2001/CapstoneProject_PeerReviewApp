@@ -27,9 +27,9 @@
             {
                 <tr>
                     <td>@a.Name</td>
-                    <td>FIX ME</td> <!-- course name, must query -->
+                    <td>@a.ParentAssignment.Course.Name</td>
                     <td>@a.ParentAssignment.DueDate</td>
-                    <td>View</td>
+                    <td><a asp-action="DetailedAssignment" asp-route-assignmentId="@a.Id">Details</a></td>
                 </tr>
             }
             </tbody>

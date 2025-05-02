@@ -46,4 +46,11 @@ public class StudentController : Controller
         
         return View(assignments);
     }
+    
+    public async Task<IActionResult> DetailedAssignment(int assignmentId)
+    {
+        var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(assignmentId);
+        
+        return View(assignment);
+    }
 }

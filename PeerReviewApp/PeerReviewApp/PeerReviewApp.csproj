@@ -22,6 +22,8 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
+      <Folder Include="wwwroot\StaticFiles\AssignmentInstructions\" />
+      <Folder Include="wwwroot\StaticFiles\ReviewForms\" />
     </ItemGroup>
 
 </Project>
