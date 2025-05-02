@@ -35,7 +35,7 @@
             {
                 <div class="row courseListEntry mb-2">
                     <div class="col">
-                        <h4>@c.ParentCourse.Name</h4>
+                        <h4>@(c.ParentCourse?.Name ?? "Course Name Not Available")</h4>
                         <h5>@c.Students.Count() Students Enrolled</h5>
                     </div>
                     <div class="col text-end">

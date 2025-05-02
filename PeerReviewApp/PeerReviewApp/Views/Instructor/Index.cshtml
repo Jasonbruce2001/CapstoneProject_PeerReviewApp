@@ -44,14 +44,14 @@
         {
             <div class="row courseListEntry mb-2">
                 <div class="col">
-                    <h4>@c.ParentCourse.Name</h4>
+                    <h4>@(c.ParentCourse != null ? c.ParentCourse.Name : "Unknown Course")</h4>
                     <h5>@c.Students.Count() Students Enrolled</h5>
                 </div>
                 <div class="col text-end">
                     <p>Active Reviews 0</p>
                 </div>
                 <div class="col text-end">
-                    <p><a asp-action="" class="courseButton">Assignments</a>|<a asp-action="" class="courseButton">Reviews</a></p>
+                    <p><a asp-action="ViewCourses" class="courseButton">Assignments</a>|<a asp-action="" class="courseButton">Reviews</a></p>
                 </div>
             </div>
         }
