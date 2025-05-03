@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
 
@@ -10,13 +11,15 @@ public class StudentController : Controller
     private readonly UserManager<AppUser> _userManager;
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
+    private readonly ApplicationDbContext _context;
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager, ApplicationDbContext context)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _userManager = userManager;
+        _context = context;
     }
 
     public async Task<IActionResult> Index()
@@ -29,7 +32,7 @@ public class StudentController : Controller
         var enhancedClasses = new List<Class>();
         foreach (var cls in classes)
         {
-            // Get the complete class with ParentCourse loaded
+            
             var fullClass = await _classRepository.GetClassByIdAsync(cls.ClassId);
             if (fullClass != null)
             {
@@ -84,6 +87,20 @@ public class StudentController : Controller
 
 
 
-        return View(classes);
+      
     }
-}
+
+    public async Task<IActionResult> ViewGroups()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var studentAssignmentVersions = await _context.AssignmentVersions
+            .Include(av => av.ParentAssignment)
+            .ThenInclude(a => a.Course)
+            .Include(av => av.Students)
+            .Where(av => av.Students.Any(s => s.Id == currentUser.Id))
+            .ToListAsync();
+
+        return View(studentAssignmentVersions);
+    }
+    }

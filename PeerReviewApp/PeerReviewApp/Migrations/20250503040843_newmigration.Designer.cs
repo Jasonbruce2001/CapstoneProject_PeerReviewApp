@@ -12,7 +12,7 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250430004457_newmigration")]
+    [Migration("20250503040843_newmigration")]
     partial class newmigration
     {
         /// <inheritdoc />
