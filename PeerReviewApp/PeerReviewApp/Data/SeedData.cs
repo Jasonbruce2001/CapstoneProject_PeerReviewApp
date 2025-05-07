@@ -74,6 +74,52 @@ public class SeedData
             await userManager.CreateAsync(student21, SECRET_PASSWORD);
             await userManager.CreateAsync(student22, SECRET_PASSWORD);
 
+
+            //adding instructors seed data 
+            AppUser instructor1 = new AppUser { UserName = "Instructor1", Email = "instructor1@mail.com", AccountAge = date };
+            AppUser instructor2 = new AppUser { UserName = "Instructor2", Email = "instructor2@mail.com", AccountAge = date };
+            AppUser instructor3 = new AppUser { UserName = "Instructor3", Email = "instructor3@mail.com", AccountAge = date };
+            AppUser instructor4 = new AppUser { UserName = "Instructor4", Email = "instructor4@mail.com", AccountAge = date };
+            AppUser instructor5 = new AppUser { UserName = "Instructor5", Email = "instructor5@mail.com", AccountAge = date };
+            AppUser instructor6 = new AppUser { UserName = "Instructor6", Email = "instructor6@mail.com", AccountAge = date };
+            AppUser instructor7 = new AppUser { UserName = "Instructor7", Email = "instructor7@mail.com", AccountAge = date };
+            AppUser instructor8 = new AppUser { UserName = "Instructor8", Email = "instructor8@mail.com", AccountAge = date };
+            AppUser instructor9 = new AppUser { UserName = "Instructor9", Email = "instructor9@mail.com", AccountAge = date };
+            AppUser instructor10 = new AppUser { UserName = "Instructor10", Email = "instructor10@mail.com", AccountAge = date };
+            AppUser instructor11 = new AppUser { UserName = "Instructor11", Email = "instructor11@mail.com", AccountAge = date };
+            AppUser instructor12 = new AppUser { UserName = "Instructor12", Email = "instructor12@mail.com", AccountAge = date };
+            AppUser instructor13 = new AppUser { UserName = "Instructor13", Email = "instructor13@mail.com", AccountAge = date };
+            AppUser instructor14 = new AppUser { UserName = "Instructor14", Email = "instructor14@mail.com", AccountAge = date };
+            AppUser instructor15 = new AppUser { UserName = "Instructor15", Email = "instructor15@mail.com", AccountAge = date };
+            AppUser instructor16 = new AppUser { UserName = "Instructor16", Email = "instructor16@mail.com", AccountAge = date };
+            AppUser instructor17 = new AppUser { UserName = "Instructor17", Email = "instructor17@mail.com", AccountAge = date };
+            AppUser instructor18 = new AppUser { UserName = "Instructor18", Email = "instructor18@mail.com", AccountAge = date };
+            AppUser instructor19 = new AppUser { UserName = "Instructor19", Email = "instructor19@mail.com", AccountAge = date };
+            AppUser instructor20 = new AppUser { UserName = "Instructor20", Email = "instructor20@mail.com", AccountAge = date };
+
+            await userManager.CreateAsync(instructor1, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor2, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor3, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor4, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor5, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor6, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor7, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor8, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor9, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor10, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor11, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor12, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor13, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor14, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor15, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor16, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor17, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor18, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor19, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor20, SECRET_PASSWORD);
+
+
+
             IList<AppUser> students = new List<AppUser> { student, student1, student2, student3, student4, student5, student6, student7, student8, student9, student0, student11, student12, student13, student14, student15, student16, student17, student18, student19, student10, student21, student22};
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
@@ -81,14 +127,48 @@ public class SeedData
             
             Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
             context.Courses.Add(course);
-            
-            Class class1 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            Class class2 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            Class class3 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            
+            Class class1 = new Class() { Instructor = instructor1, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class2 = new Class() { Instructor = instructor2, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class3 = new Class() { Instructor = instructor3, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class4 = new Class() { Instructor = instructor4, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class5 = new Class() { Instructor = instructor5, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class6 = new Class() { Instructor = instructor6, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class7 = new Class() { Instructor = instructor7, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class8 = new Class() { Instructor = instructor8, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class9 = new Class() { Instructor = instructor9, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class10 = new Class() { Instructor = instructor10, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class11 = new Class() { Instructor = instructor11, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class12 = new Class() { Instructor = instructor12, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class13 = new Class() { Instructor = instructor13, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class14 = new Class() { Instructor = instructor14, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class15 = new Class() { Instructor = instructor15, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class16 = new Class() { Instructor = instructor16, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class17 = new Class() { Instructor = instructor17, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class18 = new Class() { Instructor = instructor18, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class19 = new Class() { Instructor = instructor19, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class20 = new Class() { Instructor = instructor20, ParentCourse = course, Students = students, Term = "Spring 2025" };
+
             context.Classes.Add(class1);
             context.Classes.Add(class2);
             context.Classes.Add(class3);
+            context.Classes.Add(class4);
+            context.Classes.Add(class5);
+            context.Classes.Add(class6);
+            context.Classes.Add(class7);
+            context.Classes.Add(class8);
+            context.Classes.Add(class9);
+            context.Classes.Add(class10);
+            context.Classes.Add(class11);
+            context.Classes.Add(class12);
+            context.Classes.Add(class13);
+            context.Classes.Add(class14);
+            context.Classes.Add(class15);
+            context.Classes.Add(class16);
+            context.Classes.Add(class17);
+            context.Classes.Add(class18);
+            context.Classes.Add(class19);
+            context.Classes.Add(class20);
+
 
             Document doc1 = new Document() { Uploader = instructor, FilePath = "PlaceHolderValue", Name = "Instructions1" };
             Document doc2 = new Document() { Uploader = instructor, FilePath = "PlaceHolderValue", Name = "ReviewForm1" };

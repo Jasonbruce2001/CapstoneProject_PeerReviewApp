@@ -8,5 +8,5 @@ public class AddStudentsVM
     public string Term { get; set; }
     public List<AppUser> AvailableStudents { get; set; }
     [Display(Name = "Select Students")]
-    public List<string> SelectedStudentIds { get; set; }
+    public List<string> SelectedStudentIds { get; set; } = new List<string>();
 }
