@@ -11,6 +11,7 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<AppUser> _userManager;
     private readonly IDocumentRepository _documentRepository;
+    private const int MAX_FILE_SIZE = 10485760; //10 mb in bytes
 
     public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, IDocumentRepository documentRepository)
     {
@@ -53,6 +54,11 @@ public class HomeController : Controller
         {
             return BadRequest("Invalid file");
         }
+
+        if (model.File.Length > MAX_FILE_SIZE)
+        {
+            return BadRequest("File size is too big");
+        }
             
         var folderName = Path.Combine("wwwroot", "StaticFiles", "UserUploads");
         var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
@@ -61,8 +67,12 @@ public class HomeController : Controller
         {
             Directory.CreateDirectory(pathToSave);
         }
-            
-        var fileName = model.File.FileName;
+        
+        //strip extension from name
+        var extension = Path.GetExtension(model.File.FileName);
+        
+        //generate unique GUID for filename 
+        var fileName = $"{Guid.NewGuid()}{extension}";
         // c:// res/all/filename
         var fullPath = Path.Combine(pathToSave, fileName);
         var dbPath = Path.Combine(folderName, fileName); //for use in database

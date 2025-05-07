@@ -18,8 +18,7 @@
     <div class="row">
         @if (Model.Any())
         {
-            foreach (var d in Model)
-            {
+            
                 <table class="table table-striped">
                     <thead>
                         <th>File Name</th>
@@ -28,13 +27,17 @@
                         <th>Actions</th>
                     </thead>
                     <tbody>
-                        <td>@d.Name</td>
-                        <td>@d.DateUploaded</td>
-                        <td>@d.FileSize</td>
-                        <td><a asp-action="DeleteUpload" asp-route-id="@d.Id" class="btn btn-danger">Delete</a></td>
+                        @foreach (var d in Model)
+                        {
+                            <tr>
+                                <td>@d.Name</td>
+                                <td>@d.DateUploaded</td>
+                                <td>@d.FileSize</td>
+                                <td><a asp-action="DeleteUpload" asp-route-id="@d.Id" class="btn btn-danger">Delete</a></td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
-            }
         }
         else
         {

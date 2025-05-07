@@ -404,3 +404,4 @@ FodyWeavers.xsd
 /PeerReviewApp/PeerReviewApp/Migrations/20250507014110_docChanges2.cs
 /PeerReviewApp/PeerReviewApp/Migrations/20250507211859_docV3.cs
 /PeerReviewApp/PeerReviewApp/Migrations/20250507212934_fileSize.cs
+/PeerReviewApp/PeerReviewApp/wwwroot/StaticFiles/UserUploads/
