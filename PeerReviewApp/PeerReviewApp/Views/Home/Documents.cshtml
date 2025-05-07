@@ -1,3 +1,4 @@
+@using PeerReviewApp.Controllers
 @model IList<Document>
 
 @{
@@ -6,6 +7,48 @@
 
 <div class="container-fluid">
     <div class="row">
-        <h1>My Documents</h1>
+        <div class="col">
+            <h1>My Documents</h1>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Upload" class="btn btn-primary">Upload</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        @if (Model.Any())
+        {
+            foreach (var d in Model)
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <th>File Name</th>
+                        <th>Date Uploaded</th>
+                        <th>File Size</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                        <td>@d.Name</td>
+                        <td>@d.DateUploaded</td>
+                        <td>@d.FileSize</td>
+                        <td><a asp-action="DeleteUpload" asp-route-id="@d.Id" class="btn btn-danger">Delete</a></td>
+                    </tbody>
+                </table>
+            }
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead class="">
+                    <th>File Name</th>
+                    <th>Date Uploaded</th>
+                    <th>File Size</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+                    <td colspan="4" class="text-center">- No Documents Found -</td>
+                </tbody>
+            </table>
+        }
     </div>
 </div>

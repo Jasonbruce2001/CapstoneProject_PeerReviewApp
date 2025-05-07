@@ -38,8 +38,72 @@ public class HomeController : Controller
         return View(documents);
     }
 
+    public IActionResult Upload()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Upload([FromForm] Document model)
+    {
+        model.Uploader = await _userManager.GetUserAsync(HttpContext.User);
+        model.DateUploaded = DateTime.Now;
+        
+        if (model.File == null && model.File.Length == 0)
+        {
+            return BadRequest("Invalid file");
+        }
+            
+        var folderName = Path.Combine("wwwroot", "StaticFiles", "UserUploads");
+        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+        if (!Directory.Exists(pathToSave))
+        {
+            Directory.CreateDirectory(pathToSave);
+        }
+            
+        var fileName = model.File.FileName;
+        // c:// res/all/filename
+        var fullPath = Path.Combine(pathToSave, fileName);
+        var dbPath = Path.Combine(folderName, fileName); //for use in database
+
+        if (System.IO.File.Exists(fullPath))
+        {
+            return BadRequest("File already exists");
+        }
+
+        model.FilePath = fullPath;
+        model.FileSize = SizeSuffix(model.File.Length);
+        
+        await _documentRepository.AddDocumentAsync(model);
+        
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            model.File.CopyTo(stream);
+        }
+        
+        return Ok(new { dbPath });
+    }
+
+    public async Task<IActionResult> DeleteUpload(int id)
+    {
+        var doc = await _documentRepository.GetDocumentByIdAsync(id);
+        var path = doc.FilePath;
+        
+        _documentRepository.DeleteDocumentAsync(doc.Id);
+        
+        if (System.IO.File.Exists(path))
+        {
+            System.IO.File.Delete(path);
+        }
+
+        return RedirectToAction("Documents");
+    }
+    
     public IActionResult Privacy()
     {
+        var doc = new Document();
+
         return View();
     }
     
@@ -47,5 +111,24 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
+    //size helper
+    static readonly string[] SizeSuffixes = 
+        { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+    static string SizeSuffix(Int64 value, int decimalPlaces = 1)
+    {
+        if (value < 0) { return "-" + SizeSuffix(-value, decimalPlaces); } 
+
+        int i = 0;
+        decimal dValue = (decimal)value;
+        while (Math.Round(dValue, decimalPlaces) >= 1000)
+        {
+            dValue /= 1024;
+            i++;
+        }
+
+        return string.Format("{0:n" + decimalPlaces + "} {1}", dValue, SizeSuffixes[i]);
     }
 }

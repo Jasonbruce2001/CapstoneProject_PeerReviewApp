@@ -1,0 +1,35 @@
+@model Document
+
+@{
+    ViewData["Title"] = "Upload Document";
+}
+
+<div class="container-fluid px-5">
+    <div class="row">
+        <div class="col"><a asp-action="Documents" class="btn btn-secondary">Back</a></div>
+        <div class="col text-center"><h3>New Upload</h3></div>
+        <div class="col"></div>
+    </div>
+    
+    <div class="row">
+        <form method="post" asp-controller="Home" asp-action="Upload" enctype="multipart/form-data" class="form-container">
+            <div asp-validation-summary="All"></div>
+            <div class="row">
+                <label for="title">Title</label>
+                <input asp-for="Name" id="title" type="text"/>
+            </div>A
+            <div class="row">
+                <label for="file">Maximum File Size 10 mb</label>
+                <input asp-for="File" id="file" type="file"/>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-secondary">Cancel</a>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
