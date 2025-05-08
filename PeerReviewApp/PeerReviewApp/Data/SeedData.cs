@@ -106,8 +106,8 @@ public class SeedData
             context.Classes.Add(class2);
             context.Classes.Add(class3);
 
-            Document doc1 = new Document() { Uploader = instructor, Name = "Instructions1" };
-            Document doc2 = new Document() { Uploader = instructor, Name = "ReviewForm1" };
+            Document doc1 = new Document() { Uploader = instructor, Name = "Instructions1", FilePath = "~/StaticFiles/AssignmentInstructions/", FileSize = "1kb", DateUploaded = DateTime.Now};
+            Document doc2 = new Document() { Uploader = instructor, Name = "ReviewForm1", FilePath = "~/StaticFiles/ReviewForms/", FileSize = "1kb", DateUploaded = DateTime.Now };
 
             context.Documents.Add(doc1);
             context.Documents.Add(doc2);

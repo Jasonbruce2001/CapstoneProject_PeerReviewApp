@@ -36,12 +36,22 @@
                                     <i class="fas fa-cog"></i>&nbsp;Admin
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a asp-controller="Home" asp-action="Documents" class="nav-link text-light">
+                                    <i class="fa-solid fa-file"></i> My Documents
+                                </a>
+                            </li>
                         }
                         @if (User.IsInRole("Instructor"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-controller="Instructor" asp-action="Index">
                                     <i class="fa-solid fa-display"></i>&nbsp;Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Home" asp-action="Documents" class="nav-link text-light">
+                                    <i class="fa-solid fa-file"></i> My Documents
                                 </a>
                             </li>
                         }
@@ -52,12 +62,12 @@
                                     <i class="fa-solid fa-display"></i>&nbsp;Dashboard
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a asp-controller="Home" asp-action="Documents" class="nav-link text-light">
+                                    <i class="fa-solid fa-file"></i> My Documents
+                                </a>
+                            </li>
                         }
-                        <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Documents" class="nav-link text-light">
-                                <i class="fa-solid fa-file"></i> My Documents
-                            </a>
-                        </li>
                     </ul>
                 </div>
                 @* Code to be implemented after adding a separate instructor role  VVVVV
