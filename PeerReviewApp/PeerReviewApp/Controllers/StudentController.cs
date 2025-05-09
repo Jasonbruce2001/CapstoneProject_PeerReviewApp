@@ -11,15 +11,19 @@ public class StudentController : Controller
     private readonly UserManager<AppUser> _userManager;
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
+    private readonly IReviewRepository _reviewRepository;
+    private readonly IGradeRepository _gradeRepository;
     private readonly ApplicationDbContext _context;
 
-    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
-        UserManager<AppUser> userManager, ApplicationDbContext context)
+    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _userManager = userManager;
         _context = context;
+        _reviewRepository = reviewRepository;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -103,4 +107,53 @@ public class StudentController : Controller
 
         return View(studentAssignmentVersions);
     }
+
+    public async Task<IActionResult> ViewReviews()
+    {
+
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByReviewerAsync(currentUser);
+
+        return View(model);
     }
+
+    public async Task<IActionResult> ViewReceivedReviews()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByRevieweeAsync(currentUser);
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> ViewGrades()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _gradeRepository.GetGradesByStudentAsync(currentUser);
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> DueSoon()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+        var temp = await _userManager.Users
+            .Include(r => r.Versions)
+            .ThenInclude(r => r.ParentAssignment)
+            .ThenInclude(r => r.Course)
+            .FirstOrDefaultAsync(r => r.Id == currentUser.Id);
+
+        IList<AssignmentVersion> model = temp.Versions;
+        foreach (AssignmentVersion version in model.ToList())
+        {
+            if(!(version.ParentAssignment.DueDate > DateTime.Now && version.ParentAssignment.DueDate < DateTime.Now.AddDays(7)))
+            {
+                model.Remove(version);
+            }
+        }
+
+        return View(model);
+    }
+}

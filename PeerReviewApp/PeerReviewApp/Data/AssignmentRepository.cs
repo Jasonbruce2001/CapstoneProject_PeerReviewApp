@@ -21,6 +21,10 @@ namespace PeerReviewApp.Data
                 .Include(a => a.Course)
                 .ToListAsync();
         }
+        public Task<IList<Assignment>> GetStudentAssignments(AppUser student)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<IList<Assignment>> GetAssignmentsByCourseAsync(int courseId)
         { 
