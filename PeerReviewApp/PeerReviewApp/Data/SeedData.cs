@@ -69,7 +69,7 @@ public class SeedData
             await userManager.CreateAsync(student7, SECRET_PASSWORD);
             await userManager.CreateAsync(student8, SECRET_PASSWORD);
             await userManager.CreateAsync(student9, SECRET_PASSWORD);
-            await userManager.CreateAsync(student0, SECRET_PASSWORD);
+            await userManager.CreateAsync(student10, SECRET_PASSWORD);
             await userManager.CreateAsync(student11, SECRET_PASSWORD);
             await userManager.CreateAsync(student12, SECRET_PASSWORD);
             await userManager.CreateAsync(student13, SECRET_PASSWORD);

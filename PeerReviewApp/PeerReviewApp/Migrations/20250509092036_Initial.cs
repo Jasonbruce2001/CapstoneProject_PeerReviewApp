@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PeerReviewApp.Migrations
 {
     /// <inheritdoc />
-    public partial class newmigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -335,6 +335,9 @@ namespace PeerReviewApp.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FilePath = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    FileSize = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DateUploaded = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UploaderId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
