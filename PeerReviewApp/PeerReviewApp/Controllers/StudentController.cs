@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,21 +7,26 @@ using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Controllers;
 
+
 public class StudentController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
+    private readonly IAssignmentVersionRepository _assignmentVersionRepository;
+    private readonly IDocumentRepository _documentRepository;
     private readonly IReviewRepository _reviewRepository;
     private readonly IGradeRepository _gradeRepository;
     private readonly ApplicationDbContext _context;
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
-        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context)
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
+        _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
+        _documentRepository = documentRepository;
         _context = context;
         _reviewRepository = reviewRepository;
         _gradeRepository = gradeRepository;
@@ -29,22 +35,10 @@ public class StudentController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        //temp change to repo calls
-        // var classes = new List<Class>();
+
+        
         var classes = await _classRepository.GetClassesForStudentAsync(user);
-
-        var enhancedClasses = new List<Class>();
-        foreach (var cls in classes)
-        {
-            
-            var fullClass = await _classRepository.GetClassByIdAsync(cls.ClassId);
-            if (fullClass != null)
-            {
-                enhancedClasses.Add(fullClass);
-            }
-        }
-
-        var reviewGroups = new List<ReviewGroup>(); 
+        var reviewGroups = new List<ReviewGroup>(); //temp change to repo calls
         var documents = new List<Document>();
 
        
@@ -66,6 +60,21 @@ public class StudentController : Controller
         return View(model);
     }
 
+    public async Task<IActionResult> Assignments()
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        
+        var assignments = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(user);
+        
+        return View(assignments);
+    }
+    
+    public async Task<IActionResult> DetailedAssignment(int assignmentId)
+    {
+        var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(assignmentId);
+        
+        return View(assignment);
+    }
 
     public async Task<IActionResult> ViewCourses()
     {

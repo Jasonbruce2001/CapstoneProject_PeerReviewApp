@@ -13,14 +13,40 @@ namespace PeerReviewApp.Data
         }
         public Task<IList<AssignmentVersion>> GetAssignmentVersionsAsync()
         {
-
             throw new NotImplementedException();
         }
-        public Task<AssignmentVersion> GetAssignmentVersionByIdAsync(int id)
+        public async Task<AssignmentVersion> GetAssignmentVersionByIdAsync(int id)
         {
-
-            throw new NotImplementedException();
+            return await _context.AssignmentVersions
+                .Include(a => a.Instructions)
+                .Include(a => a.ReviewForm)
+                .Include(a => a.ParentAssignment)
+                .Include(a => a.Students)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
+
+        public async Task<IList<AssignmentVersion>> GetAssignmentVersionsForStudentAsync(AppUser user)
+        {
+            var allAssignments = await _context.AssignmentVersions
+                                                                    .Include(a => a.Students)
+                                                                    .Include(a => a.Instructions)
+                                                                    .Include(a => a.ReviewForm)
+                                                                    .Include(a => a.ParentAssignment)
+                                                                    .ThenInclude(p => p.Course)
+                                                                    .ToListAsync();
+            var assignments = new List<AssignmentVersion>();
+
+            foreach (var a in allAssignments)
+            {
+                if (a.Students.Contains(user))
+                {
+                    assignments.Add(a);
+                }
+            }
+            
+            return assignments;
+        }
+
         public async Task<int> AddAssignmentVersionAsync(AssignmentVersion model)
         {
             await _context.AssignmentVersions.AddAsync(model);
@@ -81,8 +107,6 @@ namespace PeerReviewApp.Data
             int result = await task;
 
             return result;
-
-            throw new NotImplementedException();
         }
     }
 }

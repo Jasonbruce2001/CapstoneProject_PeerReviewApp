@@ -1,0 +1,35 @@
+@model AssignmentVersion
+
+@{
+    ViewData["Title"] = "Detailed Assignment";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <a asp-action="Assignments" class="btn btn-secondary">Back</a>
+        </div>
+        <div class="col-9"></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h1>@Model.Name</h1>
+        </div>
+        <div class="col">
+            <h5 class="text-end">Due Date: @Model.ParentAssignment.DueDate</h5>
+        </div>
+    </div>
+    <div class="row">
+        <p>@Model.TextInstructions</p>
+    </div>
+    <div class="row mb-5">
+        <p><a href="~/StaticFiles/AssignmentInstructions/SampleLabInstructions.pdf" download>Download Instructions</a></p>
+        <p><a href="~/StaticFiles/ReviewForms/" download>Download Review Form</a></p>
+    </div>
+    <div class="row align-content-end">
+        <div class="col-9"></div>
+        <div class="col text-end">
+            <a asp-action="addSubmission" class="btn btn-primary">Add Submission</a>
+        </div>
+    </div>
+</div>
