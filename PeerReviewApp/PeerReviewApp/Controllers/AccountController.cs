@@ -93,14 +93,18 @@ public class AccountController : Controller
                     {
                         return RedirectToAction("Index", "Admin");
                     }
-                    else if (User.IsInRole("Instructor"))
+                    if (User.IsInRole("Instructor"))
                     {
                         return RedirectToAction("Index", "Instructor");
                     }
-                    else
+                    
+                    if (User.IsInRole("Student"))
                     {
                         return RedirectToAction("Index", "Student");
                     }
+                    
+                    //if no role, should only happen in error
+                    return RedirectToAction("Index", "Home");
                 }
             }
         }

@@ -182,8 +182,28 @@ footer {
   overflow: hidden;
 }
 
+.form-container {
+  padding-inline: 10vw;
+  margin-top: 5vh;
+}
+
+.form-title {
+  width: 50%;
+}
+
+.form-body {
+  background-color: white;
+  border-radius: 10px;
+  padding-inline: 1vw;
+  padding-block: 0;
+}
+
 .btn-thin {
   margin-left: auto;
   margin-right: 0;
   width: 10vw;
+}
+
+.nav-item a:hover {
+  font-weight: bold;
 }

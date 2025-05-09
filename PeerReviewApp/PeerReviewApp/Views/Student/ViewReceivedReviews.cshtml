@@ -1,0 +1,26 @@
+﻿@model List<Review>
+@{
+    ViewData["Title"] = "My Recieved Reviews";
+}
+
+<h1 class="text-center fw-bolder">Received Reviews</h1>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var version in Model)
+        {
+            <li class="list-group-item">
+                <h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>
+                <h5>Reviewer: @version.Reviewer</h5>
+                <a asp-action="ViewReceivedReviews">Download Review</a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="alert alert-info">
+        You are not currently assigned to any reviews.
+    </div>
+}

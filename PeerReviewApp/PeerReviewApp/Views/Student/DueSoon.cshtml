@@ -1,0 +1,25 @@
+﻿@model List<AssignmentVersion>
+@{
+    ViewData["Title"] = "Due Soon";
+}
+
+<h1 class="text-center fw-bolder">Assignments Due</h1>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var version in Model)
+        {
+            <li class="list-group-item">
+                <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="alert alert-info">
+        You do not currently have any graded assignments.
+    </div>
+}

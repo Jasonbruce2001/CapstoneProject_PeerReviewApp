@@ -40,20 +40,35 @@ namespace PeerReviewApp.Data
 
             return document;
         }
-        public Task<int> AddDocumentAsync(Document model)
-        {
 
-            throw new NotImplementedException();
+        public async Task<IList<Document>> GetDocumentsByUserAsync(AppUser user)
+        {
+            var documents = await _context.Documents
+                .Include(d => d.Uploader)
+                .Where(d => d.Uploader.Id == user.Id)
+                .ToListAsync();
+                
+            return documents;
+        }
+        
+        public async Task<int> AddDocumentAsync(Document model)
+        {
+            _context.Documents.Add(model);
+            
+            return await _context.SaveChangesAsync();
         }
         public Task<int> UpdateDocumentAsync(Document model)
         {
 
             throw new NotImplementedException();
         }
-        public Task<int> DeleteDocumentAsync(int id)
+        public async Task<int> DeleteDocumentAsync(int id)
         {
-
-            throw new NotImplementedException();
+            var doc = await _context.Documents.FindAsync(id);
+            
+            _context.Documents.Remove(doc);
+            
+            return await _context.SaveChangesAsync();
         }
     }
 }

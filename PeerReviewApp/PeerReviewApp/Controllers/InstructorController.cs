@@ -437,7 +437,6 @@ namespace PeerReviewApp.Controllers
             var availableStudents = await _userManager.GetUsersInRoleAsync("Student");
             availableStudents = availableStudents.Where(u => !existingStudentIds.Contains(u.Id)).ToList();
 
-
             var model = new AddStudentsVM
             {
                 ClassId = classId,

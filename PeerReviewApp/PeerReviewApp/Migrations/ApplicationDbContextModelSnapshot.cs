@@ -392,7 +392,14 @@ namespace PeerReviewApp.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("DateUploaded")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileSize")
                         .IsRequired()
                         .HasColumnType("longtext");
 

@@ -1,0 +1,60 @@
+@using PeerReviewApp.Controllers
+@model IList<Document>
+
+@{
+    ViewData["Title"] = "My Documents";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h1>My Documents</h1>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Upload" class="btn btn-primary">Upload</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        @if (Model.Any())
+        {
+            
+                <table class="table table-striped">
+                    <thead>
+                        <th>File Name</th>
+                        <th>Date Uploaded</th>
+                        <th>File Size</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model)
+                        {
+                            <tr>
+                                <td>@d.Name</td>
+                                <td>@d.DateUploaded</td>
+                                <td>@d.FileSize</td>
+                                <td>
+                                    <a href="~/@d.FilePath" download class="btn btn-sm btn-secondary">Download</a>
+                                    <a asp-action="DeleteUpload" asp-route-id="@d.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead class="">
+                    <th>File Name</th>
+                    <th>Date Uploaded</th>
+                    <th>File Size</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+                    <td colspan="4" class="text-center">- No Documents Found -</td>
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

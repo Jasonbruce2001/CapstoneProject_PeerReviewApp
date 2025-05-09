@@ -10,7 +10,7 @@ namespace PeerReviewApp.Models
             [NotMapped]
             public IList<string> RoleNames { get; set; } = null!;
             public DateTime AccountAge { get; set; }
-            public IList<Class> Classes { get; set; }
-            public IList<AssignmentVersion> Versions { get; set; }
+            public IList<Class> Classes { get; set; } = new List<Class>();
+            public IList<AssignmentVersion> Versions { get; set; } = new List<AssignmentVersion>();
         }
 }
