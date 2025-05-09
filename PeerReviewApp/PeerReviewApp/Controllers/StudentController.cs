@@ -11,15 +11,17 @@ public class StudentController : Controller
     private readonly UserManager<AppUser> _userManager;
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
+    private readonly IReviewRepository _reviewRepository;
     private readonly ApplicationDbContext _context;
 
-    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
+    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
         UserManager<AppUser> userManager, ApplicationDbContext context)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _userManager = userManager;
         _context = context;
+        _reviewRepository = reviewRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -103,4 +105,23 @@ public class StudentController : Controller
 
         return View(studentAssignmentVersions);
     }
+
+    public async Task<IActionResult> ViewReviews()
+    {
+
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByReviewerAsync(currentUser);
+
+        return View(model);
     }
+
+    public async Task<IActionResult> ViewReceivedReviews()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByRevieweeAsync(currentUser);
+
+        return View(model);
+    }
+}

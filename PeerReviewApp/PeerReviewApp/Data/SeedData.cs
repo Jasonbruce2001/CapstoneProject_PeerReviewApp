@@ -29,28 +29,28 @@ public class SeedData
             }
 
             // Adding a whole class of students
-            AppUser student1 = new AppUser { UserName = "User1", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student2 = new AppUser { UserName = "User2", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student3 = new AppUser { UserName = "User3", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student4 = new AppUser { UserName = "User4", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student5 = new AppUser { UserName = "User5", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student6 = new AppUser { UserName = "User6", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student7 = new AppUser { UserName = "User7", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student8 = new AppUser { UserName = "User8", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student9 = new AppUser { UserName = "User9", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student0 = new AppUser { UserName = "User0", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student11 = new AppUser { UserName = "User11", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student12 = new AppUser { UserName = "User12", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student13 = new AppUser { UserName = "User13", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student14 = new AppUser { UserName = "User14", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student15 = new AppUser { UserName = "User15", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student16 = new AppUser { UserName = "User16", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student17 = new AppUser { UserName = "User17", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student18 = new AppUser { UserName = "User18", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student19 = new AppUser { UserName = "User19", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student10 = new AppUser { UserName = "User10", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student21 = new AppUser { UserName = "User21", Email = "testMail@gmail.com", AccountAge = date };
-            AppUser student22 = new AppUser { UserName = "User22", Email = "testMail@gmail.com", AccountAge = date };
+            AppUser student1 = new AppUser { UserName = "User1", Email = "testMail1@gmail.com", AccountAge = date };
+            AppUser student2 = new AppUser { UserName = "User2", Email = "testMail2@gmail.com", AccountAge = date };
+            AppUser student3 = new AppUser { UserName = "User3", Email = "testMail3@gmail.com", AccountAge = date };
+            AppUser student4 = new AppUser { UserName = "User4", Email = "testMail4@gmail.com", AccountAge = date };
+            AppUser student5 = new AppUser { UserName = "User5", Email = "testMail5@gmail.com", AccountAge = date };
+            AppUser student6 = new AppUser { UserName = "User6", Email = "testMail6@gmail.com", AccountAge = date };
+            AppUser student7 = new AppUser { UserName = "User7", Email = "testMail7@gmail.com", AccountAge = date };
+            AppUser student8 = new AppUser { UserName = "User8", Email = "testMail8@gmail.com", AccountAge = date };
+            AppUser student9 = new AppUser { UserName = "User9", Email = "testMail9@gmail.com", AccountAge = date };
+            AppUser student0 = new AppUser { UserName = "User0", Email = "testMail0@gmail.com", AccountAge = date };
+            AppUser student11 = new AppUser { UserName = "User11", Email = "testMail11@gmail.com", AccountAge = date };
+            AppUser student12 = new AppUser { UserName = "User12", Email = "testMail12@gmail.com", AccountAge = date };
+            AppUser student13 = new AppUser { UserName = "User13", Email = "testMail13@gmail.com", AccountAge = date };
+            AppUser student14 = new AppUser { UserName = "User14", Email = "testMail14@gmail.com", AccountAge = date };
+            AppUser student15 = new AppUser { UserName = "User15", Email = "testMail15@gmail.com", AccountAge = date };
+            AppUser student16 = new AppUser { UserName = "User16", Email = "testMail16@gmail.com", AccountAge = date };
+            AppUser student17 = new AppUser { UserName = "User17", Email = "testMail17@gmail.com", AccountAge = date };
+            AppUser student18 = new AppUser { UserName = "User18", Email = "testMail18@gmail.com", AccountAge = date };
+            AppUser student19 = new AppUser { UserName = "User19", Email = "testMail19@gmail.com", AccountAge = date };
+            AppUser student10 = new AppUser { UserName = "User10", Email = "testMail10@gmail.com", AccountAge = date };
+            AppUser student21 = new AppUser { UserName = "User21", Email = "testMail21@gmail.com", AccountAge = date };
+            AppUser student22 = new AppUser { UserName = "User22", Email = "testMail22@gmail.com", AccountAge = date };
             await userManager.CreateAsync(student1, SECRET_PASSWORD);
             await userManager.CreateAsync(student2, SECRET_PASSWORD);
             await userManager.CreateAsync(student3, SECRET_PASSWORD);
@@ -60,7 +60,7 @@ public class SeedData
             await userManager.CreateAsync(student7, SECRET_PASSWORD);
             await userManager.CreateAsync(student8, SECRET_PASSWORD);
             await userManager.CreateAsync(student9, SECRET_PASSWORD);
-            await userManager.CreateAsync(student10, SECRET_PASSWORD);
+            await userManager.CreateAsync(student0, SECRET_PASSWORD);
             await userManager.CreateAsync(student11, SECRET_PASSWORD);
             await userManager.CreateAsync(student12, SECRET_PASSWORD);
             await userManager.CreateAsync(student13, SECRET_PASSWORD);
@@ -189,6 +189,20 @@ public class SeedData
             context.AssignmentVersions.Add(assignmentVersion2);
             context.AssignmentVersions.Add(assignmentVersion3);
             context.AssignmentVersions.Add(assignmentVersion4);
+
+            Review review1 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
+            Review review2 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
+            Review review3 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
+            Review review4 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
+            Review review5 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
+            Review review6 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
+
+            context.Reviews.Add(review1);
+            context.Reviews.Add(review2);
+            context.Reviews.Add(review3);
+            context.Reviews.Add(review4);
+            context.Reviews.Add(review5);
+            context.Reviews.Add(review6);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             
