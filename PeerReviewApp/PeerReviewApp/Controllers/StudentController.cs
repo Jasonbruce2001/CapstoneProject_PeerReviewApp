@@ -135,4 +135,25 @@ public class StudentController : Controller
 
         return View(model);
     }
+
+    public async Task<IActionResult> DueSoon()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+        var temp = await _userManager.Users
+            .Include(r => r.Versions)
+            .ThenInclude(r => r.ParentAssignment)
+            .ThenInclude(r => r.Course)
+            .FirstOrDefaultAsync(r => r.Id == currentUser.Id);
+
+        IList<AssignmentVersion> model = temp.Versions;
+        foreach (AssignmentVersion version in model.ToList())
+        {
+            if(!(version.ParentAssignment.DueDate > DateTime.Now && version.ParentAssignment.DueDate < DateTime.Now.AddDays(7)))
+            {
+                model.Remove(version);
+            }
+        }
+
+        return View(model);
+    }
 }

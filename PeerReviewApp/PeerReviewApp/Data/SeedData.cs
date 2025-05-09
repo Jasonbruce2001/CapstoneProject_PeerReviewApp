@@ -177,9 +177,9 @@ public class SeedData
             context.Documents.Add(doc2);
 
             Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
-            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 2" };
-            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 3" };
-            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 4" };
+            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(4), Title = "Lab 2" };
+            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(11), Title = "Lab 3" };
+            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
 
@@ -187,11 +187,17 @@ public class SeedData
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student0 } };
             AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
             AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
+            AssignmentVersion assignment2Version1 = new AssignmentVersion() { ParentAssignment = assignment2, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
+            AssignmentVersion assignment3Version1 = new AssignmentVersion() { ParentAssignment = assignment3, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
+            AssignmentVersion assignment4Version1 = new AssignmentVersion() { ParentAssignment = assignment4, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
 
             context.AssignmentVersions.Add(assignmentVersion1);
             context.AssignmentVersions.Add(assignmentVersion2);
             context.AssignmentVersions.Add(assignmentVersion3);
             context.AssignmentVersions.Add(assignmentVersion4);
+            context.AssignmentVersions.Add(assignment2Version1);
+            context.AssignmentVersions.Add(assignment3Version1);
+            context.AssignmentVersions.Add(assignment4Version1);
 
             Review review1 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
             Review review2 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };

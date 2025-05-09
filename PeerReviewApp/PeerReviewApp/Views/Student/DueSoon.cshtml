@@ -1,9 +1,9 @@
-﻿@model List<Grade>
+﻿@model List<AssignmentVersion>
 @{
-    ViewData["Title"] = "My Reviews";
+    ViewData["Title"] = "Due Soon";
 }
 
-<h1 class="text-center fw-bolder">My Grades</h1>
+<h1 class="text-center fw-bolder">Assignments Due</h1>
 
 @if (Model.Any())
 {
@@ -11,8 +11,8 @@
         @foreach (var version in Model)
         {
             <li class="list-group-item">
-                <h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>
-                <h5>Grade: @(version.Value)%</h5>
+                <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
             </li>
         }
     </ul>
