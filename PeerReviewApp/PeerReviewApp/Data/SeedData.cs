@@ -177,6 +177,9 @@ public class SeedData
             context.Documents.Add(doc2);
 
             Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
+            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 2" };
+            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 3" };
+            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now, Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
 
@@ -203,6 +206,16 @@ public class SeedData
             context.Reviews.Add(review4);
             context.Reviews.Add(review5);
             context.Reviews.Add(review6);
+
+            Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
+            Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
+            Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
+            Grade grade4 = new Grade() { Value = 100, Assignment = assignment4, Student = student1 };
+
+            context.Grades.Add(grade1);
+            context.Grades.Add(grade2);
+            context.Grades.Add(grade3);
+            context.Grades.Add(grade4);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             

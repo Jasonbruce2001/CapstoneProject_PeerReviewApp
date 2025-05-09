@@ -1,0 +1,25 @@
+﻿@model List<Grade>
+@{
+    ViewData["Title"] = "My Reviews";
+}
+
+<h1 class="text-center fw-bolder">Reviews</h1>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var version in Model)
+        {
+            <li class="list-group-item">
+                <h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>
+                <h5>Grade: @(version.Value)%</h5>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="alert alert-info">
+        You do not currently have any graded assignments.
+    </div>
+}
