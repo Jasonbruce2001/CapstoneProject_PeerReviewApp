@@ -13,16 +13,16 @@
     <!-- Dashboard buttons -->
     <div class="row mb-2">
         <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Reviews to do 0</div></a>
+            <a asp-action="ViewReviews"><div class="sizeWrapper">Reviews to do</div></a>
         </div>
         <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Reviews received</div></a>
+            <a asp-action="ViewReceivedReviews"><div class="sizeWrapper">Reviews received</div></a>
         </div>
         <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">My Grades</div></a>
+            <a asp-action="ViewGrades"><div class="sizeWrapper">My Grades</div></a>
         </div>
         <div class="col dashboardWidget">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Due Soon</div></a>
+            <a asp-action="DueSoon"><div class="sizeWrapper">Due Soon</div></a>
         </div>
     </div>
     <div class="row courseList">
@@ -35,7 +35,7 @@
             {
                 <div class="row courseListEntry mb-2">
                     <div class="col">
-                        <h4>@c.ParentCourse.Name</h4>
+                        <h4>@(c.ParentCourse?.Name ?? "Course Name Not Available")</h4>
                         <h5>@c.Students.Count() Students Enrolled</h5>
                     </div>
                     <div class="col text-end">
@@ -43,6 +43,7 @@
                     </div>
                     <div class="col text-end">
                         <p><a asp-action="Assignments" class="courseButton">View Assignments</a></p>
+
                     </div>
                 </div>
             }

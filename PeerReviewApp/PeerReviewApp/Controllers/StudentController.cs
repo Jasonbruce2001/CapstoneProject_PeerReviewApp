@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
 
@@ -14,25 +15,46 @@ public class StudentController : Controller
     private readonly IReviewGroupRepository _reviewGroupRepository;
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
     private readonly IDocumentRepository _documentRepository;
+    private readonly IReviewRepository _reviewRepository;
+    private readonly IGradeRepository _gradeRepository;
+    private readonly ApplicationDbContext _context;
 
-    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository,
-        UserManager<AppUser> userManager, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
+    public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
         _documentRepository = documentRepository;
+        _context = context;
+        _reviewRepository = reviewRepository;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
+
         
         var classes = await _classRepository.GetClassesForStudentAsync(user);
         var reviewGroups = new List<ReviewGroup>(); //temp change to repo calls
         var documents = new List<Document>();
-        
+
+       
+        if (user != null)
+        {
+           
+            try
+            {
+                classes = (await _classRepository.GetClassesForStudentAsync(user)).ToList();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
+
         var model = new StudentDashVM(){ Classes = classes, User = user, ReviewGroups = reviewGroups, Documents = documents };
         
         return View(model);
@@ -52,5 +74,95 @@ public class StudentController : Controller
         var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(assignmentId);
         
         return View(assignment);
+    }
+
+    public async Task<IActionResult> ViewCourses()
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var classes = await _classRepository.GetClassesForStudentAsync(user);
+
+        var enhancedClasses = new List<Class>();
+        foreach (var cls in classes)
+        {
+            var fullClass = await _classRepository.GetClassByIdAsync(cls.ClassId);
+            if (fullClass != null)
+            {
+                enhancedClasses.Add(fullClass);
+            }
+        }
+
+        return View(enhancedClasses);
+
+
+
+      
+    }
+
+    public async Task<IActionResult> ViewGroups()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var studentAssignmentVersions = await _context.AssignmentVersions
+            .Include(av => av.ParentAssignment)
+            .ThenInclude(a => a.Course)
+            .Include(av => av.Students)
+            .Where(av => av.Students.Any(s => s.Id == currentUser.Id))
+            .ToListAsync();
+
+        return View(studentAssignmentVersions);
+    }
+
+    public async Task<IActionResult> ViewReviews()
+    {
+
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByReviewerAsync(currentUser);
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> ViewReceivedReviews()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _reviewRepository.GetReviewsByRevieweeAsync(currentUser);
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> ViewGrades()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var model = await _gradeRepository.GetGradesByStudentAsync(currentUser);
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> DueSoon()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+        var temp = await _userManager.Users
+            .Include(r => r.Versions)
+            .ThenInclude(r => r.ParentAssignment)
+            .ThenInclude(r => r.Course)
+            .FirstOrDefaultAsync(r => r.Id == currentUser.Id);
+
+        IList<AssignmentVersion> model = temp.Versions;
+        foreach (AssignmentVersion version in model.ToList())
+        {
+            if(!(version.ParentAssignment.DueDate > DateTime.Now && version.ParentAssignment.DueDate < DateTime.Now.AddDays(7)))
+            {
+                model.Remove(version);
+            }
+        }
+
+        return View(model);
     }
 }

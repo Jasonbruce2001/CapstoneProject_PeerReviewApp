@@ -452,7 +452,7 @@ namespace PeerReviewApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddStudents(AddStudentsVM model)
         {
-            if (!ModelState.IsValid || model.SelectedStudentIds == null || !model.SelectedStudentIds.Any())
+            if (model.SelectedStudentIds == null || !model.SelectedStudentIds.Any())
             {
                 TempData["ErrorMessage"] = "Please select at least one student to add.";
                 return RedirectToAction(nameof(AddStudents), new { classId = model.ClassId });

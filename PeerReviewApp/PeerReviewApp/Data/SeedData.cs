@@ -59,6 +59,7 @@ public class SeedData
             AppUser student21 = new AppUser { UserName = "User21", Email = "testMail21@gmail.com", AccountAge = date };
             AppUser student22 = new AppUser { UserName = "User22", Email = "testMail22@gmail.com", AccountAge = date };
             
+
             await userManager.CreateAsync(student1, SECRET_PASSWORD);
             await userManager.CreateAsync(student2, SECRET_PASSWORD);
             await userManager.CreateAsync(student3, SECRET_PASSWORD);
@@ -68,7 +69,7 @@ public class SeedData
             await userManager.CreateAsync(student7, SECRET_PASSWORD);
             await userManager.CreateAsync(student8, SECRET_PASSWORD);
             await userManager.CreateAsync(student9, SECRET_PASSWORD);
-            await userManager.CreateAsync(student10, SECRET_PASSWORD);
+            await userManager.CreateAsync(student0, SECRET_PASSWORD);
             await userManager.CreateAsync(student11, SECRET_PASSWORD);
             await userManager.CreateAsync(student12, SECRET_PASSWORD);
             await userManager.CreateAsync(student13, SECRET_PASSWORD);
@@ -82,6 +83,7 @@ public class SeedData
             await userManager.CreateAsync(student21, SECRET_PASSWORD);
             await userManager.CreateAsync(student22, SECRET_PASSWORD);
 
+
             IList<AppUser> students = new List<AppUser> { student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20, student21, student22};
 
             foreach (var s in students)
@@ -91,20 +93,102 @@ public class SeedData
                     await userManager.AddToRoleAsync(s, "Student");
                 }
             }
+
+
+            //adding instructors seed data 
+            AppUser instructor1 = new AppUser { UserName = "Instructor1", Email = "instructor1@mail.com", AccountAge = date };
+            AppUser instructor2 = new AppUser { UserName = "Instructor2", Email = "instructor2@mail.com", AccountAge = date };
+            AppUser instructor3 = new AppUser { UserName = "Instructor3", Email = "instructor3@mail.com", AccountAge = date };
+            AppUser instructor4 = new AppUser { UserName = "Instructor4", Email = "instructor4@mail.com", AccountAge = date };
+            AppUser instructor5 = new AppUser { UserName = "Instructor5", Email = "instructor5@mail.com", AccountAge = date };
+            AppUser instructor6 = new AppUser { UserName = "Instructor6", Email = "instructor6@mail.com", AccountAge = date };
+            AppUser instructor7 = new AppUser { UserName = "Instructor7", Email = "instructor7@mail.com", AccountAge = date };
+            AppUser instructor8 = new AppUser { UserName = "Instructor8", Email = "instructor8@mail.com", AccountAge = date };
+            AppUser instructor9 = new AppUser { UserName = "Instructor9", Email = "instructor9@mail.com", AccountAge = date };
+            AppUser instructor10 = new AppUser { UserName = "Instructor10", Email = "instructor10@mail.com", AccountAge = date };
+            AppUser instructor11 = new AppUser { UserName = "Instructor11", Email = "instructor11@mail.com", AccountAge = date };
+            AppUser instructor12 = new AppUser { UserName = "Instructor12", Email = "instructor12@mail.com", AccountAge = date };
+            AppUser instructor13 = new AppUser { UserName = "Instructor13", Email = "instructor13@mail.com", AccountAge = date };
+            AppUser instructor14 = new AppUser { UserName = "Instructor14", Email = "instructor14@mail.com", AccountAge = date };
+            AppUser instructor15 = new AppUser { UserName = "Instructor15", Email = "instructor15@mail.com", AccountAge = date };
+            AppUser instructor16 = new AppUser { UserName = "Instructor16", Email = "instructor16@mail.com", AccountAge = date };
+            AppUser instructor17 = new AppUser { UserName = "Instructor17", Email = "instructor17@mail.com", AccountAge = date };
+            AppUser instructor18 = new AppUser { UserName = "Instructor18", Email = "instructor18@mail.com", AccountAge = date };
+            AppUser instructor19 = new AppUser { UserName = "Instructor19", Email = "instructor19@mail.com", AccountAge = date };
+            AppUser instructor20 = new AppUser { UserName = "Instructor20", Email = "instructor20@mail.com", AccountAge = date };
+
+            await userManager.CreateAsync(instructor1, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor2, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor3, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor4, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor5, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor6, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor7, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor8, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor9, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor10, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor11, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor12, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor13, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor14, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor15, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor16, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor17, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor18, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor19, SECRET_PASSWORD);
+            await userManager.CreateAsync(instructor20, SECRET_PASSWORD);
+
+
+
+
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
             context.Institutions.Add(inst);
             
             Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
             context.Courses.Add(course);
-            
-            Class class1 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            Class class2 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            Class class3 =  new Class() { Instructor = instructor, ParentCourse = course, Students = students, Term = "Spring 2025"};
-            
+            Class class1 = new Class() { Instructor = instructor1, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class2 = new Class() { Instructor = instructor2, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class3 = new Class() { Instructor = instructor3, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class4 = new Class() { Instructor = instructor4, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class5 = new Class() { Instructor = instructor5, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class6 = new Class() { Instructor = instructor6, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class7 = new Class() { Instructor = instructor7, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class8 = new Class() { Instructor = instructor8, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class9 = new Class() { Instructor = instructor9, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class10 = new Class() { Instructor = instructor10, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class11 = new Class() { Instructor = instructor11, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class12 = new Class() { Instructor = instructor12, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class13 = new Class() { Instructor = instructor13, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class14 = new Class() { Instructor = instructor14, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class15 = new Class() { Instructor = instructor15, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class16 = new Class() { Instructor = instructor16, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class17 = new Class() { Instructor = instructor17, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class18 = new Class() { Instructor = instructor18, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class19 = new Class() { Instructor = instructor19, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class20 = new Class() { Instructor = instructor20, ParentCourse = course, Students = students, Term = "Spring 2025" };
+
             context.Classes.Add(class1);
             context.Classes.Add(class2);
             context.Classes.Add(class3);
+            context.Classes.Add(class4);
+            context.Classes.Add(class5);
+            context.Classes.Add(class6);
+            context.Classes.Add(class7);
+            context.Classes.Add(class8);
+            context.Classes.Add(class9);
+            context.Classes.Add(class10);
+            context.Classes.Add(class11);
+            context.Classes.Add(class12);
+            context.Classes.Add(class13);
+            context.Classes.Add(class14);
+            context.Classes.Add(class15);
+            context.Classes.Add(class16);
+            context.Classes.Add(class17);
+            context.Classes.Add(class18);
+            context.Classes.Add(class19);
+            context.Classes.Add(class20);
+
 
             Document doc1 = new Document() { Uploader = instructor, Name = "Instructions1", FilePath = "~/StaticFiles/AssignmentInstructions/", FileSize = "1kb", DateUploaded = DateTime.Now};
             Document doc2 = new Document() { Uploader = instructor, Name = "ReviewForm1", FilePath = "~/StaticFiles/ReviewForms/", FileSize = "1kb", DateUploaded = DateTime.Now };
@@ -113,6 +197,9 @@ public class SeedData
             context.Documents.Add(doc2);
 
             Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
+            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(4), Title = "Lab 2" };
+            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(11), Title = "Lab 3" };
+            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
 
@@ -120,11 +207,41 @@ public class SeedData
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
             AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
             AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
+            AssignmentVersion assignment2Version1 = new AssignmentVersion() { ParentAssignment = assignment2, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
+            AssignmentVersion assignment3Version1 = new AssignmentVersion() { ParentAssignment = assignment3, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
+            AssignmentVersion assignment4Version1 = new AssignmentVersion() { ParentAssignment = assignment4, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
 
             context.AssignmentVersions.Add(assignmentVersion1);
             context.AssignmentVersions.Add(assignmentVersion2);
             context.AssignmentVersions.Add(assignmentVersion3);
             context.AssignmentVersions.Add(assignmentVersion4);
+            context.AssignmentVersions.Add(assignment2Version1);
+            context.AssignmentVersions.Add(assignment3Version1);
+            context.AssignmentVersions.Add(assignment4Version1);
+
+            Review review1 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
+            Review review2 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
+            Review review3 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
+            Review review4 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
+            Review review5 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
+            Review review6 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
+
+            context.Reviews.Add(review1);
+            context.Reviews.Add(review2);
+            context.Reviews.Add(review3);
+            context.Reviews.Add(review4);
+            context.Reviews.Add(review5);
+            context.Reviews.Add(review6);
+
+            Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
+            Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
+            Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
+            Grade grade4 = new Grade() { Value = 100, Assignment = assignment4, Student = student1 };
+
+            context.Grades.Add(grade1);
+            context.Grades.Add(grade2);
+            context.Grades.Add(grade3);
+            context.Grades.Add(grade4);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             
