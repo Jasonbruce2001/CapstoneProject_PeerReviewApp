@@ -12,7 +12,7 @@ namespace PeerReviewApp.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationDbContext _context;
+       
         private readonly IInstitutionRepository _institutionRepository;
         private readonly ICourseRepository _courseRepository;
 
@@ -22,20 +22,20 @@ namespace PeerReviewApp.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _institutionRepository = institutionRepository;
-            _context = context;
+          
             _courseRepository = courseRepository;
         }
 
 
-        public IActionResult Index()
+        public async Task <IActionResult> Index()
         {
             var dashboard = new AdminDashboardVM
             {
-                TotalInstitutions = _context.Institutions.Count(),
-                ActiveInstructors = _roleManager.Roles.Where(r => r.Name != "Instructor").Count(),
-                ActiveCourses = _context.Courses.Count(),
-                TotalStudents = _context.Users.Count(),
-                Institutions = _context.Institutions.ToList(),
+                TotalInstitutions = (await _institutionRepository.GetInstitutionsAsync()).Count(),
+                ActiveInstructors = (await _userManager.GetUsersInRoleAsync("Instructor")).Count(),
+                ActiveCourses = (await _courseRepository.GetCoursesAsync()).Count(),
+                TotalStudents = _userManager.Users.Count(), 
+                Institutions = await _institutionRepository.GetInstitutionsAsync(),
                 RecentActions = new List<string>()
             };
 
@@ -68,8 +68,8 @@ namespace PeerReviewApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var institution = await _context.Institutions
-                    .FirstOrDefaultAsync(i => i.Code == model.InstitutionCode);
+                var institutions = await _institutionRepository.GetInstitutionsAsync();
+                var institution = institutions.FirstOrDefault(i => i.Code == model.InstitutionCode);
 
                 if (institution == null)
                 {
@@ -89,13 +89,9 @@ namespace PeerReviewApp.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Instructor");
-
-                    institution.Instructors.Add(user);
-                    await _context.SaveChangesAsync();
-
-
-
+                    await _institutionRepository.AddInstructorToInstitutionAsync(model.InstitutionCode, user.Id);
                     return RedirectToAction("ManageInstructors");
+                    
                 }
                 foreach (var error in result.Errors)
                 {
