@@ -21,9 +21,9 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
         private readonly IDocumentRepository _documentRepo;
-        private readonly ApplicationDbContext _context;
+        private readonly IReviewRepository _reviewRepository;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context)
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository)
 
 
         {
@@ -36,7 +36,7 @@ namespace PeerReviewApp.Controllers
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
             _documentRepo = documentRepository;
-            _context = context;
+            _reviewRepository = reviewRepository;
         }
         public async Task<IActionResult> Index()
         {
@@ -224,11 +224,8 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> AddAssignment(int classId)
         {
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
-
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
+               
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
                 return NotFound();
@@ -254,10 +251,7 @@ namespace PeerReviewApp.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
+            var class_ = await _classRepo.GetClassByIdAsync(model.ClassId);
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -283,10 +277,8 @@ namespace PeerReviewApp.Controllers
         {
 
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes 
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
+              
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -404,6 +396,8 @@ namespace PeerReviewApp.Controllers
                 .Select(r => r.ReviewDocument)
                 .ToList();
 
+            var submissions = await _reviewRepository.GetSubmissionsForAssignmentAsync(assignmentId);
+
             ViewBag.AssignmentTitle = assignment.Title;
             ViewBag.DueDate = assignment.DueDate;
             ViewBag.ClassId = classForCourse.ClassId;
@@ -415,13 +409,7 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> AddStudents(int classId)
         {
             var user = await _userManager.GetUserAsync(User);
-
-            // Get the class with its related entities
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .Include(c => c.Students)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -430,6 +418,7 @@ namespace PeerReviewApp.Controllers
 
             // Get IDs of students already in the class
             var existingStudentIds = class_.Students.Select(s => s.Id).ToList();
+
 
             // Get all users who aren't already in the class
             var availableStudents = await _userManager.GetUsersInRoleAsync("Student");
@@ -456,30 +445,10 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction(nameof(AddStudents), new { classId = model.ClassId });
             }
 
-            // Get the class with its students
-            var class_ = await _context.Classes
-                .Include(c => c.Students)
-                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
 
-            if (class_ == null)
-            {
-                return NotFound();
-            }
+            await _classRepo.AddStudentsToClassAsync(model.ClassId, model.SelectedStudentIds);
 
-            // Add selected students to class
-            foreach (var studentId in model.SelectedStudentIds)
-            {
-                var student = await _userManager.FindByIdAsync(studentId);
-                if (student != null && !class_.Students.Any(s => s.Id == studentId))
-                {
-                    class_.Students.Add(student);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            
-            return RedirectToAction("ViewStudents", new { instructor = await _userManager.GetUserAsync(User) });
+            return RedirectToAction("ViewStudents");
         }
 
 
