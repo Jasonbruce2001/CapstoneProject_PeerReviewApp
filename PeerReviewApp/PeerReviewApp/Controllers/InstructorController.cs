@@ -384,6 +384,18 @@ namespace PeerReviewApp.Controllers
             if (classForCourse == null)
                 return Forbid();
 
+            // Retrieve reviews that have this assignment
+            var reviews = await _context.Reviews
+                .Include(r => r.Reviewer)
+                .Include(r => r.ReviewDocument)
+                .ToListAsync();
+
+            // Extract documents from reviews
+            var submissions = reviews
+                .Where(r => r.ReviewDocument != null)
+                .Select(r => r.ReviewDocument)
+                .ToList();
+
             var submissions = await _reviewRepository.GetSubmissionsForAssignmentAsync(assignmentId);
 
             ViewBag.AssignmentTitle = assignment.Title;
