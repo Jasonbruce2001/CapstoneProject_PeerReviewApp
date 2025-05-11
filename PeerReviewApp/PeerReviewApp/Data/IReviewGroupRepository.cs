@@ -9,4 +9,6 @@ public interface IReviewGroupRepository
     public Task<int> AddReviewGroupAsync(ReviewGroup reviewGroup);
     public Task<int> UpdateReviewGroupAsync(ReviewGroup reviewGroup);
     public Task<int> DeleteReviewGroupByIdAsync(int id);
+
+  
 }

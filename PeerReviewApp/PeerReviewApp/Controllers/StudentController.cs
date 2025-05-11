@@ -17,7 +17,7 @@ public class StudentController : Controller
     private readonly IDocumentRepository _documentRepository;
     private readonly IReviewRepository _reviewRepository;
     private readonly IGradeRepository _gradeRepository;
-    private readonly ApplicationDbContext _context;
+  
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
         IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
@@ -27,7 +27,7 @@ public class StudentController : Controller
         _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
         _documentRepository = documentRepository;
-        _context = context;
+       
         _reviewRepository = reviewRepository;
         _gradeRepository = gradeRepository;
     }
@@ -107,13 +107,7 @@ public class StudentController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var studentAssignmentVersions = await _context.AssignmentVersions
-            .Include(av => av.ParentAssignment)
-            .ThenInclude(a => a.Course)
-            .Include(av => av.Students)
-            .Where(av => av.Students.Any(s => s.Id == currentUser.Id))
-            .ToListAsync();
-
+        var studentAssignmentVersions = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(currentUser);
         return View(studentAssignmentVersions);
     }
 
@@ -148,21 +142,13 @@ public class StudentController : Controller
     public async Task<IActionResult> DueSoon()
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        var temp = await _userManager.Users
-            .Include(r => r.Versions)
-            .ThenInclude(r => r.ParentAssignment)
-            .ThenInclude(r => r.Course)
-            .FirstOrDefaultAsync(r => r.Id == currentUser.Id);
+        var versions = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(currentUser);
 
-        IList<AssignmentVersion> model = temp.Versions;
-        foreach (AssignmentVersion version in model.ToList())
-        {
-            if(!(version.ParentAssignment.DueDate > DateTime.Now && version.ParentAssignment.DueDate < DateTime.Now.AddDays(7)))
-            {
-                model.Remove(version);
-            }
-        }
+        var dueVersions = versions
+            .Where(v => v.ParentAssignment.DueDate > DateTime.Now
+                     && v.ParentAssignment.DueDate < DateTime.Now.AddDays(7))
+            .ToList();
 
-        return View(model);
+        return View(dueVersions);
     }
 }
