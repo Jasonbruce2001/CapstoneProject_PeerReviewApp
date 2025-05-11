@@ -18,7 +18,6 @@ namespace PeerReviewApp.Data
                 .Include(r => r.Reviewee)
                 .Include(r => r.Reviewer)
                 .Include(r => r.ReviewDocument)
-                .Include(r => r.Assignment)
                 .ToListAsync();
 
             return review;
@@ -29,8 +28,6 @@ namespace PeerReviewApp.Data
                 .Include(r => r.Reviewee)
                 .Include(r => r.Reviewer)
                 .Include(r => r.ReviewDocument)
-                .Include(r => r.Assignment)
-                .ThenInclude(r => r.Course)
                 .Where(r => r.Reviewer == user)
                 .ToListAsync();
 
@@ -42,8 +39,6 @@ namespace PeerReviewApp.Data
                 .Include(r => r.Reviewee)
                 .Include(r => r.Reviewer)
                 .Include(r => r.ReviewDocument)
-                .Include(r => r.Assignment)
-                .ThenInclude(r => r.Course)
                 .Where(r => r.Reviewee == user)
                 .ToListAsync();
 

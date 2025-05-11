@@ -137,9 +137,11 @@ public class SeedData
             await userManager.CreateAsync(instructor18, SECRET_PASSWORD);
             await userManager.CreateAsync(instructor19, SECRET_PASSWORD);
             await userManager.CreateAsync(instructor20, SECRET_PASSWORD);
-
-
-
+            
+            await userManager.AddToRoleAsync(instructor1, "Instructor");
+            await userManager.AddToRoleAsync(instructor2, "Instructor");
+            await userManager.AddToRoleAsync(instructor3, "Instructor");
+            await userManager.AddToRoleAsync(instructor4, "Instructor");
 
             
             Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
@@ -219,12 +221,12 @@ public class SeedData
             context.AssignmentVersions.Add(assignment3Version1);
             context.AssignmentVersions.Add(assignment4Version1);
 
-            Review review1 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
-            Review review2 = new Review() { Assignment = assignment1, Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
-            Review review3 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
-            Review review4 = new Review() { Assignment = assignment1, Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
-            Review review5 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
-            Review review6 = new Review() { Assignment = assignment1, Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
+            Review review1 = new Review() { Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
+            Review review2 = new Review() { Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
+            Review review3 = new Review() { Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
+            Review review4 = new Review() { Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
+            Review review5 = new Review() { Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
+            Review review6 = new Review() { Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
 
             context.Reviews.Add(review1);
             context.Reviews.Add(review2);

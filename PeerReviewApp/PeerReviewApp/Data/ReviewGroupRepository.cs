@@ -18,7 +18,6 @@ public class ReviewGroupRepository : IReviewGroupRepository
     public async Task<List<ReviewGroup>> GetAllReviewGroupsForInstructorAsync(string userId)
     {
         return await _context.ReviewGroups
-                            .Include(group => group.Reviews)
                             .Include(group => group.Students)
                             .ToListAsync();
     }
@@ -27,7 +26,6 @@ public class ReviewGroupRepository : IReviewGroupRepository
     {
         return await _context.ReviewGroups
             .Include(group => group.Students)
-            .Include(group => group.Reviews)
             .Where(group => group.Id == id)
             .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
     }
