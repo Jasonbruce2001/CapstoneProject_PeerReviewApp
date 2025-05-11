@@ -1,4 +1,4 @@
-﻿@model List<Review>
+﻿@model IList<Review>
 @{
     ViewData["Title"] = "My Reviews";
 }
@@ -11,7 +11,7 @@
     @foreach (var version in Model)
         {
         <li class="list-group-item">
-            <h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>
+            @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
             <h5>Reviewee: @version.Reviewee</h5>
             <a asp-action="ViewReviews">Download Assignment</a>
         </li>

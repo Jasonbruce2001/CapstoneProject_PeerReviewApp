@@ -394,10 +394,8 @@ namespace PeerReviewApp.Controllers
 
             // Retrieve reviews that have this assignment
             var reviews = await _context.Reviews
-                .Include(r => r.Assignment)
                 .Include(r => r.Reviewer)
                 .Include(r => r.ReviewDocument)
-                .Where(r => r.Assignment.Id == assignmentId)
                 .ToListAsync();
 
             // Extract documents from reviews
