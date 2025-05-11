@@ -19,6 +19,9 @@ namespace PeerReviewApp.Data
         {
             return await _context.AssignmentVersions
                 .Include(a => a.Instructions)
+                .Include(a => a.Submissions)
+                .ThenInclude(s => s.Review)
+                .ThenInclude(r => r.ReviewDocument)
                 .Include(a => a.ReviewForm)
                 .Include(a => a.ParentAssignment)
                 .Include(a => a.Students)
@@ -31,6 +34,9 @@ namespace PeerReviewApp.Data
                                                                     .Include(a => a.Students)
                                                                     .Include(a => a.Instructions)
                                                                     .Include(a => a.ReviewForm)
+                                                                    .Include(a => a.Submissions)
+                                                                    .ThenInclude(s => s.Review)
+                                                                    .ThenInclude(r => r.ReviewDocument)
                                                                     .Include(a => a.ParentAssignment)
                                                                     .ThenInclude(p => p.Course)
                                                                     .ToListAsync();

@@ -11,7 +11,7 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<AppUser> _userManager;
     private readonly IDocumentRepository _documentRepository;
-    private const int MAX_FILE_SIZE = 10485760; //10 mb in bytes
+    private const int MAX_FILE_SIZE = 20971520; //20 mb in bytes
 
     public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, IDocumentRepository documentRepository)
     {
@@ -92,7 +92,7 @@ public class HomeController : Controller
             model.File.CopyTo(stream);
         }
         
-        return Ok(new { dbPath });
+        return RedirectToAction("Documents");
     }
 
     public async Task<IActionResult> DeleteUpload(int id)
@@ -106,6 +106,8 @@ public class HomeController : Controller
         {
             System.IO.File.Delete(path);
         }
+        
+        _logger.LogInformation($"Deleted document at {path}", path);
 
         return RedirectToAction("Documents");
     }
