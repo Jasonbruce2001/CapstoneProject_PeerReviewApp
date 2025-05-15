@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PeerReviewApp.Migrations
 {
     /// <inheritdoc />
-    public partial class merge : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -450,13 +450,11 @@ namespace PeerReviewApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    AssignmentId = table.Column<int>(type: "int", nullable: false),
                     ReviewerId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RevieweeId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ReviewDocumentId = table.Column<int>(type: "int", nullable: false),
-                    ReviewGroupId = table.Column<int>(type: "int", nullable: true)
+                    ReviewDocumentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,22 +470,11 @@ namespace PeerReviewApp.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Reviews_Assignments_AssignmentId",
-                        column: x => x.AssignmentId,
-                        principalTable: "Assignments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Reviews_Documents_ReviewDocumentId",
                         column: x => x.ReviewDocumentId,
                         principalTable: "Documents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Reviews_ReviewGroups_ReviewGroupId",
-                        column: x => x.ReviewGroupId,
-                        principalTable: "ReviewGroups",
-                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -512,6 +499,43 @@ namespace PeerReviewApp.Migrations
                         name: "FK_AppUserAssignmentVersion_AssignmentVersions_VersionsId",
                         column: x => x.VersionsId,
                         principalTable: "AssignmentVersions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AssignmentSubmissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AssignmentLink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AssignmentVersionId = table.Column<int>(type: "int", nullable: false),
+                    SubmissionDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ReviewId = table.Column<int>(type: "int", nullable: false),
+                    SubmitterId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssignmentSubmissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AssignmentSubmissions_AspNetUsers_SubmitterId",
+                        column: x => x.SubmitterId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AssignmentSubmissions_AssignmentVersions_AssignmentVersionId",
+                        column: x => x.AssignmentVersionId,
+                        principalTable: "AssignmentVersions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AssignmentSubmissions_Reviews_ReviewId",
+                        column: x => x.ReviewId,
+                        principalTable: "Reviews",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -575,6 +599,21 @@ namespace PeerReviewApp.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssignmentSubmissions_AssignmentVersionId",
+                table: "AssignmentSubmissions",
+                column: "AssignmentVersionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssignmentSubmissions_ReviewId",
+                table: "AssignmentSubmissions",
+                column: "ReviewId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssignmentSubmissions_SubmitterId",
+                table: "AssignmentSubmissions",
+                column: "SubmitterId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AssignmentVersions_InstructionsId",
                 table: "AssignmentVersions",
                 column: "InstructionsId");
@@ -630,11 +669,6 @@ namespace PeerReviewApp.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_AssignmentId",
-                table: "Reviews",
-                column: "AssignmentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ReviewDocumentId",
                 table: "Reviews",
                 column: "ReviewDocumentId");
@@ -648,11 +682,6 @@ namespace PeerReviewApp.Migrations
                 name: "IX_Reviews_ReviewerId",
                 table: "Reviews",
                 column: "ReviewerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ReviewGroupId",
-                table: "Reviews",
-                column: "ReviewGroupId");
         }
 
         /// <inheritdoc />
@@ -677,19 +706,22 @@ namespace PeerReviewApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "AssignmentSubmissions");
+
+            migrationBuilder.DropTable(
                 name: "ClassStudents");
 
             migrationBuilder.DropTable(
                 name: "Grades");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AssignmentVersions");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Classes");

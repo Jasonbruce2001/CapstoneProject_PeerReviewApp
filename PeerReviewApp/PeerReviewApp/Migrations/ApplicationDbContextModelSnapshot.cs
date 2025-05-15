@@ -301,7 +301,7 @@ namespace PeerReviewApp.Migrations
                     b.Property<int>("AssignmentVersionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewId")
+                    b.Property<int?>("ReviewId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SubmissionDate")
@@ -318,7 +318,7 @@ namespace PeerReviewApp.Migrations
 
                     b.HasIndex("SubmitterId");
 
-                    b.ToTable("AssignmentSubmission");
+                    b.ToTable("AssignmentSubmissions");
                 });
 
             modelBuilder.Entity("PeerReviewApp.Models.AssignmentVersion", b =>
@@ -657,9 +657,7 @@ namespace PeerReviewApp.Migrations
 
                     b.HasOne("PeerReviewApp.Models.Review", "Review")
                         .WithMany()
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReviewId");
 
                     b.HasOne("PeerReviewApp.Models.AppUser", "Submitter")
                         .WithMany()

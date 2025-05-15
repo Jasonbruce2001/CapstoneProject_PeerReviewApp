@@ -16,3 +16,18 @@ function toggleFilters()
         element.classList.add("formHidden");
     }
 }
+
+function toggleElementById(id)
+{
+    //get reference to div containing form
+    let element = document.getElementById(id);
+
+    if(element.classList.contains("formHidden"))
+    {
+        //if elements class list already contains formHidden, remove it so it is visible
+        element.classList.remove("formHidden");
+    } else {
+        //otherwise hide form
+        element.classList.add("formHidden");
+    }
+}

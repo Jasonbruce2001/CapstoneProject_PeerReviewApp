@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
+using PeerReviewApp.Models.ViewModels;
 
 namespace PeerReviewApp.Controllers;
 
@@ -18,13 +19,16 @@ public class StudentController : Controller
     private readonly IReviewRepository _reviewRepository;
     private readonly IGradeRepository _gradeRepository;
     private readonly ApplicationDbContext _context;
+    private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepository;
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
-        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, 
+        IDocumentRepository documentRepository, IAssignmentSubmissionRepository assignmentSubmissionRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _assignmentVersionRepository = assignmentVersionRepository;
+        _assignmentSubmissionRepository = assignmentSubmissionRepository;
         _userManager = userManager;
         _documentRepository = documentRepository;
         _context = context;
@@ -40,7 +44,6 @@ public class StudentController : Controller
         var classes = await _classRepository.GetClassesForStudentAsync(user);
         var reviewGroups = new List<ReviewGroup>(); //temp change to repo calls
         var documents = new List<Document>();
-
        
         if (user != null)
         {
@@ -51,7 +54,7 @@ public class StudentController : Controller
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -72,8 +75,35 @@ public class StudentController : Controller
     public async Task<IActionResult> DetailedAssignment(int assignmentId)
     {
         var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(assignmentId);
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var submissionStatus = false;
+        AssignmentSubmission userSub = null;
+
+        //check through submissions for user
+        foreach (var submission in assignment.Submissions)
+        {
+            if (submission.Submitter == user)
+            {
+                submissionStatus = true;
+                userSub = submission;
+            }
+        }
         
-        return View(assignment);
+        var vm = new DetailedAssignmentVM(){Assignment = assignment, HasSubmitted = submissionStatus, Submission = userSub};
+        return View(vm);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddSubmission(AssignmentSubmission model, int versionId)
+    {
+        model.AssignmentVersion = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(versionId);
+        model.SubmissionDate = DateTime.Now;
+        model.Submitter = await _userManager.GetUserAsync(HttpContext.User);
+        
+        //add new submission to db
+        await _assignmentSubmissionRepository.AddAssignmentSubmissionAsync(model);
+        
+        return RedirectToAction("Assignments");
     }
 
     public async Task<IActionResult> ViewCourses()

@@ -59,10 +59,11 @@ namespace PeerReviewApp.Data
 
             return await _context.SaveChangesAsync();
         }
-        public Task<int> UpdateAssignmentVersionAsync(AssignmentVersion model)
+        public async Task<int> UpdateAssignmentVersionAsync(AssignmentVersion model)
         {
-
-            throw new NotImplementedException();
+            _context.AssignmentVersions.Update(model);
+            
+            return await _context.SaveChangesAsync();
         }
         public Task<int> DeleteAssignmentVersionAsync(int id)
         {

@@ -12,8 +12,8 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250511012215_modelUpdates")]
-    partial class modelUpdates
+    [Migration("20250513181147_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -321,7 +321,7 @@ namespace PeerReviewApp.Migrations
 
                     b.HasIndex("SubmitterId");
 
-                    b.ToTable("AssignmentSubmission");
+                    b.ToTable("AssignmentSubmissions");
                 });
 
             modelBuilder.Entity("PeerReviewApp.Models.AssignmentVersion", b =>
