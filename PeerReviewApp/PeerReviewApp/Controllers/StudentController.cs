@@ -106,6 +106,19 @@ public class StudentController : Controller
         return RedirectToAction("Assignments");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> UpdateSubmission(AssignmentSubmission model, int versionId)
+    {
+        model.AssignmentVersion = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(versionId);
+        model.SubmissionDate = DateTime.Now;
+        model.Submitter = await _userManager.GetUserAsync(HttpContext.User);
+        
+        //update submission
+        await _assignmentSubmissionRepository.UpdateAssignmentSubmissionAsync(model);
+        
+        return RedirectToAction("Assignments");
+    }
+
     public async Task<IActionResult> ViewCourses()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);

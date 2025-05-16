@@ -11,13 +11,10 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     
-    public AssignmentSubmissionRepository(ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, 
-        UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AssignmentSubmissionRepository(ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository)
     {
         _context = context;
         _assignmentVersionRepository = assignmentVersionRepository;
-        _userManager = userManager;
-        _signInManager = signInManager;
     }
     
     public async Task<IList<AssignmentSubmission>> GetAllSubmissionsByStudentAsync(AppUser user)
@@ -39,9 +36,26 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
         return await _context.SaveChangesAsync();
     }
 
-    public Task<int> UpdateAssignmentSubmissionAsync(AssignmentSubmission model)
+    public async Task<int> UpdateAssignmentSubmissionAsync(AssignmentSubmission model)
     {
-        throw new NotImplementedException();
+        var oldSubmission = model.AssignmentVersion.Submissions.FirstOrDefault(s => s.Submitter == model.Submitter);
+
+        if (oldSubmission != null)
+        {
+            //track reference of parent assignment version
+            var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(model.AssignmentVersion.Id);
+            //remove old submission from list
+            assignment.Submissions.Remove(oldSubmission);
+            //add updated submission
+            assignment.Submissions.Add(model);
+            //update assignment version
+            await _assignmentVersionRepository.UpdateAssignmentVersionAsync(assignment);
+            
+            //update submission
+            _context.AssignmentSubmissions.Update(model);
+        }
+        
+        return await _context.SaveChangesAsync();
     }
 
     public Task<int> DeleteAssignmentSubmissionAsync(AssignmentSubmission model)
