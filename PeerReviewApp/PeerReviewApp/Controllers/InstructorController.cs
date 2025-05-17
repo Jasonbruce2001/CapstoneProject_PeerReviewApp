@@ -22,8 +22,11 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
         private readonly IDocumentRepository _documentRepo;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IAssignmentSubmissionRepository _submissionRepository;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository)
+
+
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
 
 
         {
@@ -37,6 +40,7 @@ namespace PeerReviewApp.Controllers
             _assignmentRepo = assignmentRepository;
             _documentRepo = documentRepository;
             _reviewRepository = reviewRepository;
+            _submissionRepository = submissionRepository;
         }
         public async Task<IActionResult> Index()
         {
@@ -384,19 +388,7 @@ namespace PeerReviewApp.Controllers
             if (classForCourse == null)
                 return Forbid();
 
-            // Retrieve reviews that have this assignment
-            var reviews = await _context.Reviews
-                .Include(r => r.Reviewer)
-                .Include(r => r.ReviewDocument)
-                .ToListAsync();
-
-            // Extract documents from reviews
-            var submissions = reviews
-                .Where(r => r.ReviewDocument != null)
-                .Select(r => r.ReviewDocument)
-                .ToList();
-
-            var submissions = await _reviewRepository.GetSubmissionsForAssignmentAsync(assignmentId);
+            var submissions = await _submissionRepository.GetSubmissionsForAssignmentAsync(assignmentId);
 
             ViewBag.AssignmentTitle = assignment.Title;
             ViewBag.DueDate = assignment.DueDate;

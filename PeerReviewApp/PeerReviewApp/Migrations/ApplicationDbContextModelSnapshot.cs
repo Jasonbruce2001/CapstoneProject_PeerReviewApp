@@ -318,7 +318,7 @@ namespace PeerReviewApp.Migrations
 
                     b.HasIndex("SubmitterId");
 
-                    b.ToTable("AssignmentSubmission");
+                    b.ToTable("AssignmentSubmissions");
                 });
 
             modelBuilder.Entity("PeerReviewApp.Models.AssignmentVersion", b =>
