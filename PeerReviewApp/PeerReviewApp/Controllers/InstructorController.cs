@@ -526,6 +526,20 @@ namespace PeerReviewApp.Controllers
 
         }
 
+        public async Task<IActionResult> ViewAllGroups()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            if (!classes.Any())
+            {
+                TempData["Message"] = "You don't have any classes yet. Create a class first.";
+                return RedirectToAction("AddClass");
+            }
+
+            return View(classes);
+        }
+
         public async Task<IActionResult> SortGroup(int classId, int assignmentId)
         {
             Class cls = await _classRepo.GetClassByIdAsync(classId);
