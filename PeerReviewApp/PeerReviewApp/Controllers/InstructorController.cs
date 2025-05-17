@@ -23,7 +23,7 @@ namespace PeerReviewApp.Controllers
         private readonly IDocumentRepository _documentRepo;
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
-
+        private readonly ApplicationDbContext _context;
 
 
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
@@ -388,11 +388,17 @@ namespace PeerReviewApp.Controllers
             if (classForCourse == null)
                 return Forbid();
 
-            var submissions = await _submissionRepository.GetSubmissionsForAssignmentAsync(assignmentId);
+            // Retrieve reviews that have this assignment
+            var reviews = await _context.Reviews
+                .Include(r => r.Reviewer)
+                .Include(r => r.ReviewDocument)
+                .ToListAsync();
 
-            ViewBag.AssignmentTitle = assignment.Title;
-            ViewBag.DueDate = assignment.DueDate;
-            ViewBag.ClassId = classForCourse.ClassId;
+            // Extract documents from reviews
+            var submissions = reviews
+                .Where(r => r.ReviewDocument != null)
+                .Select(r => r.ReviewDocument)
+                .ToList();
 
             return View(submissions);
         }
