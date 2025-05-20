@@ -25,17 +25,25 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="card mb-4">
-        <div class="card-header">
-            <h5>Available Students</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Available Students</h5>
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" id="studentSearch" class="form-control" placeholder="Search students...">
+                <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                    <i class="fa fa-times"></i> Clear
+                </button>
+            </div>
         </div>
         <div class="card-body">
             @if (Model.AvailableStudents.Any())
             {
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-striped">
-                        <thead>
+                        <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                             <tr>
-                                <th>Select</th>
+                                <th>
+                                    <input type="checkbox" id="selectAll" class="form-check-input" />
+                                </th>
                                 <th>Username</th>
                                 <th>Email</th>
                             </tr>
@@ -43,16 +51,19 @@
                         <tbody>
                             @foreach (var student in Model.AvailableStudents)
                             {
-                                <tr>
+                                <tr class="student-row">
                                     <td>
-                                        <input type="checkbox" name="SelectedStudentIds[]" value="@student.Id" class="form-check-input" value=""/>
+                                        <input type="checkbox" name="SelectedStudentIds[]" value="@student.Id" class="form-check-input student-checkbox" />
                                     </td>
-                                    <td>@student.UserName</td>
-                                    <td>@student.Email</td>
+                                    <td class="student-username">@student.UserName</td>
+                                    <td class="student-email">@student.Email</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+                </div>
+                <div class="mt-2">
+                    <span id="selectedCount" class="text-muted">0 students selected</span>
                 </div>
             }
             else
@@ -69,3 +80,62 @@
         <input type="submit" value="Add Selected Students" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('studentSearch').addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.student-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const username = row.querySelector('.student-username').textContent.toLowerCase(); 
+                const email = row.querySelector('.student-email').textContent.toLowerCase();
+
+                if (username.includes(searchTerm) || email.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+   
+        document.getElementById('studentSearch').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+        function clearSearch() {
+            document.getElementById('studentSearch').value = '';
+            document.querySelectorAll('.student-row').forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const isChecked = this.checked;
+            document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+                if (checkbox.closest('tr').style.display !== 'none') {
+                    checkbox.checked = isChecked;
+                }
+            });
+            updateSelectedCount();
+        });
+
+        document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedCount);
+        });
+
+        function updateSelectedCount() {
+            const checkedCount = document.querySelectorAll('.student-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = checkedCount + ' students selected';
+        }
+
+        updateSelectedCount();
+    </script>
+}

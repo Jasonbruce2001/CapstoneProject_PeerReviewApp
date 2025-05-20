@@ -22,8 +22,11 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
         private readonly IDocumentRepository _documentRepo;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IAssignmentSubmissionRepository _submissionRepository;
+        private readonly ApplicationDbContext _context;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository)
+
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
 
 
         {
@@ -37,6 +40,7 @@ namespace PeerReviewApp.Controllers
             _assignmentRepo = assignmentRepository;
             _documentRepo = documentRepository;
             _reviewRepository = reviewRepository;
+            _submissionRepository = submissionRepository;
         }
         public async Task<IActionResult> Index()
         {
@@ -396,12 +400,6 @@ namespace PeerReviewApp.Controllers
                 .Select(r => r.ReviewDocument)
                 .ToList();
 
-            var submissions = await _reviewRepository.GetSubmissionsForAssignmentAsync(assignmentId);
-
-            ViewBag.AssignmentTitle = assignment.Title;
-            ViewBag.DueDate = assignment.DueDate;
-            ViewBag.ClassId = classForCourse.ClassId;
-
             return View(submissions);
         }
 
@@ -526,6 +524,20 @@ namespace PeerReviewApp.Controllers
 
             return View(vm);
 
+        }
+
+        public async Task<IActionResult> ViewAllGroups()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            if (!classes.Any())
+            {
+                TempData["Message"] = "You don't have any classes yet. Create a class first.";
+                return RedirectToAction("AddClass");
+            }
+
+            return View(classes);
         }
 
         public async Task<IActionResult> SortGroup(int classId, int assignmentId)

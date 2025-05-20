@@ -62,19 +62,5 @@ namespace PeerReviewApp.Data
         }
 
 
-        public async Task<IList<Document>> GetSubmissionsForAssignmentAsync(int assignmentId)
-        {
-            var reviews = await _context.Reviews
-                .Include(r => r.ReviewDocument)
-                .ThenInclude(d => d.Uploader)
-                .Where(r => r.Assignment.Id == assignmentId && r.ReviewDocument != null)
-                .ToListAsync();
-
-            return reviews
-                .Select(r => r.ReviewDocument)
-                .DistinctBy(d => d.Id)
-                .ToList();
-        }
-
     }
 }

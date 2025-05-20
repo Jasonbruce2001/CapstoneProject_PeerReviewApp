@@ -12,6 +12,6 @@ namespace PeerReviewApp.Data
         public Task<int> UpdateReviewAsync(Review model);
         public Task<int> DeleteReviewAsync(int id);
 
-        Task<IList<Document>> GetSubmissionsForAssignmentAsync(int assignmentId);
+      
     }
 }
