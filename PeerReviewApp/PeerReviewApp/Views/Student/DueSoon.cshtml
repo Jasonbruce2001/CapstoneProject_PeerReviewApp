@@ -3,23 +3,35 @@
     ViewData["Title"] = "Due Soon";
 }
 
-<h1 class="text-center fw-bolder">Assignments Due</h1>
 
-@if (Model.Any())
-{
-    <ul class="list-group">
-        @foreach (var version in Model)
-        {
-            <li class="list-group-item">
-                <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
-                <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <div class="alert alert-info">
-        You do not currently have any graded assignments.
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col"><a class="btn btn-secondary" asp-action="Index">Back</a></div>
+        <div class="col-9"></div>
     </div>
-}
+
+    <div class="row">
+        <h1 class="text-center fw-bolder">Assignments Due</h1>
+    </div>
+    
+    <div class="row">
+        @if (Model.Any())
+        {
+            <ul class="list-group">
+                @foreach (var version in Model)
+                {
+                    <li class="list-group-item">
+                        <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                        <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                You do not currently have any graded assignments.
+            </div>
+        }
+    </div>
+</div>

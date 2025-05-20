@@ -20,12 +20,15 @@ namespace PeerReviewApp.Controllers
         private readonly IClassRepository _classRepo;
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
+        private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepo;
         private readonly IDocumentRepository _documentRepo;
         private readonly ApplicationDbContext _context;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context)
-
-
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, 
+            ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, 
+            SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, 
+            IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context,
+            IAssignmentSubmissionRepository assignmentSubmissionRepository)
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -35,6 +38,7 @@ namespace PeerReviewApp.Controllers
             _classRepo = classRepo;
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
+            _assignmentSubmissionRepo = assignmentSubmissionRepository;
             _documentRepo = documentRepository;
             _context = context;
         }
@@ -379,35 +383,12 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewSubmissions(int assignmentId)
         {
-            var user = await _userManager.GetUserAsync(User);
             var assignment = await _assignmentRepo.GetAssignmentByIdAsync(assignmentId);
-
-            if (assignment == null)
-                return NotFound();
-
-            // Find a class that this instructor teaches with this assignment's course
-            var classes = await _classRepo.GetClassesAsync(user.Id);
-            var classForCourse = classes.FirstOrDefault(c => c.ParentCourse.Id == assignment.Course.Id);
-
-            if (classForCourse == null)
-                return Forbid();
-
-            // Retrieve reviews that have this assignment
-            var reviews = await _context.Reviews
-                .Include(r => r.Reviewer)
-                .Include(r => r.ReviewDocument)
-                .ToListAsync();
-
-            // Extract documents from reviews
-            var submissions = reviews
-                .Where(r => r.ReviewDocument != null)
-                .Select(r => r.ReviewDocument)
-                .ToList();
+            var submissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignmentId);
 
             ViewBag.AssignmentTitle = assignment.Title;
             ViewBag.DueDate = assignment.DueDate;
-            ViewBag.ClassId = classForCourse.ClassId;
-
+            
             return View(submissions);
         }
 

@@ -31,8 +31,8 @@
         <p>@Model.Assignment.TextInstructions</p>
     </div>
     <div class="row mb-5">
-        <p><a href="~/StaticFiles/AssignmentInstructions/SampleLabInstructions.pdf" download>Download Instructions</a></p>
-        <p><a href="~/StaticFiles/ReviewForms/SampleReviewForm.pdf" download>Download Review Form</a></p>
+        <p><a href="~/StaticFiles/ReviewForms/@Model.Assignment.Instructions.FilePath" download>Download Instructions</a></p>
+        <p><a href="~/StaticFiles/ReviewForms/@Model.Assignment.ReviewForm.FilePath" download>Download Review Form</a></p>
     </div>
     <div class="row align-content-end">
         @if (Model.HasSubmitted)

@@ -1,4 +1,4 @@
-﻿@model List<Document>
+﻿@model IList<AssignmentSubmission>
 @{
     ViewData["Title"] = "View Submissions";
 }
@@ -7,7 +7,7 @@
 <h4 class="text-center">@ViewBag.AssignmentTitle (Due: @ViewBag.DueDate.ToString("MM/dd/yyyy"))</h4>
 
 <div class="mb-4">
-    <a asp-action="ViewAssignments" asp-route-classId="@ViewBag.ClassId" class="btn btn-secondary">Back to Assignments</a>
+    @*<a asp-action="ViewAssignments" asp-route-classId="@ViewBag.ClassId" class="btn btn-secondary">Back to Assignments</a>*@
 </div>
 
 @if (Model.Any())
@@ -15,8 +15,9 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Student</th>
+                <th>Submitter</th>
                 <th>Submission Date</th>
+                <th>Reviewer</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -24,10 +25,27 @@
             @foreach (var submission in Model)
             {
                 <tr>
-                    <td>@submission.Uploader.UserName</td>
-                    <td>@submission.Uploader.AccountAge.ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@submission.Submitter.UserName</td>
+                    @if (submission.SubmissionDate < submission.AssignmentVersion.ParentAssignment.DueDate)
+                    {
+                        <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-success"> (On Time)</span></td>
+                    }
+                    else
+                    {
+                        <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-danger"> (Late)</span></td>
+                    }
+                    
+                    @if (submission.Review != null)
+                    {
+                        <td>@submission.Review.Reviewer.UserName)</td>
+                    }
+                    else
+                    {
+                        <td>Not Reviewed</td>
+                    }
                     <td>
-                        <a href="@submission.FilePath" target="_blank" class="btn btn-info btn-sm">View Submission</a>
+                        <a href="@submission.AssignmentLink" target="_blank" class="btn btn-info btn-sm">View Submission</a>
+                        <a href="@submission.AssignmentLink" target="_blank" class="btn btn-info btn-sm">View Review</a>
                     </td>
                 </tr>
             }

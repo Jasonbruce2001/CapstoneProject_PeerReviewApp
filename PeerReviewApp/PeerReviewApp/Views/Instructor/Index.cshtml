@@ -20,17 +20,27 @@
     </div>
     <!-- Dashboard buttons -->
     <div class="row mb-2">
-        <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Active Reviews 0</div></a>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ViewSubmissions">
+                <div class="sizeWrapper">View Submissions</div>
+            </a>
         </div>
-        <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Total Students @students.Count()</div></a>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ViewGroups">
+                <div class="sizeWrapper">Manage Groups</div>
+            </a>
         </div>
-        <div class="col dashboardWidget spacingRight">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Ready for Grading 0</div></a>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ViewStudents">
+                <div class="sizeWrapper">Total Students @students.Count()</div></a>
         </div>
-        <div class="col dashboardWidget">
-            <a asp-action="ViewStudents"><div class="sizeWrapper">Upcoming Deadlines 0</div></a>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ViewStudents">
+                <div class="sizeWrapper">Ready for Grading 0</div></a>
+        </div>
+        <div class="col dashboardWidget btn btn-outline-primary">
+            <a asp-action="ViewStudents">
+                <div class="sizeWrapper">Upcoming Deadlines 0</div></a>
         </div>
     </div>
     <div class="row courseList">
@@ -52,18 +62,13 @@
                     <p>Active Reviews 0</p>
                 </div>
                 <div class="col text-end">
-                    <p><a asp-action="ViewCourses" class="courseButton">Assignments</a>|<a asp-action="" class="courseButton">Reviews</a></p>
+                    <p>
+                        <a asp-action="ViewAssignments" asp-route-classId="@c.ClassId" class="courseButton">Assignments</a>|
+                        <a asp-action="" class="courseButton">Reviews</a>
+                    </p>
                 </div>
             </div>
         }
-    </div>
-    <div class="row mt-2 mb-5">
-        <div class="col dashboardWidget limit-height me-2">
-            <h3>View All Submissions</h3>
-        </div>
-        <div class="col dashboardWidget limit-height">
-            <h3>Manage Groups</h3>
-        </div>
     </div>
     <div class="spacer"></div>
 </div>

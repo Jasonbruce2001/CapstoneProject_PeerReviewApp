@@ -22,8 +22,23 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
         return await _context.AssignmentSubmissions.Where(s => s.Submitter == user).ToListAsync();
     }
 
+    public async Task<IList<AssignmentSubmission>> GetSubmissionsByAssignmentAsync(int assignmentId)
+    {
+        //returns all submissions for every assignment version of a parent assignment
+        return await _context.AssignmentSubmissions.Where(s => s.AssignmentVersion.ParentAssignment.Id == assignmentId)
+            .Include(s => s.Submitter)
+            .Include(s => s.AssignmentVersion)
+            .ThenInclude(av => av.ParentAssignment)
+            .Include(s => s.Review)
+            .ThenInclude(r => r.Reviewer)
+            .ToListAsync();
+    }
+
     public async Task<int> AddAssignmentSubmissionAsync(AssignmentSubmission model)
     {
+        //normalize link to assignment for easy href url
+        model.AssignmentLink = NormalizeUrl(model.AssignmentLink);
+        
         _context.AssignmentSubmissions.Add(model);
         
         //track reference of parent assignment version
@@ -61,5 +76,27 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
     public Task<int> DeleteAssignmentSubmissionAsync(AssignmentSubmission model)
     {
         throw new NotImplementedException();
+    }
+    
+    //helper methods
+    
+    //method to ensure https:// prefixes every assignment submission
+    private string NormalizeUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return url;
+
+        // Add https:// if missing
+        if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+            !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://" + url;
+        }
+
+        // Optional: remove duplicate "www." if already covered
+        url = url.Replace("http://www.", "https://")
+            .Replace("https://www.", "https://");
+
+        return url;
     }
 }
