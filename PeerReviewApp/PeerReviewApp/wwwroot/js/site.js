@@ -57,3 +57,59 @@ function hideElementById(rowId, buttonId)
         $("rowId").slideUp("slow");
     }
 }
+
+function showTooltip(targetElement, message) {
+    // Create tooltip container
+    const tooltip = document.createElement('div');
+    tooltip.style.position = 'absolute';
+    tooltip.style.background = '#333';
+    tooltip.style.color = '#fff';
+    tooltip.style.padding = '6px 10px';
+    tooltip.style.borderRadius = '4px';
+    tooltip.style.fontSize = '14px';
+    tooltip.style.zIndex = 1000;
+    tooltip.style.transition = 'opacity 1s ease';
+    tooltip.style.opacity = '1';
+    tooltip.style.pointerEvents = 'none';
+
+    // Set initial position temporarily (will adjust after DOM insert)
+    tooltip.style.top = '0';
+    tooltip.style.left = '0';
+
+    // Add tooltip message
+    tooltip.innerText = message;
+
+    // Create arrow
+    const arrow = document.createElement('div');
+    arrow.style.position = 'absolute';
+    arrow.style.top = '100%';
+    arrow.style.left = '50%';
+    arrow.style.transform = 'translateX(-50%)';
+    arrow.style.width = '0';
+    arrow.style.height = '0';
+    arrow.style.borderLeft = '6px solid transparent';
+    arrow.style.borderRight = '6px solid transparent';
+    arrow.style.borderTop = '6px solid #333';
+
+    // Append arrow to tooltip
+    tooltip.appendChild(arrow);
+    document.body.appendChild(tooltip);
+
+    // Position tooltip relative to the target element
+    const rect = targetElement.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    tooltip.style.top = `${window.scrollY + rect.top - tooltipRect.height - 10}px`;
+    tooltip.style.left = `${window.scrollX + rect.left + rect.width / 2}px`;
+    tooltip.style.transform = 'translateX(-50%)';
+
+    // Start fade out after 4 seconds
+    setTimeout(() => {
+        tooltip.style.opacity = '0';
+    }, 4000);
+
+    // Remove from DOM after 5 seconds
+    setTimeout(() => {
+        tooltip.remove();
+    }, 5000);
+}
+
