@@ -45,6 +45,8 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
             .Include(s => s.AssignmentVersion)
             .ThenInclude(av => av.ParentAssignment)
             .Include(s => s.Review)
+            .ThenInclude(r => r.ReviewGrade)
+            .Include(s => s.AssignmentGrade)
             .ToListAsync();
     }
     public async Task<IList<AssignmentSubmission>> GetSubmissionsByReviewerAsync(AppUser user)

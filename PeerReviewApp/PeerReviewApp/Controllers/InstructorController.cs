@@ -394,7 +394,42 @@ namespace PeerReviewApp.Controllers
             
             return View(vm);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignmentGrade(int submissionId, int assignmentId)
+        {
+            //get submission that is being graded
+            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
 
+             var gradeStr = Request.Form[$"submissionGrade_{submissionId}"];
+
+             if (int.TryParse(gradeStr, out int gradeValue))
+             {
+                 // Save the grade
+                 var model = new Grade
+                 {
+                     Value = gradeValue,
+                     Student = updatedSubmission.Submitter
+                 };
+                 
+                 //add grade reference
+                 await _gradeRepo.AddGradeAsync(model);
+            
+                 //update model
+                 updatedSubmission.AssignmentGrade = model;
+             }
+             
+            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
+            
+            //redirect back to submission page
+            return RedirectToAction("ViewSubmissions", new { assignmentId });
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
+        {
+            return View();
+        }
 
         public async Task<IActionResult> AddStudents(int classId)
         {
@@ -551,30 +586,7 @@ namespace PeerReviewApp.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitAssignmentGrade(Grade model, int submissionId, int assignmentId)
-        {
-            //get submission that is being graded
-            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
-
-            model.Student = updatedSubmission.Submitter;
-            
-            //add grade reference
-            await _gradeRepo.AddGradeAsync(model);
-            
-            //update model
-            updatedSubmission.AssignmentGrade = model;
-            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
-            
-            //redirect back to submission page
-            return RedirectToAction("ViewSubmissions", new { assignmentId });
-        }
         
-        [HttpPost]
-        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
-        {
-            return View();
-        }
         
     }
 }

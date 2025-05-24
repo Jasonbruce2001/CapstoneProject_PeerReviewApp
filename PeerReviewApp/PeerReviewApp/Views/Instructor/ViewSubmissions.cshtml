@@ -85,7 +85,7 @@
                                             <div class="row">
                                                 <div class="col text-end">
                                                     <label for="submission">Submission Score</label>
-                                                    <input asp-for="Grade.Value" class="submissionInput" type="number" min="0" max="100" id="submission"/>
+                                                    <input name="submissionGrade_@submission.Id" class="submissionInput" type="number" min="0" max="100" id="submission"/>
                                                 </div>
                                                 <div class="col align-content-center">
                                                     <button type="submit" class="btn btn-sm btn-success">Grade</button>
@@ -138,9 +138,6 @@
                 }
                 </tbody>
             </table>
-        </div>
-        <div class="" id="submissionHighlightArea">
-            
         </div>
     </div>
 }
