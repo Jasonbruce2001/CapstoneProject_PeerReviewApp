@@ -22,6 +22,19 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
         return await _context.AssignmentSubmissions.Where(s => s.Submitter == user).ToListAsync();
     }
 
+    public async Task<AssignmentSubmission> GetSubmissionByIdAsync(int id)
+    {
+        return await _context.AssignmentSubmissions
+            .Where(s => s.Id == id)
+            .Include(s => s.Submitter)
+            .Include(s => s.AssignmentGrade)
+            .Include(s => s.AssignmentVersion)
+            .ThenInclude(av => av.ParentAssignment)
+            .Include(s => s.Review)
+            .ThenInclude(r => r.ReviewGrade)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<IList<AssignmentSubmission>> GetSubmissionsByAssignmentAsync(int assignmentId)
     {
         //returns all submissions for every assignment version of a parent assignment
@@ -30,7 +43,6 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
             .Include(s => s.AssignmentVersion)
             .ThenInclude(av => av.ParentAssignment)
             .Include(s => s.Review)
-            .ThenInclude(r => r.Reviewer)
             .ToListAsync();
     }
 

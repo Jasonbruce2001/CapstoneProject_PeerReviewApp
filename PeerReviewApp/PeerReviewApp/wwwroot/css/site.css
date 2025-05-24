@@ -185,6 +185,10 @@ footer {
   overflow: hidden;
 }
 
+.hidden {
+  display: none;
+}
+
 .form-container {
   padding-inline: 10vw;
   margin-top: 5vh;
@@ -213,4 +217,16 @@ footer {
 
 .groupContainer {
   margin-bottom: 10vh;
+}
+
+.submission-actions {
+  width: 10%;
+}
+
+.table-striped-skip tr:nth-child(4n+1) td, .table-striped-skip tr:nth-child(4n+2) td {
+  background: lightgray;
+}
+
+.submissionInput {
+  width: 7vw;
 }

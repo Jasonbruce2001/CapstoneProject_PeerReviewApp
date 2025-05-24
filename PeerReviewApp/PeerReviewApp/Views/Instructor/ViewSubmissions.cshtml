@@ -1,4 +1,5 @@
-﻿@model IList<AssignmentSubmission>
+﻿@model PeerReviewApp.Models.ViewModels.ViewSubmissionsVM
+
 @{
     ViewData["Title"] = "View Submissions";
 }
@@ -7,50 +8,141 @@
 <h4 class="text-center">@ViewBag.AssignmentTitle (Due: @ViewBag.DueDate.ToString("MM/dd/yyyy"))</h4>
 
 <div class="mb-4">
-    @*<a asp-action="ViewAssignments" asp-route-classId="@ViewBag.ClassId" class="btn btn-secondary">Back to Assignments</a>*@
+    <a asp-action="ViewAssignments" asp-route-classId="@ViewBag.ClassId" class="btn btn-secondary">Back to Assignments</a>
 </div>
 
-@if (Model.Any())
+@if (Model.Submissions.Any())
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Submitter</th>
-                <th>Submission Date</th>
-                <th>Reviewer</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var submission in Model)
-            {
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped-skip">
+                <thead>
                 <tr>
-                    <td>@submission.Submitter.UserName</td>
-                    @if (submission.SubmissionDate < submission.AssignmentVersion.ParentAssignment.DueDate)
-                    {
-                        <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-success"> (On Time)</span></td>
-                    }
-                    else
-                    {
-                        <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-danger"> (Late)</span></td>
-                    }
-                    
-                    @if (submission.Review != null)
-                    {
-                        <td>@submission.Review.Reviewer.UserName)</td>
-                    }
-                    else
-                    {
-                        <td>Not Reviewed</td>
-                    }
-                    <td>
-                        <a href="@submission.AssignmentLink" target="_blank" class="btn btn-info btn-sm">View Submission</a>
-                        <a href="@submission.AssignmentLink" target="_blank" class="btn btn-info btn-sm">View Review</a>
-                    </td>
+                    <th>Submitter</th>
+                    <th>Submission Date</th>
+                    <th>Submission Grade</th>
+                    <th>Reviewer</th>
+                    <th>Review Grade</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                @foreach (var submission in Model.Submissions)
+                {
+                    var rowId = $"detailsRow_{submission.Id}";
+                    var viewMore = $"viewMore_{submission.Id}";
+                    
+                    <tr>
+                        <td>@submission.Submitter.UserName</td>
+                        @if (submission.SubmissionDate < submission.AssignmentVersion.ParentAssignment.DueDate)
+                        {
+                            <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-success"> (On Time)</span></td>
+                        }
+                        else
+                        {
+                            <td>@submission.SubmissionDate.ToString("MM/dd/yyyy hh:mm tt")<span class="text-danger"> (Late)</span></td>
+                        }
+                        
+                        @if (submission.AssignmentGrade != null)
+                        {
+                            <td>@submission.AssignmentGrade.Value</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+
+                        @if (submission.Review != null)
+                        {
+                            <td>@submission.Review.Reviewer.UserName)</td>
+                        }
+                        else
+                        {
+                            <td>Not Reviewed</td>
+                            <td>N/A</td> 
+                        }
+                        
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="hideElementById('@rowId', '@viewMore')">
+                                <i class="fa-solid fa-chevron-down" id="@viewMore"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr id="@rowId" class="submission-details-row hidden">
+                        <td colspan="6">
+                            <div class="row">
+                                <div class="col-3">
+                                    <a href="@submission.AssignmentLink" target="_blank" class="btn btn-info btn-sm">View Code Submission</a>
+                                    @if (submission.Review != null)
+                                    {
+                                        <a href="@submission.Review.ReviewDocument.FilePath" target="_blank" class="btn btn-info btn-sm">View Review</a>
+                                    }
+                                </div>
+                                @if (submission.Review == null)
+                                {
+                                    <div class="col">
+                                        <form class="pb-3" method="post" asp-action="SubmitAssignmentGrade" asp-route-submissionId="@submission.Id" asp-route-assignmentId="@ViewBag.AssignmentId">
+                                            <div class="row">
+                                                <div class="col text-end">
+                                                    <label for="submission">Submission Score</label>
+                                                    <input asp-for="Grade.Value" class="submissionInput" type="number" min="0" max="100" id="submission"/>
+                                                </div>
+                                                <div class="col align-content-center">
+                                                    <button type="submit" class="btn btn-sm btn-success">Grade</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form method="post" asp-action="SubmitReviewGrade">
+                                            <div class="row">
+                                                <div class="col text-end">
+                                                    <label for="review">Review Score</label>
+                                                    <input asp-for="Grade.Value" class="submissionInput" id="review" min="0" max="0" aria-disabled="True" disabled/>
+                                                </div>
+                                                <div class="col align-content-center">
+                                                    <button type="submit" class="btn btn-sm btn-success" aria-disabled="True" disabled>Grade</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col">
+                                        <form class="pb-3" method="post" asp-action="SubmitAssignmentGrade">
+                                            <div class="row">
+                                                <div class="col text-end">
+                                                    <label for="submission">Submission Score</label>
+                                                    <input id="submission"/>
+                                                </div>
+                                                <div class="col align-content-center">
+                                                    <button type="submit" class="btn btn-sm btn-success">Grade</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form method="post" asp-action="SubmitReviewGrade" asp-route-id="@submission.Review.Id">
+                                            <div class="row">
+                                                <div class="col text-end">
+                                                    <label for="review">Review Score</label>
+                                                    <input id="review"/>
+                                                </div>
+                                                <div class="col align-content-center">
+                                                    <button type="submit" class="btn btn-sm btn-success">Grade</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="" id="submissionHighlightArea">
+            
+        </div>
+    </div>
 }
 else
 {
@@ -58,3 +150,4 @@ else
         No submissions found for this assignment yet.
     </div>
 }
+

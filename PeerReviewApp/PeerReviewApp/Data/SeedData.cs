@@ -203,6 +203,16 @@ public class SeedData
             Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
+            
+            Grade grade1 = new Grade() { Value = 94, Student = student1 };
+            Grade grade2 = new Grade() { Value = 84, Student = student1 };
+            Grade grade3 = new Grade() { Value = 79, Student = student1 };
+            Grade grade4 = new Grade() { Value = 100, Student = student1 };
+
+            context.Grades.Add(grade1);
+            context.Grades.Add(grade2);
+            context.Grades.Add(grade3);
+            context.Grades.Add(grade4);
 
             AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5 } };
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
@@ -220,12 +230,12 @@ public class SeedData
             context.AssignmentVersions.Add(assignment3Version1);
             context.AssignmentVersions.Add(assignment4Version1);
 
-            Review review1 = new Review() { Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
-            Review review2 = new Review() { Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
-            Review review3 = new Review() { Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
-            Review review4 = new Review() { Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
-            Review review5 = new Review() { Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
-            Review review6 = new Review() { Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
+            Review review1 = new Review() { Reviewee = student1, Reviewer = student2, ReviewDocument = doc2, ReviewGrade = grade1};
+            Review review2 = new Review() { Reviewee = student1, Reviewer = student3, ReviewDocument = doc2, ReviewGrade = grade2};
+            Review review3 = new Review() { Reviewee = student2, Reviewer = student1, ReviewDocument = doc2, ReviewGrade = grade3};
+            Review review4 = new Review() { Reviewee = student2, Reviewer = student3, ReviewDocument = doc2, ReviewGrade = grade4};
+            Review review5 = new Review() { Reviewee = student3, Reviewer = student1, ReviewDocument = doc2, ReviewGrade = grade2};
+            Review review6 = new Review() { Reviewee = student3, Reviewer = student2, ReviewDocument = doc2, ReviewGrade = grade4};
 
             context.Reviews.Add(review1);
             context.Reviews.Add(review2);
@@ -233,16 +243,6 @@ public class SeedData
             context.Reviews.Add(review4);
             context.Reviews.Add(review5);
             context.Reviews.Add(review6);
-
-            Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
-            Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
-            Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
-            Grade grade4 = new Grade() { Value = 100, Assignment = assignment4, Student = student1 };
-
-            context.Grades.Add(grade1);
-            context.Grades.Add(grade2);
-            context.Grades.Add(grade3);
-            context.Grades.Add(grade4);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             

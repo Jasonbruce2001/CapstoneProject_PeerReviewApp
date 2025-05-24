@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
 using Microsoft.EntityFrameworkCore;
+using PeerReviewApp.Models.ViewModels;
 
 namespace PeerReviewApp.Controllers
 {
@@ -21,6 +22,7 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
         private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepo;
+        private readonly IGradeRepository _gradeRepo;
         private readonly IDocumentRepository _documentRepo;
         private readonly ApplicationDbContext _context;
 
@@ -28,7 +30,7 @@ namespace PeerReviewApp.Controllers
             ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, 
             SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, 
             IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context,
-            IAssignmentSubmissionRepository assignmentSubmissionRepository)
+            IAssignmentSubmissionRepository assignmentSubmissionRepository, IGradeRepository gradeRepository)
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -39,6 +41,7 @@ namespace PeerReviewApp.Controllers
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
             _assignmentSubmissionRepo = assignmentSubmissionRepository;
+            _gradeRepo = gradeRepository;
             _documentRepo = documentRepository;
             _context = context;
         }
@@ -387,9 +390,13 @@ namespace PeerReviewApp.Controllers
             var submissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignmentId);
 
             ViewBag.AssignmentTitle = assignment.Title;
+            ViewBag.AssignmentId = assignment.Id;
             ViewBag.DueDate = assignment.DueDate;
+            ViewBag.ClassId = assignment.Course.Id;
+
+            var vm = new ViewSubmissionsVM() { Submissions = submissions };
             
-            return View(submissions);
+            return View(vm);
         }
 
 
@@ -550,6 +557,32 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignmentGrade(Grade model, int submissionId, int assignmentId)
+        {
+            //get submission that is being graded
+            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
+
+            model.Student = updatedSubmission.Submitter;
+            
+            //add grade reference
+            await _gradeRepo.AddGradeAsync(model);
+            
+            //update model
+            updatedSubmission.AssignmentGrade = model;
+            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
+            
+            //redirect back to submission page
+            return RedirectToAction("ViewSubmissions", new { assignmentId });
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
+        {
+            return View();
+        }
+        
     }
 }
 

@@ -15,7 +15,6 @@ namespace PeerReviewApp.Data
         public async Task<IList<Grade>> GetGradesAsync()
         {
             var grades = await _context.Grades
-            .Include(r => r.Assignment)
             .ToListAsync();
 
             return grades;
@@ -23,10 +22,7 @@ namespace PeerReviewApp.Data
         public async Task<IList<Grade>> GetGradesByStudentAsync(AppUser user)
         {
             var grades = await _context.Grades
-            .Include(r => r.Assignment)
-            .ThenInclude(r => r.Course)
             .Where(r => r.Student == user)
-            .OrderBy(r => r.Assignment.Course)
             .ToListAsync();
 
             return grades;
@@ -35,9 +31,11 @@ namespace PeerReviewApp.Data
         {
             throw new NotImplementedException();
         }
-        public Task<int> AddGradeAsync(Grade model)
+        public async Task<int> AddGradeAsync(Grade model)
         {
-            throw new NotImplementedException();
+            _context.Grades.Add(model);
+            
+            return await _context.SaveChangesAsync();
         }
         public Task<int> UpdateGradeAsync(Grade model)
         {

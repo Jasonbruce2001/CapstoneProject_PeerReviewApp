@@ -8,4 +8,5 @@ public class AssignmentSubmission
     public DateTime SubmissionDate { get; set; }
     public Review? Review { get; set; }
     public AppUser Submitter { get; set; }
+    public Grade? AssignmentGrade { get; set; }
 }

@@ -31,3 +31,29 @@ function toggleElementById(id)
         element.classList.add("formHidden");
     }
 }
+
+/*
+    For use in View Submissions page for instructors for expanding the row options.
+    Inputs table rowId and buttonId
+    Toggles visibility of row and changes button icon to reflect direction
+*/
+function hideElementById(rowId, buttonId)
+{
+    //get reference to div containing extra options
+    let element = document.getElementById(rowId);
+    let button = document.getElementById(buttonId);
+
+    if(element.classList.contains("hidden"))
+    {
+        //if elements class list already contains hidden, remove it so it is visible
+        button.classList.remove("fa-chevron-down");
+        button.classList.add("fa-chevron-up");
+        element.classList.remove("hidden");
+    } else {
+        //otherwise hide form
+        button.classList.remove("fa-chevron-up");
+        button.classList.add("fa-chevron-down");
+        element.classList.add("hidden");
+        $("rowId").slideUp("slow");
+    }
+}
