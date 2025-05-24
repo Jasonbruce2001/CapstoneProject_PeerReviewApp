@@ -1,4 +1,4 @@
-﻿@model IList<Review>
+﻿@model IList<AssignmentSubmission>
 @{
     ViewData["Title"] = "My Reviews";
 }
@@ -11,18 +11,18 @@
     
     <h1 class="text-center fw-bolder">Reviews</h1>
 
-    @if (Model.Any())
-    {
-        <ul class="list-group">
-        @foreach (var r in Model)
-            {
-            <li class="list-group-item">
-                @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
-                <h5>Reviewee: @r.Reviewee</h5>
-                <a href="~/StaticFiles/UserUploads/@r.ReviewDocument.FilePath" download>Download Assignment</a>
-            </li>
-        }
-        </ul>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+    @foreach (var submission in Model)
+        {
+        <li class="list-group-item">
+            <h3>@submission.AssignmentVersion.ParentAssignment.Course.Name - @submission.AssignmentVersion.ParentAssignment.Title</h3>
+            <h5>Reviewee: @submission.Review.Reviewee</h5>
+                Link To project: @submission.AssignmentLink <a class="float-end btn btn-primary" asp-action="SubmitReview" asp-route-reviewId="@submission.Review.Id">Submit Review</a>
+            <br />
+        </li>
     }
     else
     {

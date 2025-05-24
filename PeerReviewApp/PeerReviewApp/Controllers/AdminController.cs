@@ -12,30 +12,30 @@ namespace PeerReviewApp.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationDbContext _context;
+
         private readonly IInstitutionRepository _institutionRepository;
         private readonly ICourseRepository _courseRepository;
 
-        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, 
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context,
                                 IInstitutionRepository institutionRepository, ICourseRepository courseRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _institutionRepository = institutionRepository;
-            _context = context;
+
             _courseRepository = courseRepository;
         }
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var dashboard = new AdminDashboardVM
             {
-                TotalInstitutions = _context.Institutions.Count(),
-                ActiveInstructors = _roleManager.Roles.Where(r => r.Name != "Instructor").Count(),
-                ActiveCourses = _context.Courses.Count(),
-                TotalStudents = _context.Users.Count(),
-                Institutions = _context.Institutions.ToList(),
+                TotalInstitutions = (await _institutionRepository.GetInstitutionsAsync()).Count(),
+                ActiveInstructors = (await _userManager.GetUsersInRoleAsync("Instructor")).Count(),
+                ActiveCourses = (await _courseRepository.GetCoursesAsync()).Count(),
+                TotalStudents = _userManager.Users.Count(),
+                Institutions = await _institutionRepository.GetInstitutionsAsync(),
                 RecentActions = new List<string>()
             };
 
@@ -54,7 +54,7 @@ namespace PeerReviewApp.Controllers
             }
 
             return View(instructors);
-            
+
         }
 
         public IActionResult CreateInstructor()
@@ -68,8 +68,8 @@ namespace PeerReviewApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var institution = await _context.Institutions
-                    .FirstOrDefaultAsync(i => i.Code == model.InstitutionCode);
+                var institutions = await _institutionRepository.GetInstitutionsAsync();
+                var institution = institutions.FirstOrDefault(i => i.Code == model.InstitutionCode);
 
                 if (institution == null)
                 {
@@ -89,13 +89,9 @@ namespace PeerReviewApp.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Instructor");
-
-                    institution.Instructors.Add(user);
-                    await _context.SaveChangesAsync();
-
-
-
+                    await _institutionRepository.AddInstructorToInstitutionAsync(model.InstitutionCode, user.Id);
                     return RedirectToAction("ManageInstructors");
+
                 }
                 foreach (var error in result.Errors)
                 {
@@ -105,7 +101,7 @@ namespace PeerReviewApp.Controllers
 
             return View(model);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> DeactivateInstructor(string id)
         {
@@ -129,7 +125,7 @@ namespace PeerReviewApp.Controllers
             }
             return RedirectToAction("ManageInstructors");
         }
-        
+
         public async Task<IActionResult> ResetInstructorPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -183,23 +179,23 @@ namespace PeerReviewApp.Controllers
             var institutions = _institutionRepository.GetInstitutionsAsync().Result.ToList();
             return View(institutions);
         }
-        
+
         public IActionResult CreateInstitution()
         {
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> CreateInstitution(Institution institution)
         {
             institution.Code = GenerateRandomCode(6);
-            
+
             await _institutionRepository.AddInstitutionAsync(institution);
-            
+
             return RedirectToAction("ManageInstitutions");
         }
-        
-        
+
+
         public IActionResult ViewInstructors(int institutionId)
         {
             var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
@@ -214,16 +210,16 @@ namespace PeerReviewApp.Controllers
                     notActive.Add(u);
                 }
             }
-            
-            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
-            
+
+            var vm = new ViewInstructorsVM { institution = institution, allInstructors = notActive };
+
             return View(vm);
         }
 
         public async Task<IActionResult> AssignInstructor(int institutionId, string instructorId)
         {
             await _institutionRepository.AddInstructorToInstitutionByIdAsync(institutionId, instructorId);
-            
+
             var institution = _institutionRepository.GetInstitutionByIdAsync(institutionId).Result;
             var users = _userManager.GetUsersInRoleAsync("Instructor").Result.ToList();
 
@@ -236,12 +232,12 @@ namespace PeerReviewApp.Controllers
                     notActive.Add(u);
                 }
             }
-            
-            var vm = new ViewInstructorsVM { institution = institution,  allInstructors = notActive };
-            
+
+            var vm = new ViewInstructorsVM { institution = institution, allInstructors = notActive };
+
             return View("ViewInstructors", vm);
         }
-        
+
         public async Task<IActionResult> ViewCourses()
         {
             var courses = await _courseRepository.GetCoursesAsync();
@@ -253,7 +249,7 @@ namespace PeerReviewApp.Controllers
             var result = new List<Course>();
             int parsedId = 0;
 
-            
+
             if (institutionId == "All")
             {   //no institution selected
                 if (string.IsNullOrEmpty(search))
@@ -261,25 +257,25 @@ namespace PeerReviewApp.Controllers
 
                 }
                 //only search term is entered
-                
+
             }
             else
             {   //if an institution is selected
                 parsedId = int.Parse(institutionId);
-                
-                
+
+
                 if (search != "")
                 {
                     //institution is selected, but no search term entered
-                    
-                } 
+
+                }
                 //both institution selected and search term are entered
-                
+
             }
-            
+
             return View("ViewCourses", result);
         }
-        
+
         private string GenerateRandomCode(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -287,5 +283,79 @@ namespace PeerReviewApp.Controllers
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+    
+
+    public async Task<IActionResult> ManageStudents(string searchTerm = null)
+    {
+        var studentRole = await _roleManager.FindByNameAsync("Student");
+        var students = new List<AppUser>();
+
+        if (studentRole != null)
+        {
+            students = (await _userManager.GetUsersInRoleAsync(studentRole.Name)).ToList();
+
+            // Apply search filter if provided
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                students = students.Where(s =>
+                    s.UserName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    s.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+        }
+
+        ViewBag.SearchTerm = searchTerm;
+        return View(students);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteStudent(string id)
+    {
+        var student = await _userManager.FindByIdAsync(id);
+        if (student != null)
+        {
+            var result = await _userManager.DeleteAsync(student);
+
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Student deleted successfully.";
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+        }
+        return RedirectToAction("ManageStudents");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteSelectedStudents(List<string> selectedIds)
+    {
+        if (selectedIds != null && selectedIds.Any())
+        {
+            int successCount = 0;
+
+            foreach (var id in selectedIds)
+            {
+                var student = await _userManager.FindByIdAsync(id);
+                if (student != null)
+                {
+                    var result = await _userManager.DeleteAsync(student);
+                    if (result.Succeeded)
+                    {
+                        successCount++;
+                    }
+                }
+            }
+
+            TempData["Message"] = $"{successCount} student(s) deleted successfully.";
+        }
+
+        return RedirectToAction("ManageStudents");
+    }
+
+}
 }

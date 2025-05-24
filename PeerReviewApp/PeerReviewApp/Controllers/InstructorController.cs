@@ -24,6 +24,8 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepo;
         private readonly IGradeRepository _gradeRepo;
         private readonly IDocumentRepository _documentRepo;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
 
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, 
@@ -31,6 +33,11 @@ namespace PeerReviewApp.Controllers
             SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, 
             IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context,
             IAssignmentSubmissionRepository assignmentSubmissionRepository, IGradeRepository gradeRepository)
+
+
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
+
+
         {
             _userManager = userManager;
             _signInManager = signInMngr;
@@ -43,7 +50,8 @@ namespace PeerReviewApp.Controllers
             _assignmentSubmissionRepo = assignmentSubmissionRepository;
             _gradeRepo = gradeRepository;
             _documentRepo = documentRepository;
-            _context = context;
+            _reviewRepository = reviewRepository;
+            _submissionRepository = submissionRepository;
         }
         public async Task<IActionResult> Index()
         {
@@ -231,11 +239,8 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> AddAssignment(int classId)
         {
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
-
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
+               
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
                 return NotFound();
@@ -261,10 +266,7 @@ namespace PeerReviewApp.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
+            var class_ = await _classRepo.GetClassByIdAsync(model.ClassId);
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -290,10 +292,8 @@ namespace PeerReviewApp.Controllers
         {
 
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _context.Classes 
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
+              
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -403,13 +403,7 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> AddStudents(int classId)
         {
             var user = await _userManager.GetUserAsync(User);
-
-            // Get the class with its related entities
-            var class_ = await _context.Classes
-                .Include(c => c.ParentCourse)
-                .Include(c => c.Instructor)
-                .Include(c => c.Students)
-                .FirstOrDefaultAsync(c => c.ClassId == classId);
+            var class_ = await _classRepo.GetClassByIdAsync(classId);
 
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
@@ -418,6 +412,7 @@ namespace PeerReviewApp.Controllers
 
             // Get IDs of students already in the class
             var existingStudentIds = class_.Students.Select(s => s.Id).ToList();
+
 
             // Get all users who aren't already in the class
             var availableStudents = await _userManager.GetUsersInRoleAsync("Student");
@@ -444,30 +439,10 @@ namespace PeerReviewApp.Controllers
                 return RedirectToAction(nameof(AddStudents), new { classId = model.ClassId });
             }
 
-            // Get the class with its students
-            var class_ = await _context.Classes
-                .Include(c => c.Students)
-                .FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
 
-            if (class_ == null)
-            {
-                return NotFound();
-            }
+            await _classRepo.AddStudentsToClassAsync(model.ClassId, model.SelectedStudentIds);
 
-            // Add selected students to class
-            foreach (var studentId in model.SelectedStudentIds)
-            {
-                var student = await _userManager.FindByIdAsync(studentId);
-                if (student != null && !class_.Students.Any(s => s.Id == studentId))
-                {
-                    class_.Students.Add(student);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            
-            return RedirectToAction("ViewStudents", new { instructor = await _userManager.GetUserAsync(User) });
+            return RedirectToAction("ViewStudents");
         }
 
 
@@ -547,6 +522,28 @@ namespace PeerReviewApp.Controllers
 
         }
 
+        public async Task<IActionResult> ViewAllGroups()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            if (!classes.Any())
+            {
+                TempData["Message"] = "You don't have any classes yet. Create a class first.";
+                return RedirectToAction("AddClass");
+            }
+
+            return View(classes);
+        }
+
+        public async Task<IActionResult> RemoveStudentFromGroup(string studentId, int assignmentId)
+        {
+            
+            await _assignmentVersionRepo.DeleteStudentFromAssignmentVersionAsync(studentId, assignmentId);
+
+            return RedirectToAction("ViewAllGroups");
+        }
+
         public async Task<IActionResult> SortGroup(int classId, int assignmentId)
         {
             Class cls = await _classRepo.GetClassByIdAsync(classId);
@@ -554,7 +551,7 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.DeleteStudentsFromAssignmentVersionAsync(students, assignmentId);
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
-            return RedirectToAction("ViewClasses");
+            return RedirectToAction("ViewAllGroups");
 
         }
 

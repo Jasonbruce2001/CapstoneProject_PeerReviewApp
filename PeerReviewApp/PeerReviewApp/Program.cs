@@ -22,7 +22,8 @@ builder.Services.AddTransient<IInstitutionRepository, InstitutionRepository>()
     .AddTransient<IAssignmentSubmissionRepository, AssignmentSubmissionRepository>()
     .AddTransient<IDocumentRepository, DocumentRepository>()
     .AddTransient<IReviewRepository, ReviewRepository>()
-    .AddTransient<IGradeRepository, GradeRepository>();
+    .AddTransient<IGradeRepository, GradeRepository>()
+    .AddTransient<IAssignmentSubmissionRepository, AssignmentSubmissionRepository>();
 
 
 //add Identity

@@ -81,7 +81,7 @@ public class HomeController : Controller
         var fileName = $"{Guid.NewGuid()}{extension}";
         // c:// res/all/filename
         var fullPath = Path.Combine(pathToSave, fileName);
-        var dbPath = Path.Combine(folderName, fileName); //for use in database
+        var dbPath = Path.Combine(folderName, fileName).Substring(8); //for use in database
 
         if (System.IO.File.Exists(fullPath))
         {

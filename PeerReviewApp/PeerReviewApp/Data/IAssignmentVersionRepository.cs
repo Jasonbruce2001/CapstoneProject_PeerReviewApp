@@ -10,6 +10,7 @@ namespace PeerReviewApp.Data
         public Task<int> UpdateAssignmentVersionAsync(AssignmentVersion model);
         public Task<int> DeleteAssignmentVersionAsync(int id);
         public Task<int> DeleteStudentsFromAssignmentVersionAsync(IList<AppUser> students, int assignmentId);
+        public Task<int> DeleteStudentFromAssignmentVersionAsync(string studentId, int assignmentId);
         public Task<int> AddStudentsToAssignmentVersionsAsync(IList<AppUser> students, int assignmentId);
     }
 }

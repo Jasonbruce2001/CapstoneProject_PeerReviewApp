@@ -1,8 +1,7 @@
-﻿@model IList<AssignmentVersion>
+@model IList<AssignmentVersion>
 @{
     ViewData["Title"] = "Due Soon";
 }
-
 
 <div class="container-fluid">
     <div class="row mb-2">
@@ -15,23 +14,24 @@
     </div>
     
     <div class="row">
-        @if (Model.Any())
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var version in Model)
         {
-            <ul class="list-group">
-                @foreach (var version in Model)
-                {
-                    <li class="list-group-item">
-                        <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
-                        <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
-                    </li>
-                }
-            </ul>
+            <li class="list-group-item">
+                <h3 class="d-inline">@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                <a class="d-inline float-end p-2" asp-action="DetailedAssignment" asp-route-assignmentId="@version.Id">Details</a>
+                <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
+            </li>
         }
-        else
-        {
-            <div class="alert alert-info">
-                You do not currently have any graded assignments.
-            </div>
-        }
+    </ul>
+}
+else
+{
+    <div class="alert alert-info">
+        You do not currently have any graded assignments.
+    </div>
+}
     </div>
 </div>

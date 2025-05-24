@@ -3,14 +3,17 @@
 }
 
 <h1 class="text-center fw-bolder">@Model.Class.ParentCourse.Name : @Model.Class.Term</h1>
-<div class="container-fluid">
-    @foreach (Assignment asn in Model.Assignments)
-    {
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a asp-action="SortGroup" asp-route-classId="@Model.Class.ClassId" asp-route-assignmentId="@asn.Id" class="btn btn-primary">
-                Auto Select Groups
-            </a>
-        </div>
+
+
+@foreach (Assignment asn in Model.Assignments)
+{
+    <div class="d-inline">
+        <h3 class="d-inline">@asn.Title</h3>
+        <a class="d-inline gap-2 d-md-flex float-end btn btn-primary" asp-action="SortGroup" asp-route-classId="@Model.Class.ClassId" asp-route-assignmentId="@asn.Id">
+            Auto Select Groups
+        </a>
+    </div>
+
 
 
 
@@ -35,8 +38,8 @@
                                 @if (asnv.Students.Contains(std))
                                 {
                                     <li>
-                                        @std.UserName <!---->
-                                        <!-- !Not Created yet! <a asp-action="RemoveStudentFromGroup" asp-route-studentId="@std.Id" class="btn btn-danger btn-sm">Remove</a>-->
+                                        @std.UserName
+                                        <a asp-action="RemoveStudentFromGroup" asp-route-studentId="@std.Id" asp-route-assignmentId="@asn.Id" class="btn btn-danger btn-sm">Remove</a>
                                     </li>
                                 }
                             }
@@ -47,9 +50,12 @@
             </tbody>
         </table>
 
-        var list = Model.Students;
 
-        @foreach (AppUser std in Model.Students.ToList())
+    var list = Model.Students.ToList();
+
+    @foreach (AppUser std in list.ToList())
+    {
+        @foreach(var asnv in asn.Versions)
         {
             @foreach(var asnv in asn.Versions)
             {
@@ -73,6 +79,29 @@
                 *@
             </li>
         }
+
+    }
+    if(list.Count() > 0)
+    {
+        <h2>Unassigned Students</h2>
+        @foreach (var student in list)
+        {
+            <li>
+                @student.UserName
+                @*
+                <label asp-for="">Assign to:</label>
+                <span asp-validation-for=""></span>
+                <select class="form-control"
+                        asp-items="@(new SelectList(asn.Versions, nameof(AssignmentVersion.Id), nameof(AssignmentVersion.Name)))">
+                </select>
+                *@
+            </li>
+        }
+    }
+    
+
+    <hr />
+}
 
         <hr />
     }

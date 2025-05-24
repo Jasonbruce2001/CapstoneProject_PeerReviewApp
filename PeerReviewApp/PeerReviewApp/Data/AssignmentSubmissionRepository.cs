@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
@@ -6,17 +7,18 @@ namespace PeerReviewApp.Data;
 
 public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
 {
-    private readonly ApplicationDbContext _context; 
+
+    private readonly ApplicationDbContext _context;
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
-    
+
     public AssignmentSubmissionRepository(ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository)
     {
         _context = context;
         _assignmentVersionRepository = assignmentVersionRepository;
     }
-    
+
     public async Task<IList<AssignmentSubmission>> GetAllSubmissionsByStudentAsync(AppUser user)
     {
         return await _context.AssignmentSubmissions.Where(s => s.Submitter == user).ToListAsync();
@@ -45,21 +47,35 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
             .Include(s => s.Review)
             .ToListAsync();
     }
+    public async Task<IList<AssignmentSubmission>> GetSubmissionsByReviewerAsync(AppUser user)
+    {
+        return await _context.AssignmentSubmissions
+            .Include(s => s.Review)
+            .ThenInclude(r => r.Reviewee)
+            .Include(s => s.AssignmentVersion)
+            .ThenInclude(av => av.ParentAssignment)
+            .ThenInclude(a => a.Course)
+            .Where(s => s.Review.Reviewer.Id == user.Id)
+
+            .ToListAsync();
+    }
 
     public async Task<int> AddAssignmentSubmissionAsync(AssignmentSubmission model)
     {
+
         //normalize link to assignment for easy href url
         model.AssignmentLink = NormalizeUrl(model.AssignmentLink);
         
         _context.AssignmentSubmissions.Add(model);
         
+
         //track reference of parent assignment version
         var assignment = await _assignmentVersionRepository.GetAssignmentVersionByIdAsync(model.AssignmentVersion.Id);
         //add submission to list
         assignment.Submissions.Add(model);
         //update assignment version
         await _assignmentVersionRepository.UpdateAssignmentVersionAsync(assignment);
-        
+
         return await _context.SaveChangesAsync();
     }
 
@@ -77,11 +93,12 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
             assignment.Submissions.Add(model);
             //update assignment version
             await _assignmentVersionRepository.UpdateAssignmentVersionAsync(assignment);
-            
+
+
             //update submission
             _context.AssignmentSubmissions.Update(model);
         }
-        
+
         return await _context.SaveChangesAsync();
     }
 
@@ -89,6 +106,7 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
     {
         throw new NotImplementedException();
     }
+
     
     //helper methods
     
@@ -111,4 +129,5 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
 
         return url;
     }
+
 }

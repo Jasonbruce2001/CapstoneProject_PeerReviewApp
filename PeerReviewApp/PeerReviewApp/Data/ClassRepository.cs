@@ -130,6 +130,9 @@ public class ClassRepository : IClassRepository
         var classes = await _context.Classes
             .Include(c => c.Students)
             .Include(c => c.ParentCourse)
+            .ThenInclude(c => c.Assignments)
+            .ThenInclude(a => a.Versions)
+            .ThenInclude(v => v.Students)
             .ToListAsync();
 
         foreach (var c in classes)
@@ -212,6 +215,28 @@ public class ClassRepository : IClassRepository
 
         return result;
     }
-    
-    
+
+
+    public async Task<int> AddStudentsToClassAsync(int classId, List<string> studentIds)
+    {
+        var class_ = await _context.Classes
+            .Include(c => c.Students)
+            .FirstOrDefaultAsync(c => c.ClassId == classId);
+
+        if (class_ == null)
+            return 0;
+
+        foreach (var studentId in studentIds)
+        {
+            var student = await _context.Users.FindAsync(studentId);
+            if (student != null && !class_.Students.Any(s => s.Id == studentId))
+            {
+                class_.Students.Add(student);
+            }
+        }
+
+        return await _context.SaveChangesAsync();
+    }
+
+
 }

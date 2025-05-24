@@ -217,10 +217,10 @@ public class SeedData
             AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5 } };
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
             AssignmentVersion assignmentVersion3 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 3", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student11, student12, student13, student14, student15, } };
-            AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student10, } };
-            AssignmentVersion assignment2Version1 = new AssignmentVersion() { ParentAssignment = assignment2, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
-            AssignmentVersion assignment3Version1 = new AssignmentVersion() { ParentAssignment = assignment3, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
-            AssignmentVersion assignment4Version1 = new AssignmentVersion() { ParentAssignment = assignment4, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1 } };
+            AssignmentVersion assignmentVersion4 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 4", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student16, student17, student18, student19, student20, } };
+            AssignmentVersion assignment2Version1 = new AssignmentVersion() { ParentAssignment = assignment2, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20 } };
+            AssignmentVersion assignment3Version1 = new AssignmentVersion() { ParentAssignment = assignment3, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20 } };
+            AssignmentVersion assignment4Version1 = new AssignmentVersion() { ParentAssignment = assignment4, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5, student6, student7, student8, student9, student10, student11, student12, student13, student14, student15, student16, student17, student18, student19, student20 } };
 
             context.AssignmentVersions.Add(assignmentVersion1);
             context.AssignmentVersions.Add(assignmentVersion2);
@@ -243,6 +243,30 @@ public class SeedData
             context.Reviews.Add(review4);
             context.Reviews.Add(review5);
             context.Reviews.Add(review6);
+
+            AssignmentSubmission submission1 = new AssignmentSubmission() {AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review1, SubmissionDate = DateTime.Now, Submitter = student1 };
+            AssignmentSubmission submission2 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review2, SubmissionDate = DateTime.Now, Submitter = student1 };
+            AssignmentSubmission submission3 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review3, SubmissionDate = DateTime.Now, Submitter = student2 };
+            AssignmentSubmission submission4 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review4, SubmissionDate = DateTime.Now, Submitter = student2 };
+            AssignmentSubmission submission5 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review5, SubmissionDate = DateTime.Now, Submitter = student3 };
+            AssignmentSubmission submission6 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review6, SubmissionDate = DateTime.Now, Submitter = student3 };
+
+            context.AssignmentSubmissions.Add(submission1);
+            context.AssignmentSubmissions.Add(submission2);
+            context.AssignmentSubmissions.Add(submission3);
+            context.AssignmentSubmissions.Add(submission4);
+            context.AssignmentSubmissions.Add(submission5);
+            context.AssignmentSubmissions.Add(submission6);
+
+            Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
+            Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
+            Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
+            Grade grade4 = new Grade() { Value = 100, Assignment = assignment4, Student = student1 };
+
+            context.Grades.Add(grade1);
+            context.Grades.Add(grade2);
+            context.Grades.Add(grade3);
+            context.Grades.Add(grade4);
 
             IList<Class> classes = new List<Class> { class1, class2, class3 };
             

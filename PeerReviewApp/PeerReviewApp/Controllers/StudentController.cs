@@ -15,14 +15,17 @@ public class StudentController : Controller
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
+    private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepository;
     private readonly IDocumentRepository _documentRepository;
     private readonly IReviewRepository _reviewRepository;
     private readonly IGradeRepository _gradeRepository;
-    private readonly ApplicationDbContext _context;
-    private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepository;
+
+
+  
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
-        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, 
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository,
+
         IDocumentRepository documentRepository, IAssignmentSubmissionRepository assignmentSubmissionRepository)
     {
         _classRepository = classRepository;
@@ -31,7 +34,7 @@ public class StudentController : Controller
         _assignmentSubmissionRepository = assignmentSubmissionRepository;
         _userManager = userManager;
         _documentRepository = documentRepository;
-        _context = context;
+        _assignmentSubmissionRepository = assignmentSubmissionRepository;
         _reviewRepository = reviewRepository;
         _gradeRepository = gradeRepository;
     }
@@ -150,13 +153,7 @@ public class StudentController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var studentAssignmentVersions = await _context.AssignmentVersions
-            .Include(av => av.ParentAssignment)
-            .ThenInclude(a => a.Course)
-            .Include(av => av.Students)
-            .Where(av => av.Students.Any(s => s.Id == currentUser.Id))
-            .ToListAsync();
-
+        var studentAssignmentVersions = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(currentUser);
         return View(studentAssignmentVersions);
     }
 
@@ -165,7 +162,7 @@ public class StudentController : Controller
 
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var model = await _reviewRepository.GetReviewsByReviewerAsync(currentUser);
+        var model = await _assignmentSubmissionRepository.GetSubmissionsByReviewerAsync(currentUser);
 
         return View(model);
     }
@@ -191,21 +188,35 @@ public class StudentController : Controller
     public async Task<IActionResult> DueSoon()
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        var temp = await _userManager.Users
-            .Include(r => r.Versions)
-            .ThenInclude(r => r.ParentAssignment)
-            .ThenInclude(r => r.Course)
-            .FirstOrDefaultAsync(r => r.Id == currentUser.Id);
+        var versions = await _assignmentVersionRepository.GetAssignmentVersionsForStudentAsync(currentUser);
 
-        IList<AssignmentVersion> model = temp.Versions;
-        foreach (AssignmentVersion version in model.ToList())
-        {
-            if(!(version.ParentAssignment.DueDate > DateTime.Now && version.ParentAssignment.DueDate < DateTime.Now.AddDays(7)))
-            {
-                model.Remove(version);
-            }
-        }
+        var dueVersions = versions
+            .Where(v => v.ParentAssignment.DueDate > DateTime.Now
+                     && v.ParentAssignment.DueDate < DateTime.Now.AddDays(7))
+            .ToList();
+
+        return View(dueVersions);
+    }
+
+    public async Task<IActionResult> SubmitReview(int reviewId)
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var documents = await _documentRepository.GetDocumentsByUserAsync(user);
+
+        SubmitReviewVM model = new SubmitReviewVM() { Documents = documents, ReviewId = reviewId };
 
         return View(model);
+    }
+    [HttpPost]
+    public async Task<IActionResult> SubmitReview(SubmitReviewVM model)
+    {
+        Document doc = await _documentRepository.GetDocumentByIdAsync(model.DocumentId);
+        Review review = await _reviewRepository.GetReviewByIdAsync(model.ReviewId);
+        review.ReviewDocument = doc;
+
+        await _reviewRepository.UpdateReviewAsync(review);
+
+        return RedirectToAction("ViewReviews");
+
     }
 }
