@@ -90,6 +90,30 @@ namespace PeerReviewApp.Data
 
             return result;
         }
+        public async Task<int> DeleteStudentFromAssignmentVersionAsync(string studentId, int assignmentId)
+        {
+            var asnVersions = await _context.AssignmentVersions
+                .Include(r => r.Students)
+                .Where(r => r.ParentAssignment.Id == assignmentId)
+                .ToListAsync();
+
+
+            foreach (var asnVersion in asnVersions)
+            {
+                foreach (var student in asnVersion.Students.ToList())
+                {
+                    if (student.Id == studentId)
+                    {
+                        asnVersion.Students.Remove(student);
+                    }
+                }
+            }
+
+            Task<int> task = _context.SaveChangesAsync();
+            int result = await task;
+
+            return result;
+        }
         public async Task<int> AddStudentsToAssignmentVersionsAsync(IList<AppUser> students, int assignmentId)
         {
             var asnVersions = await _context.AssignmentVersions
