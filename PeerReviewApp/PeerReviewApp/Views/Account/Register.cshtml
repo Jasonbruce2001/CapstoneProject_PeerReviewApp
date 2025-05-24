@@ -4,7 +4,7 @@
     ViewData["Title"] = "Register";
 }
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 <div class="container d-flex justify-content-center registerForm">
     <form method="post" asp-action="Register" style="width: 100%">
         <div class="form-group row registerInput">
@@ -62,6 +62,7 @@
         </div>
         
         <div class="row pt-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <span asp-validation-for="Username" class="text-danger"></span>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>

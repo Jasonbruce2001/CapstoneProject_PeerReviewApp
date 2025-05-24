@@ -3,34 +3,39 @@
     ViewData["Title"] = "My Groups";
 }
 
-<h1 class="text-center fw-bolder">My Groups</h1>
+<div class="container-fluid groupContainer">
+    <h1 class="text-center fw-bolder">My Groups</h1>
 
-@if (Model.Any())
-{
-    foreach (var version in Model)
+    @if (Model.Any())
     {
-        <div class="card mb-3">
-            <div class="card-header">
-                <h3>@version.Name</h3>
-                <h5>Assignment: @version.ParentAssignment.Title</h5>
+        foreach (var version in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3>@version.Name</h3>
+                    <h5>Assignment: @version.ParentAssignment.Title</h5>
+                </div>
+                <div class="card-body">
+                    <h5>Group Members:</h5>
+                    <ul class="list-group">
+                        @foreach (var member in version.Students)
+                        {
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col">@member.UserName</div>
+                                    <div class="col">@member.Email</div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-            <div class="card-body">
-                <h5>Group Members:</h5>
-                <ul class="list-group">
-                    @foreach (var member in version.Students)
-                    {
-                        <li class="list-group-item">
-                            @member.UserName
-                        </li>
-                    }
-                </ul>
-            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            You are not currently assigned to any groups.
         </div>
     }
-}
-else
-{
-    <div class="alert alert-info">
-        You are not currently assigned to any groups.
-    </div>
-}
+</div>

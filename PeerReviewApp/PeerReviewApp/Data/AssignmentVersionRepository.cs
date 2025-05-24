@@ -59,10 +59,11 @@ namespace PeerReviewApp.Data
 
             return await _context.SaveChangesAsync();
         }
-        public Task<int> UpdateAssignmentVersionAsync(AssignmentVersion model)
+        public async Task<int> UpdateAssignmentVersionAsync(AssignmentVersion model)
         {
-
-            throw new NotImplementedException();
+            _context.AssignmentVersions.Update(model);
+            
+            return await _context.SaveChangesAsync();
         }
         public Task<int> DeleteAssignmentVersionAsync(int id)
         {
@@ -82,6 +83,30 @@ namespace PeerReviewApp.Data
                 foreach (var student in students)
                 {
                     asnVersion.Students.Remove(student);
+                }
+            }
+
+            Task<int> task = _context.SaveChangesAsync();
+            int result = await task;
+
+            return result;
+        }
+        public async Task<int> DeleteStudentFromAssignmentVersionAsync(string studentId, int assignmentId)
+        {
+            var asnVersions = await _context.AssignmentVersions
+                .Include(r => r.Students)
+                .Where(r => r.ParentAssignment.Id == assignmentId)
+                .ToListAsync();
+
+
+            foreach (var asnVersion in asnVersions)
+            {
+                foreach (var student in asnVersion.Students.ToList())
+                {
+                    if (student.Id == studentId)
+                    {
+                        asnVersion.Students.Remove(student);
+                    }
                 }
             }
 

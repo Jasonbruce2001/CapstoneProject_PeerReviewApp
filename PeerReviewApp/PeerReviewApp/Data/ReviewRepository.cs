@@ -44,17 +44,27 @@ namespace PeerReviewApp.Data
 
             return review;
         }
-        public Task<Review> GetReviewByIdAsync(int id)
+        public async Task<Review> GetReviewByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var review = await _context.Reviews
+                .Include(r => r.Reviewee)
+                .Include(r => r.Reviewer)
+                .Include(r => r.ReviewDocument)
+                .Where(r => r.Id == id)
+                .SingleOrDefaultAsync();
+
+            return review;
         }
         public Task<int> AddReviewAsync(Review model)
         {
             throw new NotImplementedException();
         }
-        public Task<int> UpdateReviewAsync(Review model)
+        public async Task<int> UpdateReviewAsync(Review model)
         {
-            throw new NotImplementedException();
+
+            _context.Reviews.Update(model);
+
+            return await _context.SaveChangesAsync();
         }
         public Task<int> DeleteReviewAsync(int id)
         {

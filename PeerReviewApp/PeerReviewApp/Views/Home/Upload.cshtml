@@ -19,7 +19,7 @@
                 <input asp-for="Name" id="title" type="text"/>
             </div>
             <div class="row">
-                <label for="file">Maximum File Size 10 mb</label>
+                <label for="file">Maximum File Size 20 mb</label>
                 <input asp-for="File" id="file" type="file"/>
             </div>
             <div class="row text-end">
@@ -31,3 +31,9 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

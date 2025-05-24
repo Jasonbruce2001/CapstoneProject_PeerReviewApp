@@ -1,26 +1,35 @@
-﻿@model IList<Review>
+﻿@model IList<AssignmentSubmission>
 @{
     ViewData["Title"] = "My Reviews";
 }
 
-<h1 class="text-center fw-bolder">Reviews</h1>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col"><a class="btn btn-secondary" asp-action="Index">Back</a></div>
+        <div class="col-9"></div>
+    </div>
+    
+    <h1 class="text-center fw-bolder">Reviews</h1>
+
 
 @if (Model.Any())
 {
     <ul class="list-group">
-    @foreach (var version in Model)
+    @foreach (var submission in Model)
         {
         <li class="list-group-item">
-            @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
-            <h5>Reviewee: @version.Reviewee</h5>
-            <a asp-action="ViewReviews">Download Assignment</a>
+            <h3>@submission.AssignmentVersion.ParentAssignment.Course.Name - @submission.AssignmentVersion.ParentAssignment.Title</h3>
+            <h5>Reviewee: @submission.Review.Reviewee</h5>
+                Link To project: @submission.AssignmentLink <a class="float-end btn btn-primary" asp-action="SubmitReview" asp-route-reviewId="@submission.Review.Id">Submit Review</a>
+            <br />
         </li>
     }
     </ul>
 }
 else
-{
-    <div class="alert alert-info">
-        You are not currently assigned to any reviews.
-    </div>
-}
+    {
+        <div class="alert alert-info">
+            You are not currently assigned to any reviews.
+        </div>
+    }
+</div>

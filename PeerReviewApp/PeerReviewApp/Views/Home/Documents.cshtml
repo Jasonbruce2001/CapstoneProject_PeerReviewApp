@@ -34,7 +34,7 @@
                                 <td>@d.DateUploaded</td>
                                 <td>@d.FileSize</td>
                                 <td>
-                                    <a href="~/@d.FilePath" download class="btn btn-sm btn-secondary">Download</a>
+                                <a href="~/StaticFiles/UserUploads/@d.FilePath" download class="btn btn-sm btn-secondary">Download</a>
                                     <a asp-action="DeleteUpload" asp-route-id="@d.Id" class="btn btn-sm btn-danger">Delete</a>
                                 </td>
                             </tr>

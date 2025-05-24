@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using PeerReviewApp.Data;
 using PeerReviewApp.Models;
 using Microsoft.EntityFrameworkCore;
+using PeerReviewApp.Models.ViewModels;
 
 namespace PeerReviewApp.Controllers
 {
@@ -20,13 +21,17 @@ namespace PeerReviewApp.Controllers
         private readonly IClassRepository _classRepo;
         private readonly IAssignmentRepository _assignmentRepo;
         private readonly IAssignmentVersionRepository _assignmentVersionRepo;
+        private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepo;
+        private readonly IGradeRepository _gradeRepo;
         private readonly IDocumentRepository _documentRepo;
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
 
+       
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
+
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
         {
@@ -38,6 +43,8 @@ namespace PeerReviewApp.Controllers
             _classRepo = classRepo;
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
+            _assignmentSubmissionRepo = submissionRepository;
+            _gradeRepo = gradeRepository;
             _documentRepo = documentRepository;
             _reviewRepository = reviewRepository;
             _submissionRepository = submissionRepository;
@@ -375,32 +382,17 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewSubmissions(int assignmentId)
         {
-            var user = await _userManager.GetUserAsync(User);
             var assignment = await _assignmentRepo.GetAssignmentByIdAsync(assignmentId);
+            var submissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignmentId);
 
-            if (assignment == null)
-                return NotFound();
+            ViewBag.AssignmentTitle = assignment.Title;
+            ViewBag.AssignmentId = assignment.Id;
+            ViewBag.DueDate = assignment.DueDate;
+            ViewBag.ClassId = assignment.Course.Id;
 
-            // Find a class that this instructor teaches with this assignment's course
-            var classes = await _classRepo.GetClassesAsync(user.Id);
-            var classForCourse = classes.FirstOrDefault(c => c.ParentCourse.Id == assignment.Course.Id);
-
-            if (classForCourse == null)
-                return Forbid();
-
-            // Retrieve reviews that have this assignment
-            var reviews = await _context.Reviews
-                .Include(r => r.Reviewer)
-                .Include(r => r.ReviewDocument)
-                .ToListAsync();
-
-            // Extract documents from reviews
-            var submissions = reviews
-                .Where(r => r.ReviewDocument != null)
-                .Select(r => r.ReviewDocument)
-                .ToList();
-
-            return View(submissions);
+            var vm = new ViewSubmissionsVM() { Submissions = submissions };
+            
+            return View(vm);
         }
 
 
@@ -540,6 +532,14 @@ namespace PeerReviewApp.Controllers
             return View(classes);
         }
 
+        public async Task<IActionResult> RemoveStudentFromGroup(string studentId, int assignmentId)
+        {
+            
+            await _assignmentVersionRepo.DeleteStudentFromAssignmentVersionAsync(studentId, assignmentId);
+
+            return RedirectToAction("ViewAllGroups");
+        }
+
         public async Task<IActionResult> SortGroup(int classId, int assignmentId)
         {
             Class cls = await _classRepo.GetClassByIdAsync(classId);
@@ -547,9 +547,35 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.DeleteStudentsFromAssignmentVersionAsync(students, assignmentId);
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
-            return RedirectToAction("ViewClasses");
+            return RedirectToAction("ViewAllGroups");
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignmentGrade(Grade model, int submissionId, int assignmentId)
+        {
+            //get submission that is being graded
+            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
+
+            model.Student = updatedSubmission.Submitter;
+            
+            //add grade reference
+            await _gradeRepo.AddGradeAsync(model);
+            
+            //update model
+            updatedSubmission.AssignmentGrade = model;
+            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
+            
+            //redirect back to submission page
+            return RedirectToAction("ViewSubmissions", new { assignmentId });
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
+        {
+            return View();
+        }
+        
     }
 }
 
