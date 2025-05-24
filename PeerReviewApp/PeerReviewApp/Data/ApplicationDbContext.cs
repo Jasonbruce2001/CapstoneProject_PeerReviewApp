@@ -21,6 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Institution> Institutions { get; set; }
     public DbSet<Review> Reviews { get; set; } = default!;
     public DbSet<ReviewGroup> ReviewGroups { get; set; }
+    public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; } = default!;
 
     public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
 

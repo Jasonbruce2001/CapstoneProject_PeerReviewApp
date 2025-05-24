@@ -191,9 +191,8 @@ public class SeedData
             context.Classes.Add(class19);
             context.Classes.Add(class20);
 
-
-            Document doc1 = new Document() { Uploader = instructor, Name = "Instructions1", FilePath = "~/StaticFiles/AssignmentInstructions/", FileSize = "1kb", DateUploaded = DateTime.Now};
-            Document doc2 = new Document() { Uploader = instructor, Name = "ReviewForm1", FilePath = "~/StaticFiles/ReviewForms/", FileSize = "1kb", DateUploaded = DateTime.Now };
+            Document doc1 = new Document() { Uploader = instructor1, Name = "Instructions1", FilePath = "SampleLabInstructions.pdf", FileSize = "1kb", DateUploaded = DateTime.Now};
+            Document doc2 = new Document() { Uploader = instructor1, Name = "ReviewForm1", FilePath = "SampleReviewForm.pdf", FileSize = "1kb", DateUploaded = DateTime.Now };
 
             context.Documents.Add(doc1);
             context.Documents.Add(doc2);
@@ -204,6 +203,16 @@ public class SeedData
             Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
+            
+            Grade grade1 = new Grade() { Value = 94, Student = student1 };
+            Grade grade2 = new Grade() { Value = 84, Student = student1 };
+            Grade grade3 = new Grade() { Value = 79, Student = student1 };
+            Grade grade4 = new Grade() { Value = 100, Student = student1 };
+
+            context.Grades.Add(grade1);
+            context.Grades.Add(grade2);
+            context.Grades.Add(grade3);
+            context.Grades.Add(grade4);
 
             AssignmentVersion assignmentVersion1 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 1", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student1, student2, student3, student4, student5 } };
             AssignmentVersion assignmentVersion2 = new AssignmentVersion() { ParentAssignment = assignment1, Name = "Version 2", TextInstructions = "Instructions for things", Instructions = doc1, ReviewForm = doc2, Students = { student6, student7, student8, student9, student10 } };
@@ -221,12 +230,12 @@ public class SeedData
             context.AssignmentVersions.Add(assignment3Version1);
             context.AssignmentVersions.Add(assignment4Version1);
 
-            Review review1 = new Review() { Reviewee = student1, Reviewer = student2, ReviewDocument = doc2 };
-            Review review2 = new Review() { Reviewee = student1, Reviewer = student3, ReviewDocument = doc2 };
-            Review review3 = new Review() { Reviewee = student2, Reviewer = student1, ReviewDocument = doc2 };
-            Review review4 = new Review() { Reviewee = student2, Reviewer = student3, ReviewDocument = doc2 };
-            Review review5 = new Review() { Reviewee = student3, Reviewer = student1, ReviewDocument = doc2 };
-            Review review6 = new Review() { Reviewee = student3, Reviewer = student2, ReviewDocument = doc2 };
+            Review review1 = new Review() { Reviewee = student1, Reviewer = student2, ReviewDocument = doc2, ReviewGrade = grade1};
+            Review review2 = new Review() { Reviewee = student1, Reviewer = student3, ReviewDocument = doc2, ReviewGrade = grade2};
+            Review review3 = new Review() { Reviewee = student2, Reviewer = student1, ReviewDocument = doc2, ReviewGrade = grade3};
+            Review review4 = new Review() { Reviewee = student2, Reviewer = student3, ReviewDocument = doc2, ReviewGrade = grade4};
+            Review review5 = new Review() { Reviewee = student3, Reviewer = student1, ReviewDocument = doc2, ReviewGrade = grade2};
+            Review review6 = new Review() { Reviewee = student3, Reviewer = student2, ReviewDocument = doc2, ReviewGrade = grade4};
 
             context.Reviews.Add(review1);
             context.Reviews.Add(review2);

@@ -3,7 +3,14 @@
     ViewData["Title"] = "My Reviews";
 }
 
-<h1 class="text-center fw-bolder">Reviews</h1>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col"><a class="btn btn-secondary" asp-action="Index">Back</a></div>
+        <div class="col-9"></div>
+    </div>
+    
+    <h1 class="text-center fw-bolder">Reviews</h1>
+
 
 @if (Model.Any())
 {
@@ -17,11 +24,10 @@
             <br />
         </li>
     }
-    </ul>
-}
-else
-{
-    <div class="alert alert-info">
-        You are not currently assigned to any reviews.
-    </div>
-}
+    else
+    {
+        <div class="alert alert-info">
+            You are not currently assigned to any reviews.
+        </div>
+    }
+</div>

@@ -11,7 +11,8 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<AppUser> _userManager;
     private readonly IDocumentRepository _documentRepository;
-    private const int MAX_FILE_SIZE = 20971520; //20 mb in bytes
+    private readonly int MAX_FILE_SIZE = 20971520; //20 mb in bytes
+    private readonly IList<string> ALLOWED_EXTENSIONS = new List<string> {".txt", ".docx", ".odt", ".pdf", ".zip", ".md", ".html"};
 
     public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, IDocumentRepository documentRepository)
     {
@@ -70,6 +71,11 @@ public class HomeController : Controller
         
         //strip extension from name
         var extension = Path.GetExtension(model.File.FileName);
+
+        if (!ALLOWED_EXTENSIONS.Contains(extension))
+        {
+            return BadRequest("Invalid file extension");
+        }
         
         //generate unique GUID for filename 
         var fileName = $"{Guid.NewGuid()}{extension}";
@@ -82,7 +88,7 @@ public class HomeController : Controller
             return BadRequest("File already exists");
         }
 
-        model.FilePath = dbPath;
+        model.FilePath = fileName;
         model.FileSize = SizeSuffix(model.File.Length);
         
         await _documentRepository.AddDocumentAsync(model);

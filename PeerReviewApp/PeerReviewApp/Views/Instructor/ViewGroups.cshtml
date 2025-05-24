@@ -4,6 +4,7 @@
 
 <h1 class="text-center fw-bolder">@Model.Class.ParentCourse.Name : @Model.Class.Term</h1>
 
+
 @foreach (Assignment asn in Model.Assignments)
 {
     <div class="d-inline">
@@ -15,17 +16,18 @@
 
 
 
-    <table class="table">
-        <thead>
+
+        <table class="table">
+            <thead>
             <tr>
                 @foreach (var asnv in asn.Versions)
                 {
                     <th>@asnv.Name</th>
                 }
             </tr>
-        </thead>
+            </thead>
 
-        <tbody>
+            <tbody>
             <tr>
                 @foreach (AssignmentVersion asnv in asn.Versions)
                 {
@@ -45,8 +47,9 @@
                     </td>
                 }
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
 
     var list = Model.Students.ToList();
 
@@ -54,11 +57,29 @@
     {
         @foreach(var asnv in asn.Versions)
         {
-            @if (asnv.Students.Contains(std))
+            @foreach(var asnv in asn.Versions)
             {
-                list.Remove(std);
-            } 
+                @if (asnv.Students.Contains(std))
+                {
+                    list.Remove(std);
+                } 
+            }
         }
+        <h2>Unassigned Students</h2>
+        @foreach (var student in list)
+        {
+            <li>
+                @student.UserName
+                @*
+                <label asp-for="">Assign to:</label>
+                <span asp-validation-for=""></span>
+                <select asp-for="" class="form-control"
+                        asp-items="@(new SelectList(asn.Versions, nameof(AssignmentVersion.Id), nameof(AssignmentVersion.Name)))">
+                </select>
+                *@
+            </li>
+        }
+
     }
     if(list.Count() > 0)
     {
@@ -82,3 +103,7 @@
     <hr />
 }
 
+        <hr />
+    }
+</div>
+<div class="spacer"></div>

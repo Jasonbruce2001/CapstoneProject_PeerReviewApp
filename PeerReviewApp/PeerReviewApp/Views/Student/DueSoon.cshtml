@@ -1,10 +1,19 @@
-﻿@model IList<AssignmentVersion>
+@model IList<AssignmentVersion>
 @{
     ViewData["Title"] = "Due Soon";
 }
 
-<h1 class="text-center fw-bolder">Assignments Due</h1>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col"><a class="btn btn-secondary" asp-action="Index">Back</a></div>
+        <div class="col-9"></div>
+    </div>
 
+    <div class="row">
+        <h1 class="text-center fw-bolder">Assignments Due</h1>
+    </div>
+    
+    <div class="row">
 @if (Model.Any())
 {
     <ul class="list-group">
@@ -24,3 +33,5 @@ else
         You do not currently have any graded assignments.
     </div>
 }
+    </div>
+</div>
