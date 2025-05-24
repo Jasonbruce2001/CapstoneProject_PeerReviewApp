@@ -235,6 +235,20 @@ public class SeedData
             context.Reviews.Add(review5);
             context.Reviews.Add(review6);
 
+            AssignmentSubmission submission1 = new AssignmentSubmission() {AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review1, SubmissionDate = DateTime.Now, Submitter = student1 };
+            AssignmentSubmission submission2 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review2, SubmissionDate = DateTime.Now, Submitter = student1 };
+            AssignmentSubmission submission3 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review3, SubmissionDate = DateTime.Now, Submitter = student2 };
+            AssignmentSubmission submission4 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review4, SubmissionDate = DateTime.Now, Submitter = student2 };
+            AssignmentSubmission submission5 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review5, SubmissionDate = DateTime.Now, Submitter = student3 };
+            AssignmentSubmission submission6 = new AssignmentSubmission() { AssignmentLink = "github.com", AssignmentVersion = assignmentVersion1, Review = review6, SubmissionDate = DateTime.Now, Submitter = student3 };
+
+            context.AssignmentSubmissions.Add(submission1);
+            context.AssignmentSubmissions.Add(submission2);
+            context.AssignmentSubmissions.Add(submission3);
+            context.AssignmentSubmissions.Add(submission4);
+            context.AssignmentSubmissions.Add(submission5);
+            context.AssignmentSubmissions.Add(submission6);
+
             Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
             Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
             Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
