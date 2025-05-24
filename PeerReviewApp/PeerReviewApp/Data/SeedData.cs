@@ -258,11 +258,6 @@ public class SeedData
             context.AssignmentSubmissions.Add(submission5);
             context.AssignmentSubmissions.Add(submission6);
 
-            Grade grade1 = new Grade() { Value = 94, Assignment = assignment1, Student = student1 };
-            Grade grade2 = new Grade() { Value = 84, Assignment = assignment2, Student = student1 };
-            Grade grade3 = new Grade() { Value = 79, Assignment = assignment3, Student = student1 };
-            Grade grade4 = new Grade() { Value = 100, Assignment = assignment4, Student = student1 };
-
             context.Grades.Add(grade1);
             context.Grades.Add(grade2);
             context.Grades.Add(grade3);

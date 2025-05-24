@@ -4,7 +4,7 @@
 
 <h1 class="text-center fw-bolder">@Model.Class.ParentCourse.Name : @Model.Class.Term</h1>
 
-
+<div class="container-fluid">
 @foreach (Assignment asn in Model.Assignments)
 {
     <div class="d-inline">
@@ -55,8 +55,6 @@
 
     @foreach (AppUser std in list.ToList())
     {
-        @foreach(var asnv in asn.Versions)
-        {
             @foreach(var asnv in asn.Versions)
             {
                 @if (asnv.Students.Contains(std))
@@ -64,21 +62,6 @@
                     list.Remove(std);
                 } 
             }
-        }
-        <h2>Unassigned Students</h2>
-        @foreach (var student in list)
-        {
-            <li>
-                @student.UserName
-                @*
-                <label asp-for="">Assign to:</label>
-                <span asp-validation-for=""></span>
-                <select asp-for="" class="form-control"
-                        asp-items="@(new SelectList(asn.Versions, nameof(AssignmentVersion.Id), nameof(AssignmentVersion.Name)))">
-                </select>
-                *@
-            </li>
-        }
 
     }
     if(list.Count() > 0)
@@ -103,7 +86,5 @@
     <hr />
 }
 
-        <hr />
-    }
 </div>
 <div class="spacer"></div>

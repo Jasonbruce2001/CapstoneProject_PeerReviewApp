@@ -28,14 +28,10 @@ namespace PeerReviewApp.Controllers
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, 
-            ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, 
-            SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, 
-            IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, ApplicationDbContext context,
-            IAssignmentSubmissionRepository assignmentSubmissionRepository, IGradeRepository gradeRepository)
+       
 
 
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository)
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
         {
@@ -47,7 +43,7 @@ namespace PeerReviewApp.Controllers
             _classRepo = classRepo;
             _assignmentVersionRepo = assignmentVersionRepo;
             _assignmentRepo = assignmentRepository;
-            _assignmentSubmissionRepo = assignmentSubmissionRepository;
+            _assignmentSubmissionRepo = submissionRepository;
             _gradeRepo = gradeRepository;
             _documentRepo = documentRepository;
             _reviewRepository = reviewRepository;
