@@ -1,0 +1,25 @@
+﻿@model SubmitReviewVM
+
+@{
+    ViewData["Title"] = "Submit Review";
+}
+<a href="@Url.Action("Upload", "Instructor")" class="btn btn-primary mr-2 float-end">Add More Documents</a>
+<br />
+
+<form method="post" asp-controller="Student" asp-action="SubmitReview">
+    <div asp-validation-summary="All"></div>
+    <div class="form-group">
+        <label asp-for="DocumentId">Choose document to upload:</label>
+        <span asp-validation-for="DocumentId"></span>
+        <select required asp-for="DocumentId" class="form-control"
+                asp-items="@(new SelectList(Model.Documents, nameof(Document.Id), nameof(Document.Name)))">
+        </select>
+
+        <input type="hidden" asp-for="ReviewId" value="@Model.ReviewId"/>
+    </div>
+    <div class="row text-end">
+        <div class="col py-3">
+            <button class="btn btn-primary" type="submit">Upload</button>
+        </div>
+    </div>
+</form>

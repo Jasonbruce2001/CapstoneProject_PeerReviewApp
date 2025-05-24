@@ -14,20 +14,22 @@ public class StudentController : Controller
     private readonly IClassRepository _classRepository;
     private readonly IReviewGroupRepository _reviewGroupRepository;
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
+    private readonly IAssignmentSubmissionRepository _assignmentSubmissionRepository;
     private readonly IDocumentRepository _documentRepository;
     private readonly IReviewRepository _reviewRepository;
     private readonly IGradeRepository _gradeRepository;
   
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
-        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IDocumentRepository documentRepository)
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository,
+        IDocumentRepository documentRepository, IAssignmentSubmissionRepository assignmentSubmissionRepository)
     {
         _classRepository = classRepository;
         _reviewGroupRepository = reviewGroupRepository;
         _assignmentVersionRepository = assignmentVersionRepository;
         _userManager = userManager;
         _documentRepository = documentRepository;
-       
+        _assignmentSubmissionRepository = assignmentSubmissionRepository;
         _reviewRepository = reviewRepository;
         _gradeRepository = gradeRepository;
     }
@@ -116,7 +118,7 @@ public class StudentController : Controller
 
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var model = await _reviewRepository.GetReviewsByReviewerAsync(currentUser);
+        var model = await _assignmentSubmissionRepository.GetSubmissionsByReviewerAsync(currentUser);
 
         return View(model);
     }
@@ -150,5 +152,27 @@ public class StudentController : Controller
             .ToList();
 
         return View(dueVersions);
+    }
+
+    public async Task<IActionResult> SubmitReview(int reviewId)
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var documents = await _documentRepository.GetDocumentsByUserAsync(user);
+
+        SubmitReviewVM model = new SubmitReviewVM() { Documents = documents, ReviewId = reviewId };
+
+        return View(model);
+    }
+    [HttpPost]
+    public async Task<IActionResult> SubmitReview(SubmitReviewVM model)
+    {
+        Document doc = await _documentRepository.GetDocumentByIdAsync(model.DocumentId);
+        Review review = await _reviewRepository.GetReviewByIdAsync(model.ReviewId);
+        review.ReviewDocument = doc;
+
+        await _reviewRepository.UpdateReviewAsync(review);
+
+        return RedirectToAction("ViewReviews");
+
     }
 }

@@ -540,6 +540,14 @@ namespace PeerReviewApp.Controllers
             return View(classes);
         }
 
+        public async Task<IActionResult> RemoveStudentFromGroup(string studentId, int assignmentId)
+        {
+            
+            await _assignmentVersionRepo.DeleteStudentFromAssignmentVersionAsync(studentId, assignmentId);
+
+            return RedirectToAction("ViewAllGroups");
+        }
+
         public async Task<IActionResult> SortGroup(int classId, int assignmentId)
         {
             Class cls = await _classRepo.GetClassByIdAsync(classId);
@@ -547,7 +555,7 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.DeleteStudentsFromAssignmentVersionAsync(students, assignmentId);
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
-            return RedirectToAction("ViewClasses");
+            return RedirectToAction("ViewAllGroups");
 
         }
     }

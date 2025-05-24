@@ -11,7 +11,8 @@
         @foreach (var version in Model)
         {
             <li class="list-group-item">
-                <h3>@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                <h3 class="d-inline">@version.ParentAssignment.Course.Name - @version.ParentAssignment.Title</h3>
+                <a class="d-inline float-end p-2" asp-action="DetailedAssignment" asp-route-assignmentId="@version.Id">Details</a>
                 <h5>Due on: @(version.ParentAssignment.DueDate)</h5>
             </li>
         }
