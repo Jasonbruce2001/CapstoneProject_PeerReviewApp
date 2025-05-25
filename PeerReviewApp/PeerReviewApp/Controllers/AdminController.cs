@@ -357,5 +357,58 @@ namespace PeerReviewApp.Controllers
         return RedirectToAction("ManageStudents");
     }
 
-}
+        public async Task<IActionResult> ResetStudentPassword(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ResetStudentPasswordVM
+            {
+                StudentId = id,
+                StudentName = user.UserName,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetStudentPassword(ResetStudentPasswordVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.StudentId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Student password has been reset successfully.";
+                return RedirectToAction("ManageStudents");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
+    }
+
+
 }

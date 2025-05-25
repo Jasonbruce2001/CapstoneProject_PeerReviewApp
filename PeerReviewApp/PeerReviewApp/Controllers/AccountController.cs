@@ -149,30 +149,19 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return RedirectToAction("ForgotPasswordConfirmation");
-            }
-
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            var callbackUrl = Url.Action(
-                "ResetPassword",
-                "Account",
-                new { email = model.Email, token = token },
-                protocol: HttpContext.Request.Scheme);
-
-            TempData["ResetLink"] = callbackUrl;
-
-            return RedirectToAction("ForgotPasswordConfirmation");
+            return View(model);
         }
-        return View(model);
+
+        var logger = HttpContext.RequestServices.GetService<ILogger<AccountController>>();
+        logger?.LogInformation($"Password reset requested for {model.Email}");
+
+       
+        return RedirectToAction("ForgotPasswordConfirmation");
     }
 
-    [HttpGet]
+        [HttpGet]
     public IActionResult ResetPassword(string email, string token)
     {
         if (email == null || token == null)

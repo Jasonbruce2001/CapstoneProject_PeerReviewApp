@@ -71,6 +71,7 @@
                                                     <input type="hidden" name="id" value="@student.Id">
                                                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                                 </form>
+                                                <a asp-action="ResetStudentPassword" asp-route-id="@student.Id" class="btn btn-sm btn-warning">Reset Password</a>
                                                 <a asp-action="StudentDetails" asp-route-id="@student.Id" class="btn btn-sm btn-info">Details</a>
                                             </div>
                                         </td>
