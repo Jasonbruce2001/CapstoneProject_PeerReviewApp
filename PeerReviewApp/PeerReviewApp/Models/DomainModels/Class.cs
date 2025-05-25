@@ -3,6 +3,7 @@ namespace PeerReviewApp.Models;
 public class Class
 {
     public int ClassId { get; set; }
+    public string Crn { get; set; }
     public string Term { get; set; }
     public bool IsArchived { get; set; } = false;
     

@@ -78,21 +78,17 @@ footer {
   padding: 1vw;
   display: inline-block;
   position: relative;
+  background-color: #0f1b40;
   width: 25%;
   border-radius: 4px;
-  background-color: white;
   text-decoration: none;
 }
 
-.dashboardWidget > a > div {
-  color: black;
-}
-
 .dashboardWidget:hover {
-  background-color: #0d6efd;
+  background-color: #0d6efd !important;
 }
 
-.dashboardWidget:hover > a > div{
+.dashboardWidget > a > div{
   color: white;
 }
 
@@ -112,7 +108,7 @@ footer {
     bottom: 0;
     left: 0;
     right: 0;
-    margin-top: 10%;
+    margin-top: 12%;
     padding-top: 10px;
     font-size: 2vh;
     font-weight: bold;

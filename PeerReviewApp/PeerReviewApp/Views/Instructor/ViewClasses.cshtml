@@ -9,8 +9,9 @@
             <h1>Welcome, Instructor</h1>
         </div>
         <div class="col-md-6 text-end">
-            <a asp-action="Index" class="btn btn-primary me-2">Back</a>
-            <a asp-action="AddClass" class="btn btn-primary">Create New Course</a>
+            <a asp-action="Index" class="btn btn-secondary me-2">Back</a>
+            <a asp-action="AddCourse" class="btn btn-primary">Create New Course</a>
+            <a asp-action="AddClass" class="btn btn-primary">Create New Class</a>
         </div>
     </div>
 
@@ -25,7 +26,7 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <h5 class="card-title mb-1">@cls.ParentCourse.Name</h5>
+                                <h5 class="card-title mb-1">@cls.ParentCourse.Name - @cls.Crn</h5>
                                 <p class="card-text text-muted">@cls.Students.Count() Students enrolled</p>
                             </div>
                             <div class="col-md-6 text-end">
@@ -42,7 +43,7 @@
                                     <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
                                         View Groups
                                     </a>
-                                    <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
+                                    <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ClassId" class="d-inline me-1">
                                         <button type="submit" class="btn btn-primary btn-sm">
                                             Add Assignment Version
                                         </button>
