@@ -157,7 +157,8 @@ public class AccountController : Controller
         var logger = HttpContext.RequestServices.GetService<ILogger<AccountController>>();
         logger?.LogInformation($"Password reset requested for {model.Email}");
 
-       
+        AdminController.AddPasswordResetRequest($"{model.Email} requested password reset at {DateTime.Now:MM/dd/yyyy HH:mm}");
+
         return RedirectToAction("ForgotPasswordConfirmation");
     }
 
@@ -176,6 +177,12 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> ResetPassword(ResetStudentPasswordVM model)
     {
+        // For user self-service resets, Token is required
+        if (string.IsNullOrEmpty(model.Token))
+        {
+            ModelState.AddModelError(nameof(model.Token), "The Token field is required.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
