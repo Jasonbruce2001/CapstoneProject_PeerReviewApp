@@ -27,10 +27,7 @@ namespace PeerReviewApp.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
-
-       
-
-
+        
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
@@ -85,7 +82,7 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesAsync(user.Id);
-
+            
             return View(classes);
         }
 

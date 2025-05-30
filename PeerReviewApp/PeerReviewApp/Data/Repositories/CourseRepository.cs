@@ -20,6 +20,15 @@ public class CourseRepository : ICourseRepository
                             .ToListAsync();
     }
 
+    public async Task<IList<Course>> GetCoursesByInstructorAsync(string id)
+    {
+        return await _context.Courses.Where(c => c.Subclasses[0].Instructor.Id == id)
+            .Include(c => c.Institution)
+            .Include(c => c.Assignments)
+            .Include(c => c.Subclasses)
+            .ToListAsync();
+    }
+
     public async Task<int> AddCourseAsync(Course course)
     {
         await _context.Courses.AddAsync(course);
