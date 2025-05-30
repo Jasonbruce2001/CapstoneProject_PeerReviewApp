@@ -286,22 +286,20 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewAssignments(int classId)
         {
-
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _classRepo.GetClassByIdAsync(classId);
-              
-
-            if (class_ == null || class_.Instructor.Id != user.Id)
+            var _class = await _classRepo.GetClassByIdAsync(classId);
+            
+            if (_class == null || _class.Instructor.Id != user.Id)
             {
                 return NotFound();
             }
-
-
-            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
+            
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(_class.ParentCourse.Id);
+            
             ViewBag.ClassId = classId;
-            ViewBag.ClassName = class_.ParentCourse.Name;
-            ViewBag.Term = class_.Term;
-
+            ViewBag.ClassName = _class.ParentCourse.Name;
+            ViewBag.Term = _class.Term;
+            
             return View(assignments);
         }
 

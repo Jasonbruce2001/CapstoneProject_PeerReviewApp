@@ -13,11 +13,11 @@
     @if (Model.Any())
     {
         <ul class="list-group">
-            @foreach (var version in Model)
+            @foreach (var g in Model)
             {
                 <li class="list-group-item">
-                    @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
-                    <h5>Grade: @(version.Value)%</h5>
+                    @*<h3>@g.Assignment.Course.Name - @g.Assignment.Title</h3>*@
+                    <h5>Grade: @(g.Value)%</h5>
                 </li>
             }
         </ul>
