@@ -212,5 +212,65 @@ public class AccountController : Controller
     {
         return View();
     }
+
+
+    [HttpGet]
+    [Authorize]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+        if (result.Succeeded)
+        {
+            // Sign the user back in to refresh the security stamp
+            await _signInManager.RefreshSignInAsync(user);
+            TempData["Message"] = "Your password has been changed successfully.";
+
+            // Redirect based on user role
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("Index", "Instructor");
+            }
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("Index", "Student");
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return View(model);
+    }
+
+
+
+
 }
 
