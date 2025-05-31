@@ -16,6 +16,8 @@ namespace PeerReviewApp.Controllers
         private readonly IInstitutionRepository _institutionRepository;
         private readonly ICourseRepository _courseRepository;
 
+
+        private static List<string> PasswordResetRequests = new List<string>();
         public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context,
                                 IInstitutionRepository institutionRepository, ICourseRepository courseRepository)
         {
@@ -29,6 +31,8 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var recentRequests = GetRecentPasswordResetRequests();
+
             var dashboard = new AdminDashboardVM
             {
                 TotalInstitutions = (await _institutionRepository.GetInstitutionsAsync()).Count(),
@@ -36,10 +40,26 @@ namespace PeerReviewApp.Controllers
                 ActiveCourses = (await _courseRepository.GetCoursesAsync()).Count(),
                 TotalStudents = _userManager.Users.Count(),
                 Institutions = await _institutionRepository.GetInstitutionsAsync(),
-                RecentActions = new List<string>()
+                RecentActions = new List<string>(),
+                RecentPasswordResetRequests = GetRecentPasswordResetRequests()
             };
 
             return View(dashboard);
+        }
+
+
+        public static void AddPasswordResetRequest(string request)
+        {
+            PasswordResetRequests.Insert(0, request); // Add to beginning
+            if (PasswordResetRequests.Count > 10) // Keep only last 10
+            {
+                PasswordResetRequests.RemoveAt(PasswordResetRequests.Count - 1);
+            }
+        }
+
+        private List<string> GetRecentPasswordResetRequests()
+        {
+            return PasswordResetRequests.ToList();
         }
 
 
@@ -283,79 +303,140 @@ namespace PeerReviewApp.Controllers
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-    
 
-    public async Task<IActionResult> ManageStudents(string searchTerm = null)
-    {
-        var studentRole = await _roleManager.FindByNameAsync("Student");
-        var students = new List<AppUser>();
 
-        if (studentRole != null)
+        public async Task<IActionResult> ManageStudents(string searchTerm = null)
         {
-            students = (await _userManager.GetUsersInRoleAsync(studentRole.Name)).ToList();
+            var studentRole = await _roleManager.FindByNameAsync("Student");
+            var students = new List<AppUser>();
 
-            // Apply search filter if provided
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (studentRole != null)
             {
-                students = students.Where(s =>
-                    s.UserName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    s.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                ).ToList();
-            }
-        }
+                students = (await _userManager.GetUsersInRoleAsync(studentRole.Name)).ToList();
 
-        ViewBag.SearchTerm = searchTerm;
-        return View(students);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteStudent(string id)
-    {
-        var student = await _userManager.FindByIdAsync(id);
-        if (student != null)
-        {
-            var result = await _userManager.DeleteAsync(student);
-
-            if (result.Succeeded)
-            {
-                TempData["Message"] = "Student deleted successfully.";
-            }
-            else
-            {
-                foreach (var error in result.Errors)
+                // Apply search filter if provided
+                if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    students = students.Where(s =>
+                        s.UserName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        s.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                    ).ToList();
                 }
             }
+
+            ViewBag.SearchTerm = searchTerm;
+            return View(students);
         }
-        return RedirectToAction("ManageStudents");
-    }
 
-    [HttpPost]
-    public async Task<IActionResult> DeleteSelectedStudents(List<string> selectedIds)
-    {
-        if (selectedIds != null && selectedIds.Any())
+        [HttpPost]
+        public async Task<IActionResult> DeleteStudent(string id)
         {
-            int successCount = 0;
-
-            foreach (var id in selectedIds)
+            var student = await _userManager.FindByIdAsync(id);
+            if (student != null)
             {
-                var student = await _userManager.FindByIdAsync(id);
-                if (student != null)
+                var result = await _userManager.DeleteAsync(student);
+
+                if (result.Succeeded)
                 {
-                    var result = await _userManager.DeleteAsync(student);
-                    if (result.Succeeded)
+                    TempData["Message"] = "Student deleted successfully.";
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
                     {
-                        successCount++;
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
             }
-
-            TempData["Message"] = $"{successCount} student(s) deleted successfully.";
+            return RedirectToAction("ManageStudents");
         }
 
-        return RedirectToAction("ManageStudents");
-    }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSelectedStudents(List<string> selectedIds)
+        {
+            if (selectedIds != null && selectedIds.Any())
+            {
+                int successCount = 0;
 
-}
+                foreach (var id in selectedIds)
+                {
+                    var student = await _userManager.FindByIdAsync(id);
+                    if (student != null)
+                    {
+                        var result = await _userManager.DeleteAsync(student);
+                        if (result.Succeeded)
+                        {
+                            successCount++;
+                        }
+                    }
+                }
+
+                TempData["Message"] = $"{successCount} student(s) deleted successfully.";
+            }
+
+            return RedirectToAction("ManageStudents");
+        }
+
+        public async Task<IActionResult> ResetStudentPassword(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ResetStudentPasswordVM
+            {
+                StudentId = id,
+                StudentName = user.UserName,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetStudentPassword(ResetStudentPasswordVM model)
+        {
+
+            // No need to remove ModelState entries anymore since Token is not required
+            if (!ModelState.IsValid)
+            {
+                // Reload user data when returning view with validation errors
+                var userForView = await _userManager.FindByIdAsync(model.StudentId);
+                if (userForView != null)
+                {
+                    model.StudentName = userForView.UserName;
+                    model.Email = userForView.Email;
+                }
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.StudentId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Student password has been reset successfully.";
+                return RedirectToAction("ManageStudents");
+            }
+
+            // Reload user data when returning view with password reset errors
+            model.StudentName = user.UserName;
+            model.Email = user.Email;
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+    }
 }

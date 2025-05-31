@@ -149,30 +149,20 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return RedirectToAction("ForgotPasswordConfirmation");
-            }
-
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            var callbackUrl = Url.Action(
-                "ResetPassword",
-                "Account",
-                new { email = model.Email, token = token },
-                protocol: HttpContext.Request.Scheme);
-
-            TempData["ResetLink"] = callbackUrl;
-
-            return RedirectToAction("ForgotPasswordConfirmation");
+            return View(model);
         }
-        return View(model);
+
+        var logger = HttpContext.RequestServices.GetService<ILogger<AccountController>>();
+        logger?.LogInformation($"Password reset requested for {model.Email}");
+
+        AdminController.AddPasswordResetRequest($"{model.Email} requested password reset at {DateTime.Now:MM/dd/yyyy HH:mm}");
+
+        return RedirectToAction("ForgotPasswordConfirmation");
     }
 
-    [HttpGet]
+        [HttpGet]
     public IActionResult ResetPassword(string email, string token)
     {
         if (email == null || token == null)
@@ -187,6 +177,12 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> ResetPassword(ResetStudentPasswordVM model)
     {
+        // For user self-service resets, Token is required
+        if (string.IsNullOrEmpty(model.Token))
+        {
+            ModelState.AddModelError(nameof(model.Token), "The Token field is required.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -216,5 +212,65 @@ public class AccountController : Controller
     {
         return View();
     }
+
+
+    [HttpGet]
+    [Authorize]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+        if (result.Succeeded)
+        {
+            // Sign the user back in to refresh the security stamp
+            await _signInManager.RefreshSignInAsync(user);
+            TempData["Message"] = "Your password has been changed successfully.";
+
+            // Redirect based on user role
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("Index", "Instructor");
+            }
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("Index", "Student");
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return View(model);
+    }
+
+
+
+
 }
 
