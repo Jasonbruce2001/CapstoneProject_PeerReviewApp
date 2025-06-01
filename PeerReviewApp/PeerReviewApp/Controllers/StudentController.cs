@@ -106,6 +106,9 @@ public class StudentController : Controller
         //add new submission to db
         await _assignmentSubmissionRepository.AddAssignmentSubmissionAsync(model);
         
+        //attempt automatic partner assignment
+        var result = await _assignmentSubmissionRepository.CheckForPartner(model);
+        
         return RedirectToAction("Assignments");
     }
 
@@ -207,6 +210,7 @@ public class StudentController : Controller
 
         return View(model);
     }
+    
     [HttpPost]
     public async Task<IActionResult> SubmitReview(SubmitReviewVM model)
     {
@@ -217,6 +221,5 @@ public class StudentController : Controller
         await _reviewRepository.UpdateReviewAsync(review);
 
         return RedirectToAction("ViewReviews");
-
     }
 }

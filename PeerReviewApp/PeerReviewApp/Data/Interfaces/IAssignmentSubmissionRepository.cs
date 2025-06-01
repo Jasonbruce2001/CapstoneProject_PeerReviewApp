@@ -12,4 +12,5 @@ public interface IAssignmentSubmissionRepository
     public Task<int> AddAssignmentSubmissionAsync(AssignmentSubmission model);
     public Task<int> UpdateAssignmentSubmissionAsync(AssignmentSubmission model);
     public Task<int> DeleteAssignmentSubmissionAsync(AssignmentSubmission model);
+    public Task<int> CheckForPartner(AssignmentSubmission model);
 }

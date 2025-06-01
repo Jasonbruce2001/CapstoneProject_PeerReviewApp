@@ -578,11 +578,7 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
             return RedirectToAction("ViewAllGroups");
-
         }
-
-        
-        
     }
 }
 

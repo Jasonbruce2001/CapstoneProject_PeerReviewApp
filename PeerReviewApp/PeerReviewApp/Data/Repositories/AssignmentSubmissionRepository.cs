@@ -12,11 +12,13 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
     private readonly IAssignmentVersionRepository _assignmentVersionRepository;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly IReviewRepository _reviewRepository;
 
-    public AssignmentSubmissionRepository(ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository)
+    public AssignmentSubmissionRepository(ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository, IReviewRepository reviewRepository)
     {
         _context = context;
         _assignmentVersionRepository = assignmentVersionRepository;
+        _reviewRepository = reviewRepository;
     }
 
     public async Task<IList<AssignmentSubmission>> GetAllSubmissionsByStudentAsync(AppUser user)
@@ -107,6 +109,50 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
     public Task<int> DeleteAssignmentSubmissionAsync(AssignmentSubmission model)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<int> CheckForPartner(AssignmentSubmission model)
+    {
+        //find submissions where the parent assignment is the same, but not the assignment version
+        var submissions = await _context.AssignmentSubmissions
+            .Where(s => s.AssignmentVersion.ParentAssignment == model.AssignmentVersion.ParentAssignment 
+                                                                    && s.AssignmentVersion.Id != model.AssignmentVersion.Id)
+            .Include(a => a.Review)
+            .Include(a => a.Submitter)
+            .Include(a => a.AssignmentVersion)
+            .ThenInclude(av => av.ParentAssignment)
+            .ToListAsync();
+
+        //if submissions are found, loop through looking for null review
+        if (submissions.Any())
+        {
+            foreach (var s in submissions)
+            {
+                //if a submission from a different assignment version has a null review entry, then partners can be assigned
+                if (s.Review == null)
+                {
+                    //first create review objects for assignment submissions
+                    var review1 = new Review() { Reviewer = s.Submitter, Reviewee = model.Submitter };
+                    var review2 = new Review() { Reviewer = model.Submitter, Reviewee = s.Submitter };
+                    
+                    //add reviews to db
+                    await _reviewRepository.AddReviewAsync(review1);
+                    await _reviewRepository.AddReviewAsync(review2);
+                    
+                    //assign reviews to submissions
+                    model.Review = review1;
+                    s.Review = review2;
+
+                    //update database entries
+                    await UpdateAssignmentSubmissionAsync(model);
+                    await UpdateAssignmentSubmissionAsync(s);
+
+                    return 1; //return 1 if partners have been assigned
+                }
+            }
+        }
+
+        return 0; //return 0 if no partner found
     }
 
     
