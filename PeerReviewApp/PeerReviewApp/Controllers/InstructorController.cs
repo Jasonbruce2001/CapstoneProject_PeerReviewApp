@@ -68,8 +68,11 @@ namespace PeerReviewApp.Controllers
             {
                 students.AddRange(c.Students);
             }
-            
-            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students };
+
+
+            var readyForGradingCount = await GetReadyForGradingCountAsync();
+
+            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students, ReadyForGradingCount = readyForGradingCount };
             
             return View("Index", viewModel);
         }
@@ -586,8 +589,122 @@ namespace PeerReviewApp.Controllers
 
         }
 
-        
-        
+        public async Task<IActionResult> ReadyForGrading()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            var viewModel = new ReadyForGradingVM();
+
+            // Get ungraded assignment submissions
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    // Get submissions for this assignment that have been reviewed but not graded
+                    var ungradedSubmissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+                    var submissionsReadyForGrading = ungradedSubmissions
+                        .Where(s => s.Review != null && s.Review.ReviewDocument != null && s.AssignmentGrade == null)
+                        .ToList();
+
+                    if (submissionsReadyForGrading.Any())
+                    {
+                        viewModel.UnGradedSubmissions.Add(new UnGradedSubmissionGroup
+                        {
+                            Assignment = assignment,
+                            Class = cls,
+                            Submissions = submissionsReadyForGrading
+                        });
+                    }
+                }
+            }
+
+            // Get ungraded reviews
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    // Get all reviews for assignments in this instructor's classes that haven't been graded
+                    var allSubmissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+                    var ungradedReviews = allSubmissions
+                        .Where(s => s.Review != null && s.Review.ReviewDocument != null && s.Review.ReviewGrade == null)
+                        .Select(s => s.Review)
+                        .ToList();
+
+                    if (ungradedReviews.Any())
+                    {
+                        viewModel.UnGradedReviews.Add(new UnGradedReviewGroup
+                        {
+                            Assignment = assignment,
+                            Class = cls,
+                            Reviews = ungradedReviews
+                        });
+                    }
+                }
+            }
+
+            // Calculate total items to grade
+            viewModel.TotalItemsToGrade = viewModel.UnGradedSubmissions.Sum(g => g.Submissions.Count) +
+                                           viewModel.UnGradedReviews.Sum(g => g.Reviews.Count);
+
+            return View(viewModel);
+        }
+
+        // Helper method to get the count for the dashboard widget
+        public async Task<int> GetReadyForGradingCountAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            int count = 0;
+
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    var submissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+
+                    // Count ungraded submissions that have been reviewed
+                    count += submissions.Count(s => s.Review != null && s.Review.ReviewDocument != null && s.AssignmentGrade == null);
+
+                    // Count ungraded reviews
+                    count += submissions.Count(s => s.Review != null && s.Review.ReviewDocument != null && s.Review.ReviewGrade == null);
+                }
+            }
+
+            return count;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitReviewGrade(int reviewId, int gradeValue, string comments = "")
+        {
+            var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            // Create the grade for the review
+            var grade = new Grade
+            {
+                Value = gradeValue,
+                Student = review.Reviewer // The reviewer gets graded on their review quality
+            };
+
+            await _gradeRepo.AddGradeAsync(grade);
+
+            // Update the review with the grade
+            review.ReviewGrade = grade;
+            await _reviewRepository.UpdateReviewAsync(review);
+
+            TempData["Message"] = $"Review grade submitted successfully for {review.Reviewer.UserName}.";
+
+            return RedirectToAction("ReadyForGrading");
+        }
+
+
     }
 }
 
