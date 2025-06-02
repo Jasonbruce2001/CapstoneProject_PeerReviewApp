@@ -226,3 +226,12 @@ footer {
 .submissionInput {
   width: 7vw;
 }
+
+.bg-light-gray {
+  background-color: #f8f9fa;
+}
+
+.btn-custom {
+  width: 200px;
+  margin-bottom: 10px;
+}

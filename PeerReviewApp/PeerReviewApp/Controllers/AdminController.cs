@@ -247,27 +247,27 @@ namespace PeerReviewApp.Controllers
             return View(vm);
         }
 
-        public async Task<IActionResult> FilterCourses(string search, int institutionId) //must parse institutionId as int when querying
+        public async Task<IActionResult> FilterCourses(string courseName, int institutionName) //must parse institutionId as int when querying
         {
             var courses = await _courseRepository.GetCoursesAsync();
             var institutions = await _institutionRepository.GetInstitutionsAsync();
             
             var vm = new ViewCoursesVM(){ Courses = courses, Institutions = institutions };
             
-            if (institutionId == -1) //if no institution selected
+            if (institutionName == -1) //if no institution selected
             {   
-                if (string.IsNullOrEmpty(search)) //search term was empty
+                if (string.IsNullOrEmpty(courseName)) //search term was empty
                 {
                     return RedirectToAction("ViewCourses");
                 }
 
-                vm.Courses = await _courseRepository.SearchByNameAsync(search);
+                vm.Courses = await _courseRepository.SearchByNameAsync(courseName);
                 //only search term is entered
                 return View("ViewCourses", vm);
             }
             else //if an institution is selected
             {
-                vm.Courses = await _courseRepository.SearchByInstitutionAsync(String.Empty, institutionId);
+                vm.Courses = await _courseRepository.SearchByInstitutionAsync(String.Empty, institutionName);
                 return View("viewCourses", vm);
             }
         }

@@ -46,7 +46,6 @@
                     <select name="institutionName" id="institutionName" class="form-control-sm" asp-items="@(new SelectList(Model.Institutions, nameof(Institution.Id), nameof(Institution.Name)))">
                         <option value="-1">All</option>
                     </select>
-
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
