@@ -157,7 +157,6 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
 
     
     //helper methods
-    
     //method to ensure https:// prefixes every assignment submission
     private string NormalizeUrl(string url)
     {

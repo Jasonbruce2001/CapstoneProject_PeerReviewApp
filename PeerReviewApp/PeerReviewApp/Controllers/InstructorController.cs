@@ -146,7 +146,7 @@ namespace PeerReviewApp.Controllers
             {
                 if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("ViewClasses");
                 }
                 else
                 {
@@ -154,7 +154,7 @@ namespace PeerReviewApp.Controllers
                     return View();
                 }
             }
-            else { return RedirectToAction("AddCourse"); }
+            else { return RedirectToAction("ViewClasses"); }
         }
 
         [HttpGet]

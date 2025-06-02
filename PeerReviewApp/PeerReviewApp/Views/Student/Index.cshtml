@@ -4,6 +4,9 @@
     ViewData["Title"] = "Dashboard";
     var user = Model.User;
     var classes = Model.Classes;
+
+    var reviewsToDo = Model.ReviewsToDo.Count();
+    var reviewsReceived = Model.ReviewsReceived.Count();
 }
 
 <div class="container-fluid mb-5">
@@ -13,10 +16,10 @@
     <!-- Dashboard buttons -->
     <div class="row mb-2">
         <div class="col dashboardWidget spacingRight btn btn-outline-primary">
-            <a asp-action="ViewReviews"><div class="sizeWrapper">Reviews to do</div></a>
+            <a asp-action="ViewReviews"><div class="sizeWrapper">Reviews to do: <span class="fw-bolder">@reviewsToDo</span></div></a>
         </div>
         <div class="col dashboardWidget spacingRight btn btn-outline-primary">
-            <a asp-action="ViewReceivedReviews"><div class="sizeWrapper">Reviews received</div></a>
+            <a asp-action="ViewReceivedReviews"><div class="sizeWrapper">Reviews received: <span class="fw-bolder">@reviewsReceived</span></div></a>
         </div>
         <div class="col dashboardWidget spacingRight btn btn-outline-primary">
             <a asp-action="ViewGrades"><div class="sizeWrapper">My Grades</div></a>

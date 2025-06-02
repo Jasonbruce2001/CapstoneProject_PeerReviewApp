@@ -9,19 +9,19 @@
         <div class="col-9"></div>
     </div>
     
-    <h1 class="text-center fw-bolder">Recieved Reviews</h1>
+    <h1 class="text-center fw-bolder">Received Reviews</h1>
 
     @if (Model.Any())
     {
         <ul class="list-group">
-        @foreach (var r in Model)
+            @foreach (var r in Model)
             {
-            <li class="list-group-item">
-                @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
-                <h5>Reviewer: @r.Reviewer</h5>
-                <a href="~/StaticFiles/UserUploads/@r.ReviewDocument.FilePath" download>Download Review</a>
-            </li>
-        }
+                <li class="list-group-item">
+                    @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
+                    <h5>Reviewer: @r.Reviewer</h5>
+                    <a href="~/StaticFiles/UserUploads/@r.ReviewDocument.FilePath" download>Download Review</a>
+                </li>
+            }
         </ul>
     }
     else
