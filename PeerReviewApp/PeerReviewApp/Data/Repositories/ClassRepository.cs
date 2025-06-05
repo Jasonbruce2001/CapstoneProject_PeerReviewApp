@@ -22,8 +22,7 @@ public class ClassRepository : IClassRepository
 
         return classes;
     }
-
-
+    
     //overloaded for getting classes by instructor by id
     public async Task<IList<Class>> GetClassesAsync(string id)
     {

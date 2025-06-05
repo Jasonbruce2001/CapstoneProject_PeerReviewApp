@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeerReviewApp.Data;
 
@@ -11,9 +12,11 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525010533_cvrn")]
+    partial class cvrn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -511,7 +514,7 @@ namespace PeerReviewApp.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ReviewDocumentId")
+                    b.Property<int>("ReviewDocumentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ReviewGradeId")
@@ -768,7 +771,9 @@ namespace PeerReviewApp.Migrations
                 {
                     b.HasOne("PeerReviewApp.Models.Document", "ReviewDocument")
                         .WithMany()
-                        .HasForeignKey("ReviewDocumentId");
+                        .HasForeignKey("ReviewDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PeerReviewApp.Models.Grade", "ReviewGrade")
                         .WithMany()

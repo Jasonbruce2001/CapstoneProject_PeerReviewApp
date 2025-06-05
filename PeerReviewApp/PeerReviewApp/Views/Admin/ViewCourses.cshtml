@@ -1,11 +1,11 @@
-@model IList<Course>
+@model ViewCoursesVM
 
 @{
     ViewData["Title"] = "All Courses";
 
     var institutions = new List<Institution>();
 
-    foreach (var c in Model)
+    foreach (var c in Model.Courses)
     {
         if (!institutions.Contains(c.Institution))
         {
@@ -34,25 +34,20 @@
     <div class="row">
         <div class="col-6"></div>
         <div class="col">
-            <div class="row formHidden" id="filters">
-                <form method="post" action="/Admin/filterCourses" class="form-inline">
-                    <label for="nameSearch">Class Name</label>
-                    <input name="nameSearch" id="nameSearch"/>
+            <div class="row me-4 mt-2 mb-1">
+                <button class="btn btn-secondary btn-sm btn-thin" onclick="toggleFilters()">Toggle Filters</button>
+            </div>
+            <div class="row formHidden mb-5" id="filters">
+                <form method="post" action="/Admin/FilterCourses" class="form-inline">
+                    <label for="courseName">Class Name</label>
+                    <input name="courseName" class="form-control-sm" id="courseName"/>
 
                     <label for="institutionName">Institution</label>
-                    <select name="institutionName" id="institutionName">
-                        <option value="All">All</option>
-                        @foreach (var i in institutions)
-                        {
-                            <option value="@i.Id">@i.Name</option>
-                        }
+                    <select name="institutionName" id="institutionName" class="form-control-sm" asp-items="@(new SelectList(Model.Institutions, nameof(Institution.Id), nameof(Institution.Name)))">
+                        <option value="-1">All</option>
                     </select>
-
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
-            </div>
-            <div class="row mb-5 me-4 mt-2">
-                <button class="btn btn-secondary btn-sm btn-thin" onclick="toggleFilters()">Toggle Filters</button>
             </div>
         </div>
     </div>
@@ -66,9 +61,9 @@
                 <th>Number of Instances</th>
             </thead>
             <tbody>
-            @if (Model.Any())
+            @if (Model.Courses.Any())
             {
-                @foreach (var c in Model)
+                @foreach (var c in Model.Courses)
                 {
                     <tr>
                         <td>@c.Name</td>

@@ -261,39 +261,35 @@ namespace PeerReviewApp.Controllers
         public async Task<IActionResult> ViewCourses()
         {
             var courses = await _courseRepository.GetCoursesAsync();
-            return View(courses);
+            var institutions = await _institutionRepository.GetInstitutionsAsync();
+            
+            var vm = new ViewCoursesVM(){ Courses = courses, Institutions = institutions };
+            return View(vm);
         }
 
-        public async Task<IActionResult> Filter(string search, string institutionId) //must parse institutionId as int when querying
+        public async Task<IActionResult> FilterCourses(string courseName, int institutionName) //must parse institutionId as int when querying
         {
-            var result = new List<Course>();
-            int parsedId = 0;
-
-
-            if (institutionId == "All")
-            {   //no institution selected
-                if (string.IsNullOrEmpty(search))
+            var courses = await _courseRepository.GetCoursesAsync();
+            var institutions = await _institutionRepository.GetInstitutionsAsync();
+            
+            var vm = new ViewCoursesVM(){ Courses = courses, Institutions = institutions };
+            
+            if (institutionName == -1) //if no institution selected
+            {   
+                if (string.IsNullOrEmpty(courseName)) //search term was empty
                 {
-
+                    return RedirectToAction("ViewCourses");
                 }
+
+                vm.Courses = await _courseRepository.SearchByNameAsync(courseName);
                 //only search term is entered
-
+                return View("ViewCourses", vm);
             }
-            else
-            {   //if an institution is selected
-                parsedId = int.Parse(institutionId);
-
-
-                if (search != "")
-                {
-                    //institution is selected, but no search term entered
-
-                }
-                //both institution selected and search term are entered
-
+            else //if an institution is selected
+            {
+                vm.Courses = await _courseRepository.SearchByInstitutionAsync(String.Empty, institutionName);
+                return View("viewCourses", vm);
             }
-
-            return View("ViewCourses", result);
         }
 
         private string GenerateRandomCode(int length)
@@ -377,6 +373,9 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ManageStudents");
         }
 
+        return RedirectToAction("ManageStudents");
+    }
+}
         public async Task<IActionResult> ResetStudentPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

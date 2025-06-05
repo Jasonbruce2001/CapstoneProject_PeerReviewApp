@@ -53,6 +53,7 @@ namespace PeerReviewApp.Data
         { 
             return await _context.Assignments
                 .Include(a => a.Course)
+                .Include(a => a.Versions)
                 .Where(a => a.Course.Id == courseId)
                 .ToListAsync();
         }
@@ -61,6 +62,7 @@ namespace PeerReviewApp.Data
         { 
             return await _context.Assignments
                 .Include(a => a.Course)
+                .Include(a => a.Versions)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

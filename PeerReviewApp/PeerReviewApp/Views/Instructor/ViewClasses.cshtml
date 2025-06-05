@@ -9,98 +9,111 @@
             <h1>Welcome, Instructor</h1>
         </div>
         <div class="col-md-6 text-end">
-            <a asp-action="Index" class="btn btn-primary me-2">Back</a>
+            <a asp-action="Index" class="btn btn-secondary me-2">Back</a>
             <a asp-action="AddClass" class="btn btn-primary">Create New Class</a>
         </div>
     </div>
 
-    <!-- Active Courses Section -->
-    <h4 class="mb-3">Active Courses</h4>
-
+    <h4 class="mb-3">Your Courses</h4>
     <div class="row">
-        <div class="col-md-12">
-            @foreach (var cls in Model.Where(c => !c.IsArchived))
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <h5 class="card-title mb-1">@cls.ParentCourse.Name</h5>
-                                <p class="card-text text-muted">@cls.Students.Count() Students enrolled</p>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <div class="btn-group" role="group">
-                                    <form method="post" asp-action="ArchiveClass" asp-route-classId="@cls.ClassId" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">Archive Class</button>
-                                    </form>
-                                    <form method="get" asp-action="EditCourse" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">Edit Course Details</button>
-                                    </form>
-                                    <a asp-action="ViewAssignments" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
-                                        Manage Assignments
-                                    </a>
-                                    <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
-                                        View Groups
-                                    </a>
-                                    <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            Add Assignment Version
-                                        </button>
-                                    </form>
-                                    <a asp-action="AddStudents" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm">
-                                        Manage Students
-                                    </a>
+        <!-- only shows if an instance of a class is created, kinda need to change the model -->
+        @foreach (var c in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    @c.ParentCourse.Name
+                </div>
+            </div>
+        }
+
+        <!-- Active Courses Section -->
+        <h4 class="mb-3">Active Classes</h4>
+
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var cls in Model.Where(c => !c.IsArchived))
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-1">@cls.ParentCourse.Name | @cls.Crn</h5>
+                                    <p class="card-text text-muted">@cls.Students.Count() Students enrolled</p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="btn-group" role="group">
+                                        <form method="post" asp-action="ArchiveClass" asp-route-classId="@cls.ClassId" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Archive Class</button>
+                                        </form>
+                                        <form method="get" asp-action="EditCourse" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Edit Class Details</button>
+                                        </form>
+                                        <a asp-action="ViewAssignments" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
+                                            Manage Assignments
+                                        </a>
+                                        <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
+                                            View Groups
+                                        </a>
+                                        <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ClassId" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                Add Assignment Version
+                                            </button>
+                                        </form>
+                                        <a asp-action="AddStudents" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm">
+                                            Manage Students
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
-    </div>
 
-    <!-- Archived Courses Section -->
-    <h4 class="mb-3 mt-5">Archived Courses</h4>
+        <!-- Archived Courses Section -->
+        <h4 class="mb-3 mt-5">Archived Classes</h4>
 
-    <div class="row">
-        <div class="col-md-12">
-            @foreach (var cls in Model.Where(c => c.IsArchived))
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <h5 class="card-title mb-1">@cls.ParentCourse.Name</h5>
-                                <p class="card-text text-muted">Last Active - @cls.Term</p>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <div class="btn-group" role="group">
-                                    <form method="post" asp-action="ArchiveClass" asp-route-classId="@cls.ClassId" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">Open Class</button>
-                                    </form>
-                                    <form method="get" asp-action="EditCourse" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">Edit Course Details</button>
-                                    </form>
-                                    <a asp-action="ViewAssignments" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
-                                        Manage Assignments
-                                    </a>
-                                    <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
-                                        View Groups
-                                    </a>
-                                    <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            Add Assignment Version
-                                        </button>
-                                    </form>
-                                    <a asp-action="AddStudents" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm">
-                                        Manage Students
-                                    </a>
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var cls in Model.Where(c => c.IsArchived))
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-1">@cls.ParentCourse.Name</h5>
+                                    <p class="card-text text-muted">Last Active - @cls.Term</p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="btn-group" role="group">
+                                        <form method="post" asp-action="ArchiveClass" asp-route-classId="@cls.ClassId" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Open Class</button>
+                                        </form>
+                                        <form method="get" asp-action="EditCourse" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Edit Course Details</button>
+                                        </form>
+                                        <a asp-action="ViewAssignments" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
+                                            Manage Assignments
+                                        </a>
+                                        <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
+                                            View Groups
+                                        </a>
+                                        <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ParentCourse.Id" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                Add Assignment Version
+                                            </button>
+                                        </form>
+                                        <a asp-action="AddStudents" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm">
+                                            Manage Students
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 </div>

@@ -27,10 +27,7 @@ namespace PeerReviewApp.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
-
-       
-
-
+        
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
@@ -85,7 +82,7 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesAsync(user.Id);
-
+            
             return View(classes);
         }
 
@@ -165,6 +162,7 @@ namespace PeerReviewApp.Controllers
             {
                 if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
+
                     return RedirectToAction("ViewCourses");
                 }
                 else
@@ -302,22 +300,20 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewAssignments(int classId)
         {
-
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _classRepo.GetClassByIdAsync(classId);
-              
-
-            if (class_ == null || class_.Instructor.Id != user.Id)
+            var _class = await _classRepo.GetClassByIdAsync(classId);
+            
+            if (_class == null || _class.Instructor.Id != user.Id)
             {
                 return NotFound();
             }
-
-
-            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
+            
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(_class.ParentCourse.Id);
+            
             ViewBag.ClassId = classId;
-            ViewBag.ClassName = class_.ParentCourse.Name;
-            ViewBag.Term = class_.Term;
-
+            ViewBag.ClassName = _class.ParentCourse.Name;
+            ViewBag.Term = _class.Term;
+            
             return View(assignments);
         }
 
@@ -612,11 +608,7 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
             return RedirectToAction("ViewAllGroups");
-
         }
-
-        
-        
     }
 }
 
