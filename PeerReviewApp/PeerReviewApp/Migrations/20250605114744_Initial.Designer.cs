@@ -12,8 +12,8 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250525010533_cvrn")]
-    partial class cvrn
+    [Migration("20250605114744_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -514,7 +514,7 @@ namespace PeerReviewApp.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ReviewDocumentId")
+                    b.Property<int?>("ReviewDocumentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ReviewGradeId")
@@ -771,9 +771,7 @@ namespace PeerReviewApp.Migrations
                 {
                     b.HasOne("PeerReviewApp.Models.Document", "ReviewDocument")
                         .WithMany()
-                        .HasForeignKey("ReviewDocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReviewDocumentId");
 
                     b.HasOne("PeerReviewApp.Models.Grade", "ReviewGrade")
                         .WithMany()

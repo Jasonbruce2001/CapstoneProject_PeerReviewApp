@@ -294,6 +294,8 @@ namespace PeerReviewApp.Migrations
                 {
                     ClassId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Crn = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Term = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsArchived = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -447,7 +449,7 @@ namespace PeerReviewApp.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RevieweeId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ReviewDocumentId = table.Column<int>(type: "int", nullable: false),
+                    ReviewDocumentId = table.Column<int>(type: "int", nullable: true),
                     ReviewGradeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -467,8 +469,7 @@ namespace PeerReviewApp.Migrations
                         name: "FK_Reviews_Documents_ReviewDocumentId",
                         column: x => x.ReviewDocumentId,
                         principalTable: "Documents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reviews_Grades_ReviewGradeId",
                         column: x => x.ReviewGradeId,
