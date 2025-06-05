@@ -89,6 +89,22 @@ namespace PeerReviewApp.Controllers
             return View(classes);
         }
 
+        public async Task<IActionResult> ViewCourses()
+        {
+
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //get classes for current instructor
+            var classes = await _courseRepo.GetCoursesAsync(user);
+
+            return View(classes);
+        }
+
         [HttpPost]
         public async Task<IActionResult> ArchiveClass(int classId)
         {
@@ -149,7 +165,7 @@ namespace PeerReviewApp.Controllers
             {
                 if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("ViewCourses");
                 }
                 else
                 {
@@ -157,7 +173,7 @@ namespace PeerReviewApp.Controllers
                     return View();
                 }
             }
-            else { return RedirectToAction("AddCourse"); }
+            else { return RedirectToAction("ViewCourses"); }
         }
 
         [HttpGet]
@@ -303,6 +319,19 @@ namespace PeerReviewApp.Controllers
             ViewBag.Term = class_.Term;
 
             return View(assignments);
+        }
+
+        public async Task<IActionResult> UpcomingDeadlines()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var assignments = await _assignmentRepo.GetAssignmentsByInstructorAsync(currentUser);
+
+            var dueVersions = assignments
+            .Where(v => v.DueDate > DateTime.Now
+                     && v.DueDate < DateTime.Now.AddDays(7))
+            .ToList();
+
+            return View(dueVersions);
         }
 
         public async Task<IActionResult> EditAssignment(int assignmentId)
