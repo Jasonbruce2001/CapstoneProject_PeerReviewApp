@@ -11,69 +11,71 @@
         </div>
         <div class="col-9"></div>
     </div>
-    <div class="row">
-        <div class="col">
-            <h1>@Model.Assignment.Name</h1>
+    <div class="bg-white p-3 rounded-1">
+        <div class="row">
+            <div class="col">
+                <h1>@Model.Assignment.Name</h1>
+            </div>
+            <div class="col">
+                <h5 class="text-end">Due Date: @Model.Assignment.ParentAssignment.DueDate</h5>
+                @if (Model.HasSubmitted)
+                {
+                    <h5 class="text-end text-success">Submitted: @Model.Submission.SubmissionDate</h5>
+                }
+                else
+                {
+                    <h5 class="text-end text-danger">Not Submitted Yet</h5>
+                }
+            </div>
         </div>
-        <div class="col">
-            <h5 class="text-end">Due Date: @Model.Assignment.ParentAssignment.DueDate</h5>
+        <div class="row">
+            <p>@Model.Assignment.TextInstructions</p>
+        </div>
+        <div class="row mb-5">
+            <p><a href="~/StaticFiles/AssignmentInstructions/@Model.Assignment.Instructions.FilePath" download>Download Instructions</a></p>
+            <p><a href="~/StaticFiles/ReviewForms/@Model.Assignment.ReviewForm.FilePath" download>Download Review Form</a></p>
+        </div>
+        <div class="row align-content-end">
             @if (Model.HasSubmitted)
             {
-                <h5 class="text-end text-success">Submitted: @Model.Submission.SubmissionDate</h5>
+                <div class="col-9"></div>
+                <div class="col text-end">
+                    <button onclick="toggleElementById('submissionForm')" class="btn btn-primary">Append Submission</button>
+                </div>
+                <div class="container-fluid mt-3 formHidden" id="submissionForm">
+                    <form method="post" asp-action="UpdateSubmission" asp-route-versionId="@Model.Assignment.Id" class="form-body p-3">
+                        <label for="link">Github Link:</label>
+                        <input asp-for="AssignmentLink" type="text" id="link"/>
+
+                        <div class="row text-end">
+                            <div class="col">
+                                <a class="btn btn-secondary" onclick="toggleElementById('submissionForm')">Cancel</a>
+                                <button class="btn btn-success" type="submit">Append Submission</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             }
             else
             {
-                <h5 class="text-end text-danger">Not Submitted Yet</h5>
+                <div class="col-9"></div>
+                <div class="col text-end">
+                    <button onclick="toggleElementById('submissionForm')" class="btn btn-primary">Add Submission</button>
+                </div>
+                <div class="container-fluid mt-3 formHidden" id="submissionForm">
+                    <form method="post" asp-action="AddSubmission" asp-route-versionId="@Model.Assignment.Id" class="form-body p-3">
+                        <label for="link">Github Link:</label>
+                        <input asp-for="AssignmentLink" type="text" id="link"/>
+                    
+                        <div class="row text-end">
+                            <div class="col">
+                                <a class="btn btn-secondary" onclick="toggleElementById('submissionForm')">Cancel</a>
+                                <button class="btn btn-success" type="submit">Save Submission</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             }
         </div>
-    </div>
-    <div class="row">
-        <p>@Model.Assignment.TextInstructions</p>
-    </div>
-    <div class="row mb-5">
-        <p><a href="~/StaticFiles/AssignmentInstructions/@Model.Assignment.Instructions.FilePath" download>Download Instructions</a></p>
-        <p><a href="~/StaticFiles/ReviewForms/@Model.Assignment.ReviewForm.FilePath" download>Download Review Form</a></p>
-    </div>
-    <div class="row align-content-end">
-        @if (Model.HasSubmitted)
-        {
-            <div class="col-9"></div>
-            <div class="col text-end">
-                <button onclick="toggleElementById('submissionForm')" class="btn btn-primary">Append Submission</button>
-            </div>
-            <div class="container-fluid mt-3 formHidden" id="submissionForm">
-                <form method="post" asp-action="UpdateSubmission" asp-route-versionId="@Model.Assignment.Id" class="form-body p-3">
-                    <label for="link">Github Link:</label>
-                    <input asp-for="AssignmentLink" type="text" id="link"/>
-
-                    <div class="row text-end">
-                        <div class="col">
-                            <a class="btn btn-secondary" onclick="toggleElementById('submissionForm')">Cancel</a>
-                            <button class="btn btn-success" type="submit">Append Submission</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        }
-        else
-        {
-            <div class="col-9"></div>
-            <div class="col text-end">
-                <button onclick="toggleElementById('submissionForm')" class="btn btn-primary">Add Submission</button>
-            </div>
-            <div class="container-fluid mt-3 formHidden" id="submissionForm">
-                <form method="post" asp-action="AddSubmission" asp-route-versionId="@Model.Assignment.Id" class="form-body p-3">
-                    <label for="link">Github Link:</label>
-                    <input asp-for="AssignmentLink" type="text" id="link"/>
-                
-                    <div class="row text-end">
-                        <div class="col">
-                            <a class="btn btn-secondary" onclick="toggleElementById('submissionForm')">Cancel</a>
-                            <button class="btn btn-success" type="submit">Save Submission</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        }
     </div>
 </div>
