@@ -99,7 +99,8 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents()
+
+        public async Task<IActionResult> ViewStudents(int page = 1, string searchTerm = "")
         {
             var user = _userManager.GetUserAsync(User).Result;
 
@@ -112,9 +113,58 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesForInstructorAsync(user);
-            
-            return View("ViewStudents", classes);
+
+            // Flatten students with their class info
+            var allStudents = new List<StudentClassInfo>();
+            foreach (var cls in classes)
+            {
+                foreach (var student in cls.Students)
+                {
+                    allStudents.Add(new StudentClassInfo
+                    {
+                        Student = student,
+                        Class = cls
+                    });
+                }
+            }
+
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                allStudents = allStudents.Where(s =>
+                    s.Student.UserName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    s.Class.ParentCourse.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    s.Class.Term.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
+            // Pagination
+            const int pageSize = 10;
+            var totalStudents = allStudents.Count;
+            var totalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
+
+            page = Math.Max(1, Math.Min(page, totalPages));
+
+            var paginatedStudents = allStudents
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new StudentListVM
+            {
+                Students = paginatedStudents,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                TotalStudents = totalStudents,
+                SearchTerm = searchTerm
+            };
+
+            return View("ViewStudents", viewModel);
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteStudent(string studentId, int classId)
@@ -703,6 +753,9 @@ namespace PeerReviewApp.Controllers
 
             return RedirectToAction("ReadyForGrading");
         }
+
+
+       
 
 
     }
