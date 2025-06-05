@@ -373,9 +373,8 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ManageStudents");
         }
 
-        return RedirectToAction("ManageStudents");
-    }
-}
+
+
         public async Task<IActionResult> ResetStudentPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
