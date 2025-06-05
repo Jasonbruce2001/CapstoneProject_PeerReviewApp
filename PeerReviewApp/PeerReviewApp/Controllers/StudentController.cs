@@ -118,7 +118,9 @@ public class StudentController : Controller
         
         //update submission
         await _assignmentSubmissionRepository.UpdateAssignmentSubmissionAsync(model);
-        
+
+        //await _assignmentSubmissionRepository.CheckForPartner(model);
+
         return RedirectToAction("Assignments");
     }
 
