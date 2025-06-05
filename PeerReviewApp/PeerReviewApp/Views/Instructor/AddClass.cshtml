@@ -3,38 +3,44 @@
     ViewData["Title"] = "Add Class";
 }
 
-<form asp-action="AddClass" asp-controller="Instructor" method="post">
-    <div asp-validation-summary="All"></div>
+<div class="container-fluid">
+    <form asp-action="AddClass" asp-controller="Instructor" method="post">
+        <div asp-validation-summary="All"></div>
+        <div class="form-group">
+            <label asp-for="CourseId">Parent Course:</label>
+            <span asp-validation-for="CourseId"></span>
+            <select asp-for="CourseId" class="form-control"
+                    asp-items="@(new SelectList(Model.Courses, nameof(Course.Id), nameof(Course.Name)))">
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label asp-for="Class.Term">Term:</label>
+            <span asp-validation-for="Class.Term"></span>
+            <select asp-for="Class.Term" class="form-control">
+                @for(int i = 0; i<2; i++)
+                {
+                    <option value="Winter @(DateTime.Now.Year + i)">Winter @(DateTime.Now.Year + i)</option>
+                    <option value="Spring @(DateTime.Now.Year + i)">Spring @(DateTime.Now.Year + i)</option>
+                    <option value="Summer @(DateTime.Now.Year + i)">Summer @(DateTime.Now.Year + i)</option>
+                    <option value="Fall @(DateTime.Now.Year + i)">Fall @(DateTime.Now.Year + i)</option>
+                }
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="CourseId">Course:</label>
-        <span asp-validation-for="CourseId"></span>
-        <select asp-for="CourseId" class="form-control"
-        asp-items="@(new SelectList(Model.Courses, nameof(Course.Id), nameof(Course.Name)))">
-        </select>
-    </div>
+        <div class="form-group">
+            <label for="crn">CRN:</label>
+            <span asp-validation-for="Class.Crn"></span>
+            <input id="crn" class="form-control" asp-for="Class.Crn"/>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Class.Term">Term:</label>
-        <span asp-validation-for="Class.Term"></span>
-        <select asp-for="Class.Term" class="form-control">
-            @for(int i = 0; i<2; i++)
-            {
-                <option value="Winter @(DateTime.Now.Year + i)">Winter @(DateTime.Now.Year + i)</option>
-                <option value="Spring @(DateTime.Now.Year + i)">Spring @(DateTime.Now.Year + i)</option>
-                <option value="Summer @(DateTime.Now.Year + i)">Summer @(DateTime.Now.Year + i)</option>
-                <option value="Fall @(DateTime.Now.Year + i)">Fall @(DateTime.Now.Year + i)</option>
-            }
-        </select>
-    </div>
-
-    <div class="form-group">
-        <a href="@Url.Action("Index", "Instructor")" class="btn btn-outline-danger">Cancel</a>
-        <input type="submit" value="Add Course" class="btn btn-primary" />
-    </div>
-
-</form>
-
+        <div class="form-group">
+            <a href="@Url.Action("Index", "Instructor")" class="btn btn-outline-danger">Cancel</a>
+            <input type="submit" value="Add Class" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+<div class="spacer"></div>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

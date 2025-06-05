@@ -53,6 +53,11 @@ namespace PeerReviewApp.Data
             return assignments;
         }
 
+        public async Task<IList<AssignmentVersion>> GetAssignmentVersionsForAssignmentAsync(int assignmentId)
+        {
+            return await _context.AssignmentVersions.Where(v => v.ParentAssignment.Id == assignmentId).ToListAsync();
+        }
+
         public async Task<int> AddAssignmentVersionAsync(AssignmentVersion model)
         {
             await _context.AssignmentVersions.AddAsync(model);

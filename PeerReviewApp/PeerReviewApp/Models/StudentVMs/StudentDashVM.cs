@@ -6,4 +6,6 @@ public class StudentDashVM
     public IList<Class> Classes { get; set; }
     public IList<ReviewGroup> ReviewGroups { get; set; }
     public IList<Document> Documents { get; set; }
+    public IList<AssignmentSubmission> ReviewsToDo { get; set; }
+    public IList<Review> ReviewsReceived { get; set; }
 }

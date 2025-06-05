@@ -15,11 +15,6 @@
     <!-- Dashboard buttons -->
     <div class="row mb-2">
         <div class="col dashboardWidget spacingRight btn btn-outline-primary">
-            <a asp-action="ViewSubmissions">
-                <div class="sizeWrapper">View Submissions</div>
-            </a>
-        </div>
-        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
             <a asp-action="ViewAllGroups">
                 <div class="sizeWrapper">Manage Groups</div>
             </a>
@@ -29,19 +24,20 @@
                 <div class="sizeWrapper">Total Students @students.Count()</div></a>
         </div>
         <div class="col dashboardWidget spacingRight btn btn-outline-primary">
-            <a asp-action="ViewStudents">
+            <a asp-action="ReadyForGrading">
                 <div class="sizeWrapper">Ready for Grading 0</div></a>
         </div>
         <div class="col dashboardWidget btn btn-outline-primary" id="toolTipTarget">
-            <a asp-action="ViewStudents">
-                <div class="sizeWrapper">Upcoming Deadlines 0</div></a>
+            <a asp-action="UpcomingDeadlines">
+                <div class="sizeWrapper">Upcoming Deadlines</div></a>
         </div>
     </div>
     <div class="row courseList">
         <div class="row mb-2">
             <div class="col"><h3><b>Recently Accessed</b></h3></div>
             <div class="col text-end">
-                <a asp-action="ViewClasses" class="btn btn-sm btn-primary px-3">Manage Courses</a>
+                <a asp-action="ViewCourses" class="btn btn-sm btn-primary px-3">Manage Courses</a>
+                <a asp-action="ViewClasses" class="btn btn-sm btn-primary px-3">Manage Classes</a>
             </div>
             
         </div>
@@ -49,7 +45,7 @@
         {
             <div class="row courseListEntry mb-2">
                 <div class="col">
-                    <h4>@(c.ParentCourse != null ? c.ParentCourse.Name : "Unknown Course")</h4>
+                    <h4>@(c.ParentCourse != null ? c.ParentCourse.Name : "Unknown Course") | @c.Crn</h4>
                     <h5>@c.Students.Count() Students Enrolled</h5>
                 </div>
                 <div class="col text-end">

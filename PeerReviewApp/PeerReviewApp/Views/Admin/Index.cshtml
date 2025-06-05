@@ -1,21 +1,10 @@
-﻿@using System.Linq;
-
+@model AdminDashboardVM
+@using System.Linq;
 @using PeerReviewApp.Models;
 
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
-
-<style>
-    .bg-light-gray {
-        background-color: #f8f9fa;
-    }
-
-    .btn-custom {
-        width: 200px;
-        margin-bottom: 10px;
-    }
-</style>
 
 <div class="container bg-light-gray p-4">
     <h1>Welcome, Admin!</h1>
@@ -27,6 +16,27 @@
     </div>
 
     <div class="row">
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ManageInstitutions">
+                <div class="sizeWrapper">Active Institutions: <span class="fw-bolder">@Model.TotalInstitutions</span></div>
+            </a>
+        </div>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ManageInstructors">
+                <div class="sizeWrapper">Active Instructors: <span class="fw-bolder">@Model.ActiveInstructors</span></div>
+            </a>
+        </div>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ViewCourses">
+                <div class="sizeWrapper">Active Courses: <span class="fw-bolder">@Model.ActiveCourses</span></div>
+            </a>
+        </div>
+        <div class="col dashboardWidget spacingRight btn btn-outline-primary">
+            <a asp-action="ManageStudents">
+                <div class="sizeWrapper">Active Students: <span class="fw-bolder">@Model.TotalStudents</span></div>
+            </a>
+        </div>
+        @*
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body">
@@ -60,7 +70,7 @@
                     <p class="card-text">@Model.TotalStudents</p>
                 </div>
             </div>
-        </div>
+        </div>*@
     </div>
 
     <div class="mt-4">

@@ -4,11 +4,9 @@
 }
 
 <form asp-action="AddAssignmentVersion" asp-controller="Instructor" method="post">
-    <div asp-validation-summary="All"></div>
-
     <div class="form-group">
         <label asp-for="AssignmentId">Parent Assignment:</label>
-        <span asp-validation-for="AssignmentId"></span>
+        <span asp-validation-for="AssignmentId" class="text-danger"></span>
         <select asp-for="AssignmentId" class="form-control"
                 asp-items="@(new SelectList(Model.Assignments, nameof(Assignment.Id), nameof(Assignment.Title)))">
         </select>
@@ -16,27 +14,27 @@
         
     <div class="form-group">
         <label asp-for="AssnVersion.Name">Version Name</label>
-        <span asp-validation-for="AssnVersion.Name"></span>
+        <span asp-validation-for="AssnVersion.Name" class="text-danger"></span>
         <input asp-for="AssnVersion.Name" class="form-control p-3" required>
     </div>
 
     <div class="form-group">
         <label asp-for="AssnVersion.TextInstructions">Written instructions</label>
-        <span asp-validation-for="AssnVersion.TextInstructions"></span>
+        <span asp-validation-for="AssnVersion.TextInstructions" class="text-danger"></span>
         <input asp-for="AssnVersion.TextInstructions" class="form-control p-3" required>
     </div>
 
     <div class="form-group">
-        <label asp-for="InstructionsId">Instructions file:</label>
-        <span asp-validation-for="InstructionsId"></span>
+        <label asp-for="InstructionsId">Instructions Form: </label>
+        <span asp-validation-for="InstructionsId" class="text-danger"></span>
         <select asp-for="InstructionsId" class="form-control"
                 asp-items="@(new SelectList(Model.Documents, nameof(Document.Id), nameof(Document.Name)))">
         </select>
     </div>
 
     <div class="form-group">
-        <label asp-for="ReviewFormId">Instructions file:</label>
-        <span asp-validation-for="ReviewFormId"></span>
+        <label asp-for="ReviewFormId">Review Form:</label>
+        <span asp-validation-for="ReviewFormId" class="text-danger"></span>
         <select asp-for="ReviewFormId" class="form-control"
                 asp-items="@(new SelectList(Model.Documents, nameof(Document.Id), nameof(Document.Name)))">
         </select>

@@ -19,75 +19,79 @@
 
     <div class="card mb-4">
         <div class="card-header">
-            <form method="get" class="row g-3">
+            <div class="row g-3">
                 <div class="col-md-6">
-                    <div class="input-group">
-                        <input type="text" name="searchTerm" class="form-control" placeholder="Search by username or email" value="@ViewBag.SearchTerm">
+                    <form method="get" class="d-flex">
+                        <input type="text" name="searchTerm" class="form-control me-2" placeholder="Search by username or email" value="@ViewBag.SearchTerm">
                         <button class="btn btn-primary" type="submit">Search</button>
                         @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
                         {
-                            <a asp-action="ManageStudents" class="btn btn-secondary">Clear</a>
+                            <a asp-action="ManageStudents" class="btn btn-secondary ms-2">Clear</a>
                         }
-                    </div>
+                    </form>
                 </div>
                 <div class="col-md-6 text-end">
                     <button id="deleteSelectedBtn" type="button" class="btn btn-danger" disabled>Delete Selected</button>
                 </div>
-            </form>
+            </div>
         </div>
 
         <div class="card-body">
-            <form id="deleteForm" method="post" asp-action="DeleteSelectedStudents">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="selectAll" class="form-check-input">
-                                </th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Account Age</th>
-                                <th>Class Count</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Any())
-                            {
-                                @foreach (var student in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="selectedIds" value="@student.Id" class="form-check-input student-check">
-                                        </td>
-                                        <td>@student.UserName</td>
-                                        <td>@student.Email</td>
-                                        <td>@student.AccountAge.ToString("MM/dd/yyyy")</td>
-                                        <td>@(student.Classes?.Count() ?? 0)</td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <form asp-action="DeleteStudent" method="post" onsubmit="return confirm('Are you sure you want to delete this student?');">
-                                                    <input type="hidden" name="id" value="@student.Id">
-                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                                </form>
-                                                <a asp-action="ResetStudentPassword" asp-route-id="@student.Id" class="btn btn-sm btn-warning">Reset Password</a>
-                                                <a asp-action="StudentDetails" asp-route-id="@student.Id" class="btn btn-sm btn-info">Details</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
+            <!-- Separate form for batch deletion -->
+            <form id="deleteForm" method="post" asp-action="DeleteSelectedStudents" style="display: none;">
+                <div id="selectedStudentIds"></div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Account Age</th>
+                            <th>Class Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var student in Model)
                             {
                                 <tr>
-                                    <td colspan="6" class="text-center">No students found.</td>
+                                    <td>
+                                        <input type="checkbox" data-student-id="@student.Id" class="form-check-input student-check">
+                                    </td>
+                                    <td>@student.UserName</td>
+                                    <td>@student.Email</td>
+                                    <td>@student.AccountAge.ToString("MM/dd/yyyy")</td>
+                                    <td>@(student.Classes?.Count() ?? 0)</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <!-- Individual delete form - now outside the main form -->
+                                            <form asp-action="DeleteStudent" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this student?');">
+                                                <input type="hidden" name="id" value="@student.Id">
+                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                            </form>
+                                            <a asp-action="ResetStudentPassword" asp-route-id="@student.Id" class="btn btn-sm btn-warning">Reset Password</a>
+                                            <a asp-action="StudentDetails" asp-route-id="@student.Id" class="btn btn-sm btn-info">Details</a>
+                                        </div>
+                                    </td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                </div>
-            </form>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">No students found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -119,6 +123,24 @@
         // Submit form for batch deletion
         document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
             if (confirm('Are you sure you want to delete these students? This action cannot be undone.')) {
+                // Collect selected student IDs
+                const selectedIds = [];
+                document.querySelectorAll('.student-check:checked').forEach(checkbox => {
+                    selectedIds.push(checkbox.getAttribute('data-student-id'));
+                });
+
+                // Add hidden inputs to the form
+                const container = document.getElementById('selectedStudentIds');
+                container.innerHTML = '';
+                selectedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selectedIds';
+                    input.value = id;
+                    container.appendChild(input);
+                });
+
+                // Submit the form
                 document.getElementById('deleteForm').submit();
             }
         });

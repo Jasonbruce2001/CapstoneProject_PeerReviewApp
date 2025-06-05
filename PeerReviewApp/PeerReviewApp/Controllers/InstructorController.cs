@@ -27,10 +27,7 @@ namespace PeerReviewApp.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
-
-       
-
-
+        
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
@@ -68,8 +65,11 @@ namespace PeerReviewApp.Controllers
             {
                 students.AddRange(c.Students);
             }
-            
-            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students };
+
+
+            var readyForGradingCount = await GetReadyForGradingCountAsync();
+
+            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students, ReadyForGradingCount = readyForGradingCount };
             
             return View("Index", viewModel);
         }
@@ -85,6 +85,22 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesAsync(user.Id);
+            
+            return View(classes);
+        }
+
+        public async Task<IActionResult> ViewCourses()
+        {
+
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //get classes for current instructor
+            var classes = await _courseRepo.GetCoursesAsync(user);
 
             return View(classes);
         }
@@ -96,7 +112,8 @@ namespace PeerReviewApp.Controllers
             return RedirectToAction("ViewClasses");
         }
 
-        public async Task<IActionResult> ViewStudents()
+
+        public async Task<IActionResult> ViewStudents(int page = 1, string searchTerm = "")
         {
             var user = _userManager.GetUserAsync(User).Result;
 
@@ -109,9 +126,58 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesForInstructorAsync(user);
-            
-            return View("ViewStudents", classes);
+
+            // Flatten students with their class info
+            var allStudents = new List<StudentClassInfo>();
+            foreach (var cls in classes)
+            {
+                foreach (var student in cls.Students)
+                {
+                    allStudents.Add(new StudentClassInfo
+                    {
+                        Student = student,
+                        Class = cls
+                    });
+                }
+            }
+
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                allStudents = allStudents.Where(s =>
+                    s.Student.UserName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    s.Class.ParentCourse.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    s.Class.Term.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
+            // Pagination
+            const int pageSize = 10;
+            var totalStudents = allStudents.Count;
+            var totalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+
+
+            page = Math.Max(1, Math.Min(page, totalPages));
+
+            var paginatedStudents = allStudents
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new StudentListVM
+            {
+                Students = paginatedStudents,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                TotalStudents = totalStudents,
+                SearchTerm = searchTerm
+            };
+
+            return View("ViewStudents", viewModel);
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteStudent(string studentId, int classId)
@@ -149,7 +215,8 @@ namespace PeerReviewApp.Controllers
             {
                 if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
-                    return RedirectToAction("Index");
+
+                    return RedirectToAction("ViewCourses");
                 }
                 else
                 {
@@ -157,7 +224,7 @@ namespace PeerReviewApp.Controllers
                     return View();
                 }
             }
-            else { return RedirectToAction("AddCourse"); }
+            else { return RedirectToAction("ViewCourses"); }
         }
 
         [HttpGet]
@@ -286,23 +353,34 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewAssignments(int classId)
         {
-
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _classRepo.GetClassByIdAsync(classId);
-              
-
-            if (class_ == null || class_.Instructor.Id != user.Id)
+            var _class = await _classRepo.GetClassByIdAsync(classId);
+            
+            if (_class == null || _class.Instructor.Id != user.Id)
             {
                 return NotFound();
             }
-
-
-            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
+            
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(_class.ParentCourse.Id);
+            
             ViewBag.ClassId = classId;
-            ViewBag.ClassName = class_.ParentCourse.Name;
-            ViewBag.Term = class_.Term;
-
+            ViewBag.ClassName = _class.ParentCourse.Name;
+            ViewBag.Term = _class.Term;
+            
             return View(assignments);
+        }
+
+        public async Task<IActionResult> UpcomingDeadlines()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var assignments = await _assignmentRepo.GetAssignmentsByInstructorAsync(currentUser);
+
+            var dueVersions = assignments
+            .Where(v => v.DueDate > DateTime.Now
+                     && v.DueDate < DateTime.Now.AddDays(7))
+            .ToList();
+
+            return View(dueVersions);
         }
 
         public async Task<IActionResult> EditAssignment(int assignmentId)
@@ -583,11 +661,129 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
             return RedirectToAction("ViewAllGroups");
-
         }
 
-        
-        
+
+        public async Task<IActionResult> ReadyForGrading()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            var viewModel = new ReadyForGradingVM();
+
+            // Get ungraded assignment submissions
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    // Get submissions for this assignment that have been reviewed but not graded
+                    var ungradedSubmissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+                    var submissionsReadyForGrading = ungradedSubmissions
+                        .Where(s => s.Review != null && s.Review.ReviewDocument != null && s.AssignmentGrade == null)
+                        .ToList();
+
+                    if (submissionsReadyForGrading.Any())
+                    {
+                        viewModel.UnGradedSubmissions.Add(new UnGradedSubmissionGroup
+                        {
+                            Assignment = assignment,
+                            Class = cls,
+                            Submissions = submissionsReadyForGrading
+                        });
+                    }
+                }
+            }
+
+            // Get ungraded reviews
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    // Get all reviews for assignments in this instructor's classes that haven't been graded
+                    var allSubmissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+                    var ungradedReviews = allSubmissions
+                        .Where(s => s.Review != null && s.Review.ReviewDocument != null && s.Review.ReviewGrade == null)
+                        .Select(s => s.Review)
+                        .ToList();
+
+                    if (ungradedReviews.Any())
+                    {
+                        viewModel.UnGradedReviews.Add(new UnGradedReviewGroup
+                        {
+                            Assignment = assignment,
+                            Class = cls,
+                            Reviews = ungradedReviews
+                        });
+                    }
+                }
+            }
+
+            // Calculate total items to grade
+            viewModel.TotalItemsToGrade = viewModel.UnGradedSubmissions.Sum(g => g.Submissions.Count) +
+                                           viewModel.UnGradedReviews.Sum(g => g.Reviews.Count);
+
+            return View(viewModel);
+        }
+
+        // Helper method to get the count for the dashboard widget
+        public async Task<int> GetReadyForGradingCountAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var classes = await _classRepo.GetClassesForInstructorAsync(user);
+
+            int count = 0;
+
+            foreach (var cls in classes)
+            {
+                foreach (var assignment in cls.ParentCourse.Assignments)
+                {
+                    var submissions = await _assignmentSubmissionRepo.GetSubmissionsByAssignmentAsync(assignment.Id);
+
+                    // Count ungraded submissions that have been reviewed
+                    count += submissions.Count(s => s.Review != null && s.Review.ReviewDocument != null && s.AssignmentGrade == null);
+
+                    // Count ungraded reviews
+                    count += submissions.Count(s => s.Review != null && s.Review.ReviewDocument != null && s.Review.ReviewGrade == null);
+                }
+            }
+
+            return count;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitReviewGrade(int reviewId, int gradeValue, string comments = "")
+        {
+            var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            // Create the grade for the review
+            var grade = new Grade
+            {
+                Value = gradeValue,
+                Student = review.Reviewer // The reviewer gets graded on their review quality
+            };
+
+            await _gradeRepo.AddGradeAsync(grade);
+
+            // Update the review with the grade
+            review.ReviewGrade = grade;
+            await _reviewRepository.UpdateReviewAsync(review);
+
+            TempData["Message"] = $"Review grade submitted successfully for {review.Reviewer.UserName}.";
+
+            return RedirectToAction("ReadyForGrading");
+        }
+
+
+       
+
+
+
     }
 }
 

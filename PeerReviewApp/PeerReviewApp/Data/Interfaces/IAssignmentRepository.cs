@@ -6,6 +6,7 @@ namespace PeerReviewApp.Data
     {
         public Task<IList<Assignment>> GetAssignmentsAsync();
         public Task<IList<Assignment>> GetAssignmentsByCourseAsync(int courseId);
+        public Task<IList<Assignment>> GetAssignmentsByInstructorAsync(AppUser instructor);
         public Task<IList<Assignment>> GetStudentAssignments(AppUser student);
         public Task<Assignment> GetAssignmentByIdAsync(int id);
         public Task<int> AddAssignmentAsync(Assignment assignment);
