@@ -5,6 +5,7 @@ namespace PeerReviewApp.Data;
 public interface ICourseRepository
 {
     public Task<IList<Course>> GetCoursesAsync();
+    public Task<IList<Course>> GetCoursesAsync(AppUser instructor);
     public Task<Course> GetCourseByIdAsync(int id);
     public Task<int> AddCourseAsync(Course course);
     public Task<int> UpdateCourseAsync(Course course);
