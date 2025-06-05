@@ -1,4 +1,4 @@
-﻿@model IList<Grade>
+﻿@model ViewGradesVM
 @{
     ViewData["Title"] = "My Reviews";
 }
@@ -8,16 +8,16 @@
         <div class="col-9"></div>
     </div>
 
-    <h1 class="text-center fw-bolder">My Grades</h1>
+    <h1 class="text-center fw-bolder">Assignment Grades</h1>
 
-    @if (Model.Any())
+    @if (Model.Submissions.Any())
     {
         <ul class="list-group">
-            @foreach (var version in Model)
+            @foreach (var submission in Model.Submissions.ToList())
             {
                 <li class="list-group-item">
-                    @*<h3>@version.Assignment.Course.Name - @version.Assignment.Title</h3>*@
-                    <h5>Grade: @(version.Value)%</h5>
+                    <h3>@submission.AssignmentVersion.ParentAssignment.Course.Name - @submission.AssignmentVersion.ParentAssignment.Title</h3>
+                    <h5>Grade: @(submission.AssignmentGrade != null ? submission.AssignmentGrade.Value + "%" : "N/A")</h5>
                 </li>
             }
         </ul>
@@ -28,4 +28,26 @@
             You do not currently have any graded assignments.
         </div>
     }
+    <hr />
+    <h1 class="text-center fw-bolder">Review Grades</h1>
+
+    @if (Model.Reviews.Any())
+    {
+        <ul class="list-group">
+            @foreach (var submission in Model.Reviews.ToList())
+            {
+                <li class="list-group-item">
+                    <h3>Review of @submission.AssignmentVersion.ParentAssignment.Course.Name - @submission.AssignmentVersion.ParentAssignment.Title</h3>
+                    <h5>Grade: @(submission.Review.ReviewGrade != null ? submission.Review.ReviewGrade.Value + "%" : "N/A")</h5>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            You do not currently have any graded Reviews.
+        </div>
+    }
+    
 </div>

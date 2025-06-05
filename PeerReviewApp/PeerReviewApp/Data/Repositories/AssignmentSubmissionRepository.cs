@@ -21,7 +21,16 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
 
     public async Task<IList<AssignmentSubmission>> GetAllSubmissionsByStudentAsync(AppUser user)
     {
-        return await _context.AssignmentSubmissions.Where(s => s.Submitter == user).ToListAsync();
+        return await _context.AssignmentSubmissions
+            .Where(s => s.Submitter == user)
+            .Include(s => s.Submitter)
+            .Include(s => s.AssignmentGrade)
+            .Include(s => s.AssignmentVersion)
+            .ThenInclude(av => av.ParentAssignment)
+            .ThenInclude(pa => pa.Course)
+            .Include(s => s.Review)
+            .ThenInclude(r => r.ReviewGrade)
+            .ToListAsync();
     }
 
     public async Task<AssignmentSubmission> GetSubmissionByIdAsync(int id)
