@@ -1,4 +1,6 @@
-﻿@model AdminDashboardVM
+@model AdminDashboardVM
+@using System.Linq;
+@using PeerReviewApp.Models;
 
 @{
     ViewData["Title"] = "Admin Dashboard";
@@ -89,5 +91,22 @@
                 <li>@action</li>
             }
         </ul>
+    </div>
+
+    <div class="mt-4">
+        <h4>Recent Password Reset Requests</h4>
+        @if (Model.RecentPasswordResetRequests != null && Model.RecentPasswordResetRequests.Count > 0)
+        {
+            <ul class="list-group">
+                @foreach (var request in Model.RecentPasswordResetRequests)
+                {
+                    <li class="list-group-item list-group-item-warning">@request</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">No recent password reset requests.</p>
+        }
     </div>
 </div>

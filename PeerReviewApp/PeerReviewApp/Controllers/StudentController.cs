@@ -208,7 +208,10 @@ public class StudentController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var model = await _gradeRepository.GetGradesByStudentAsync(currentUser);
+        var assignments = await _assignmentSubmissionRepository.GetAllSubmissionsByStudentAsync(currentUser);
+        var reviews = await _assignmentSubmissionRepository.GetSubmissionsByReviewerAsync(currentUser);
+
+        ViewGradesVM model = new ViewGradesVM() { Reviews = reviews, Submissions = assignments };
 
         return View(model);
     }

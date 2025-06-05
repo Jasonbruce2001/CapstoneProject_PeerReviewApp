@@ -144,10 +144,10 @@ public class SeedData
             await userManager.AddToRoleAsync(instructor4, "Instructor");
 
             
-            Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
+            Institution inst = new Institution() { Name = "Institute", Code = "ABC123", Instructors = {instructor1, instructor2, instructor3, instructor4, instructor5, instructor6, instructor7, instructor8, instructor9, instructor10, instructor11, instructor12, instructor13, instructor14, instructor15, instructor16, instructor17, instructor18, instructor19, instructor20 } };
             context.Institutions.Add(inst);
             
-            Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
+            Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description", Subclasses = { } };
             context.Courses.Add(course);
             Class class1 = new Class() { Instructor = instructor1, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CIS-123" };
             Class class2 = new Class() { Instructor = instructor2, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "JS-123" };
@@ -190,6 +190,7 @@ public class SeedData
             context.Classes.Add(class18);
             context.Classes.Add(class19);
             context.Classes.Add(class20);
+
 
             Document doc1 = new Document() { Uploader = instructor1, Name = "Instructions1", FilePath = "SampleLabInstructions.pdf", FileSize = "1kb", DateUploaded = DateTime.Now};
             Document doc2 = new Document() { Uploader = instructor1, Name = "ReviewForm1", FilePath = "SampleReviewForm.pdf", FileSize = "1kb", DateUploaded = DateTime.Now };

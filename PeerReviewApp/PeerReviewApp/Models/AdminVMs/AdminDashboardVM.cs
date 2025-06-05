@@ -12,5 +12,9 @@
         public IEnumerable<Institution> Institutions { get; set; }
 
         public IEnumerable<string> RecentActions { get; set; }
+
+        public List<string> RecentPasswordResetRequests { get; set; } = new();
     }
 }
+
+
