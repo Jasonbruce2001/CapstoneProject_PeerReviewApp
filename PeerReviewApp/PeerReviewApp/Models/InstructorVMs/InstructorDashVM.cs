@@ -6,4 +6,6 @@ public class InstructorDashVM
     public IList<AppUser> Students { get; set; }
     public IList<Course> Courses { get; set; }
     public IList<Class> Classes { get; set; }
+
+    public int ReadyForGradingCount { get; set; }
 }
