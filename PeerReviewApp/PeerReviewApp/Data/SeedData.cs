@@ -144,31 +144,31 @@ public class SeedData
             await userManager.AddToRoleAsync(instructor4, "Instructor");
 
             
-            Institution inst = new Institution() { Name = "Institute", Code = "ABC123" };
+            Institution inst = new Institution() { Name = "Institute", Code = "ABC123", Instructors = {instructor1, instructor2, instructor3, instructor4, instructor5, instructor6, instructor7, instructor8, instructor9, instructor10, instructor11, instructor12, instructor13, instructor14, instructor15, instructor16, instructor17, instructor18, instructor19, instructor20 } };
             context.Institutions.Add(inst);
             
-            Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description" };
+            Course course = new Course() { Name = "Test Course", Institution = inst, Description = "Test Description", Subclasses = { } };
             context.Courses.Add(course);
-            Class class1 = new Class() { Instructor = instructor1, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class2 = new Class() { Instructor = instructor2, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class3 = new Class() { Instructor = instructor3, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class4 = new Class() { Instructor = instructor4, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class5 = new Class() { Instructor = instructor5, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class6 = new Class() { Instructor = instructor6, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class7 = new Class() { Instructor = instructor7, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class8 = new Class() { Instructor = instructor8, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class9 = new Class() { Instructor = instructor9, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class10 = new Class() { Instructor = instructor10, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class11 = new Class() { Instructor = instructor11, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class12 = new Class() { Instructor = instructor12, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class13 = new Class() { Instructor = instructor13, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class14 = new Class() { Instructor = instructor14, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class15 = new Class() { Instructor = instructor15, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class16 = new Class() { Instructor = instructor16, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class17 = new Class() { Instructor = instructor17, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class18 = new Class() { Instructor = instructor18, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class19 = new Class() { Instructor = instructor19, ParentCourse = course, Students = students, Term = "Spring 2025" };
-            Class class20 = new Class() { Instructor = instructor20, ParentCourse = course, Students = students, Term = "Spring 2025" };
+            Class class1 = new Class() { Instructor = instructor1, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CIS-123" };
+            Class class2 = new Class() { Instructor = instructor2, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "JS-123" };
+            Class class3 = new Class() { Instructor = instructor3, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-231" };
+            Class class4 = new Class() { Instructor = instructor4, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "JS-200" };
+            Class class5 = new Class() { Instructor = instructor5, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-333" };
+            Class class6 = new Class() { Instructor = instructor6, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-400" };
+            Class class7 = new Class() { Instructor = instructor7, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class8 = new Class() { Instructor = instructor8, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class9 = new Class() { Instructor = instructor9, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class10 = new Class() { Instructor = instructor10, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class11 = new Class() { Instructor = instructor11, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class12 = new Class() { Instructor = instructor12, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class13 = new Class() { Instructor = instructor13, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class14 = new Class() { Instructor = instructor14, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class15 = new Class() { Instructor = instructor15, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class16 = new Class() { Instructor = instructor16, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class17 = new Class() { Instructor = instructor17, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class18 = new Class() { Instructor = instructor18, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class19 = new Class() { Instructor = instructor19, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
+            Class class20 = new Class() { Instructor = instructor20, ParentCourse = course, Students = students, Term = "Spring 2025", Crn = "CS-123" };
 
             context.Classes.Add(class1);
             context.Classes.Add(class2);
@@ -190,6 +190,7 @@ public class SeedData
             context.Classes.Add(class18);
             context.Classes.Add(class19);
             context.Classes.Add(class20);
+
 
             Document doc1 = new Document() { Uploader = instructor1, Name = "Instructions1", FilePath = "SampleLabInstructions.pdf", FileSize = "1kb", DateUploaded = DateTime.Now};
             Document doc2 = new Document() { Uploader = instructor1, Name = "ReviewForm1", FilePath = "SampleReviewForm.pdf", FileSize = "1kb", DateUploaded = DateTime.Now };

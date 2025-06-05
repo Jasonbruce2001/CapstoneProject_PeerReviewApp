@@ -1,0 +1,36 @@
+﻿@model IList<Assignment>
+@{
+    ViewData["Title"] = "Upcoming Deadlines";
+}
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col"><a class="btn btn-secondary" asp-action="Index">Back</a></div>
+        <div class="col-9"></div>
+    </div>
+
+    <div class="row">
+        <h1 class="text-center fw-bolder">Upcoming Deadlines</h1>
+    </div>
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            <ul class="list-group">
+                @foreach (var assignment in Model)
+                {
+                    <li class="list-group-item">
+                        <h3 class="d-inline">@assignment.Course.Name - @assignment.Title</h3>
+                        <a class="d-inline float-end p-2" asp-action="ViewSubmissions" asp-route-assignmentId="@assignment.Id">View Submissions</a>
+                        <h5>Due on: @(assignment.DueDate)</h5>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                There are currently no deadlines due soon.
+            </div>
+        }
+    </div>
+</div>

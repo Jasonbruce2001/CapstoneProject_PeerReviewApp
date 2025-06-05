@@ -27,10 +27,7 @@ namespace PeerReviewApp.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
-
-       
-
-
+        
         public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
 
 
@@ -88,6 +85,22 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesAsync(user.Id);
+            
+            return View(classes);
+        }
+
+        public async Task<IActionResult> ViewCourses()
+        {
+
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+            if (_userManager != null)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            //get classes for current instructor
+            var classes = await _courseRepo.GetCoursesAsync(user);
 
             return View(classes);
         }
@@ -202,7 +215,8 @@ namespace PeerReviewApp.Controllers
             {
                 if (await _courseRepo.AddCourseAsync(model.Course) > 0)
                 {
-                    return RedirectToAction("Index");
+
+                    return RedirectToAction("ViewCourses");
                 }
                 else
                 {
@@ -210,7 +224,7 @@ namespace PeerReviewApp.Controllers
                     return View();
                 }
             }
-            else { return RedirectToAction("AddCourse"); }
+            else { return RedirectToAction("ViewCourses"); }
         }
 
         [HttpGet]
@@ -339,23 +353,34 @@ namespace PeerReviewApp.Controllers
 
         public async Task<IActionResult> ViewAssignments(int classId)
         {
-
             var user = await _userManager.GetUserAsync(User);
-            var class_ = await _classRepo.GetClassByIdAsync(classId);
-              
-
-            if (class_ == null || class_.Instructor.Id != user.Id)
+            var _class = await _classRepo.GetClassByIdAsync(classId);
+            
+            if (_class == null || _class.Instructor.Id != user.Id)
             {
                 return NotFound();
             }
-
-
-            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(class_.ParentCourse.Id);
+            
+            var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(_class.ParentCourse.Id);
+            
             ViewBag.ClassId = classId;
-            ViewBag.ClassName = class_.ParentCourse.Name;
-            ViewBag.Term = class_.Term;
-
+            ViewBag.ClassName = _class.ParentCourse.Name;
+            ViewBag.Term = _class.Term;
+            
             return View(assignments);
+        }
+
+        public async Task<IActionResult> UpcomingDeadlines()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var assignments = await _assignmentRepo.GetAssignmentsByInstructorAsync(currentUser);
+
+            var dueVersions = assignments
+            .Where(v => v.DueDate > DateTime.Now
+                     && v.DueDate < DateTime.Now.AddDays(7))
+            .ToList();
+
+            return View(dueVersions);
         }
 
         public async Task<IActionResult> EditAssignment(int assignmentId)
@@ -636,8 +661,8 @@ namespace PeerReviewApp.Controllers
             await _assignmentVersionRepo.AddStudentsToAssignmentVersionsAsync(students, assignmentId);
 
             return RedirectToAction("ViewAllGroups");
-
         }
+
 
         public async Task<IActionResult> ReadyForGrading()
         {
@@ -756,6 +781,7 @@ namespace PeerReviewApp.Controllers
 
 
        
+
 
 
     }

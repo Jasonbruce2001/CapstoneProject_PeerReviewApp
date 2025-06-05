@@ -57,7 +57,9 @@ namespace PeerReviewApp.Data
         }
         public Task<int> AddReviewAsync(Review model)
         {
-            throw new NotImplementedException();
+            _context.Reviews.Add(model);
+            
+            return _context.SaveChangesAsync();
         }
         public async Task<int> UpdateReviewAsync(Review model)
         {

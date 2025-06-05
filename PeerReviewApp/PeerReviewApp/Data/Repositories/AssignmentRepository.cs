@@ -21,6 +21,29 @@ namespace PeerReviewApp.Data
                 .Include(a => a.Course)
                 .ToListAsync();
         }
+
+        public async Task<IList<Assignment>> GetAssignmentsByInstructorAsync(AppUser instructor)
+        {
+            var mostAssignments = await _context.Assignments
+                .Include(a => a.Course)
+                .ThenInclude(c => c.Subclasses)
+                .ThenInclude(sc => sc.Instructor)
+                .ToListAsync();
+
+            IList<Assignment> assignments = new List<Assignment>();
+            foreach (var assignment in mostAssignments)
+            {
+                foreach(var cls in assignment.Course.Subclasses)
+                {
+                    if (cls.Instructor == instructor)
+                    {
+                        assignments.Add(assignment);
+                    }
+                }
+            }
+
+            return assignments;
+        }
         public Task<IList<Assignment>> GetStudentAssignments(AppUser student)
         {
             throw new NotImplementedException();
@@ -30,6 +53,7 @@ namespace PeerReviewApp.Data
         { 
             return await _context.Assignments
                 .Include(a => a.Course)
+                .Include(a => a.Versions)
                 .Where(a => a.Course.Id == courseId)
                 .ToListAsync();
         }
@@ -38,6 +62,7 @@ namespace PeerReviewApp.Data
         { 
             return await _context.Assignments
                 .Include(a => a.Course)
+                .Include(a => a.Versions)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 

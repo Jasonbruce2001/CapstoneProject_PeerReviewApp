@@ -22,8 +22,7 @@ public class ClassRepository : IClassRepository
 
         return classes;
     }
-
-
+    
     //overloaded for getting classes by instructor by id
     public async Task<IList<Class>> GetClassesAsync(string id)
     {
@@ -179,6 +178,11 @@ public class ClassRepository : IClassRepository
     public async Task<int> AddClassAsync(Class newClass)
     {
         await _context.Classes.AddAsync(newClass);
+        var crs = await _context.Courses
+            .Include(c => c.Subclasses)
+            .FirstOrDefaultAsync(c => c.Id == newClass.ParentCourse.Id);
+        crs.Subclasses.Add(newClass);
+        _context.Courses.Update(crs);
         
         return await _context.SaveChangesAsync();
     }

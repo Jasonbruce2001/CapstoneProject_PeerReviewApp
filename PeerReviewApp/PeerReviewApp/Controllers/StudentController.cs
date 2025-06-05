@@ -24,7 +24,7 @@ public class StudentController : Controller
   
 
     public StudentController(IClassRepository classRepository, IReviewGroupRepository reviewGroupRepository, IReviewRepository reviewRepository,
-        IGradeRepository gradeRepository, UserManager<AppUser> userManager, ApplicationDbContext context, IAssignmentVersionRepository assignmentVersionRepository,
+        IGradeRepository gradeRepository, UserManager<AppUser> userManager, IAssignmentVersionRepository assignmentVersionRepository,
 
         IDocumentRepository documentRepository, IAssignmentSubmissionRepository assignmentSubmissionRepository)
     {
@@ -42,15 +42,28 @@ public class StudentController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-
         
         var classes = await _classRepository.GetClassesForStudentAsync(user);
-        var reviewGroups = new List<ReviewGroup>(); //temp change to repo calls
+        var reviewsToDo = await _assignmentSubmissionRepository.GetSubmissionsByReviewerAsync(user);
+        var studentSubmissions = await _assignmentSubmissionRepository.GetAllSubmissionsByStudentAsync(user);
+        
+        var reviewsReceived = new List<Review>();
+
+        foreach (var a in studentSubmissions)
+        {
+            //if a students submission has a review document added to it, add the review to reviewsReceived list
+            if (a.Review is { ReviewDocument: not null })
+            {
+                reviewsReceived.Add(a.Review);
+            }
+        }
+        
+        //temp change to repo calls
+        var reviewGroups = new List<ReviewGroup>(); 
         var documents = new List<Document>();
        
         if (user != null)
         {
-           
             try
             {
                 classes = (await _classRepository.GetClassesForStudentAsync(user)).ToList();
@@ -61,7 +74,8 @@ public class StudentController : Controller
             }
         }
 
-        var model = new StudentDashVM(){ Classes = classes, User = user, ReviewGroups = reviewGroups, Documents = documents };
+        var model = new StudentDashVM(){ Classes = classes, User = user, ReviewGroups = reviewGroups, Documents = documents, 
+                                        ReviewsToDo = reviewsToDo, ReviewsReceived = reviewsReceived};
         
         return View(model);
     }
@@ -105,6 +119,9 @@ public class StudentController : Controller
         
         //add new submission to db
         await _assignmentSubmissionRepository.AddAssignmentSubmissionAsync(model);
+        
+        //attempt automatic partner assignment
+        var result = await _assignmentSubmissionRepository.CheckForPartner(model);
         
         return RedirectToAction("Assignments");
     }
@@ -173,7 +190,18 @@ public class StudentController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var model = await _reviewRepository.GetReviewsByRevieweeAsync(currentUser);
+        //all assigned submissions, not ones that have had reviews submitted to
+        var reviews = await _reviewRepository.GetReviewsByRevieweeAsync(currentUser);
+
+        var model = new List<Review>();
+
+        foreach (var r in reviews)
+        {
+            if (r.ReviewDocument != null)
+            {
+                model.Add(r); //only reviews that have had a review document submitted
+            }
+        }
 
         return View(model);
     }
@@ -182,7 +210,10 @@ public class StudentController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
 
-        var model = await _gradeRepository.GetGradesByStudentAsync(currentUser);
+        var assignments = await _assignmentSubmissionRepository.GetAllSubmissionsByStudentAsync(currentUser);
+        var reviews = await _assignmentSubmissionRepository.GetSubmissionsByReviewerAsync(currentUser);
+
+        ViewGradesVM model = new ViewGradesVM() { Reviews = reviews, Submissions = assignments };
 
         return View(model);
     }
@@ -209,6 +240,7 @@ public class StudentController : Controller
 
         return View(model);
     }
+    
     [HttpPost]
     public async Task<IActionResult> SubmitReview(SubmitReviewVM model)
     {
@@ -219,6 +251,5 @@ public class StudentController : Controller
         await _reviewRepository.UpdateReviewAsync(review);
 
         return RedirectToAction("ViewReviews");
-
     }
 }

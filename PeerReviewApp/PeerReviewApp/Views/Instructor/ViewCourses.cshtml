@@ -1,0 +1,42 @@
+﻿@model IList<Course>
+@{
+    ViewData["Title"] = "Your Courses";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Welcome, Instructor</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" class="btn btn-primary me-2">Back</a>
+            <a asp-action="AddCourse" class="btn btn-primary">Create New Course</a>
+        </div>
+    </div>
+
+    <!-- Active Courses Section -->
+    <h4 class="mb-3">Your Institution's Courses</h4>
+
+    <div class="row">
+        <div class="col-md-12">
+            @foreach (var crs in Model.ToList())
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="card-title mb-1">@crs.Name</h5>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <div class="btn-group" role="group">
+                                    <form method="get" asp-action="EditCourse" asp-route-Id="@crs.Id" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-primary btn-sm">Edit Course Details</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>

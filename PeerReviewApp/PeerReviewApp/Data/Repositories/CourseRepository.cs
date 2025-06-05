@@ -19,6 +19,39 @@ public class CourseRepository : ICourseRepository
                             .Include(c => c.Subclasses)
                             .ToListAsync();
     }
+    public async Task<IList<Course>> GetCoursesAsync(AppUser instructor)
+    {
+        return await _context.Courses
+                            .Include(c => c.Institution)
+                            .Include(c => c.Assignments)
+                            .Include(c => c.Subclasses)
+                            .Where(c => c.Institution.Instructors.Contains(instructor))
+                            .ToListAsync();
+    }
+
+    public async Task<IList<Course>> GetCoursesByInstructorAsync(string id)
+    {
+        return await _context.Courses.Where(c => c.Subclasses[0].Instructor.Id == id)
+            .Include(c => c.Institution)
+            .Include(c => c.Assignments)
+            .Include(c => c.Subclasses)
+            .ToListAsync();
+    }
+
+    public async Task<IList<Course>> SearchByNameAsync(string name)
+    {
+        return await _context.Courses
+            .Where(c => c.Name.ToLower().Contains(name.ToLower()))
+            .ToListAsync();
+    }
+
+    public async Task<IList<Course>> SearchByInstitutionAsync(string name, int institutionId)
+    {
+        return await _context.Courses
+            .Where(c => c.Institution.Id == institutionId)
+            .Where(c => c.Name.ToLower().Contains(name.ToLower()))
+            .ToListAsync();
+    }
 
     public async Task<int> AddCourseAsync(Course course)
     {

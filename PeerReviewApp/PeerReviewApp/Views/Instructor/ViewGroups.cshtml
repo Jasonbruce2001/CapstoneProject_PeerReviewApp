@@ -2,89 +2,96 @@
 @{
 }
 
-<h1 class="text-center fw-bolder">@Model.Class.ParentCourse.Name : @Model.Class.Term</h1>
+
 
 <div class="container-fluid">
-@foreach (Assignment asn in Model.Assignments)
-{
-    <div class="d-inline">
-        <h3 class="d-inline">@asn.Title</h3>
-        <a class="d-inline gap-2 d-md-flex float-end btn btn-primary" asp-action="SortGroup" asp-route-classId="@Model.Class.ClassId" asp-route-assignmentId="@asn.Id">
-            Auto Select Groups
-        </a>
-    </div>
+    <a class="btn btn-secondary" asp-action="ViewClasses">Back</a>
+    <h1 class="text-center fw-bolder">@Model.Class.ParentCourse.Name : @Model.Class.Term</h1>
+    @if (Model.Assignments.Any())
+    {
+        @foreach (Assignment asn in Model.Assignments)
+        {
+            <div class="d-inline">
+                <h3 class="d-inline">@asn.Title</h3>
+                <a class="d-inline gap-2 d-md-flex float-end btn btn-primary" asp-action="SortGroup" asp-route-classId="@Model.Class.ClassId" asp-route-assignmentId="@asn.Id">
+                    Auto Select Groups
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    @foreach (var asnv in asn.Versions)
+                    {
+                        <th>@asnv.Name</th>
+                    }
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    @foreach (AssignmentVersion asnv in asn.Versions)
+                    {
+                        <td>
+                            <ul>
+                                @foreach (AppUser std in Model.Students.ToList())
+                                {
+                                    @if (asnv.Students.Contains(std))
+                                    {
+                                        <li>
+                                            @std.UserName
+                                            <a asp-action="RemoveStudentFromGroup" asp-route-studentId="@std.Id" asp-route-assignmentId="@asn.Id" class="btn btn-danger btn-sm">Remove</a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </td>
+                    }
+                </tr>
+                </tbody>
+            </table>
 
 
+            var list = Model.Students.ToList();
 
-
-        <table class="table">
-            <thead>
-            <tr>
+            @foreach (AppUser std in list.ToList())
+            {
                 @foreach (var asnv in asn.Versions)
                 {
-                    <th>@asnv.Name</th>
+                    @if (asnv.Students.Contains(std))
+                    {
+                        list.Remove(std);
+                    }
                 }
-            </tr>
-            </thead>
 
-            <tbody>
-            <tr>
-                @foreach (AssignmentVersion asnv in asn.Versions)
-                {
-                    <td>
-                        <ul>
-                            @foreach (AppUser std in Model.Students.ToList())
-                            {
-                                @if (asnv.Students.Contains(std))
-                                {
-                                    <li>
-                                        @std.UserName
-                                        <a asp-action="RemoveStudentFromGroup" asp-route-studentId="@std.Id" asp-route-assignmentId="@asn.Id" class="btn btn-danger btn-sm">Remove</a>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </td>
-                }
-            </tr>
-            </tbody>
-        </table>
-
-
-    var list = Model.Students.ToList();
-
-    @foreach (AppUser std in list.ToList())
-    {
-            @foreach(var asnv in asn.Versions)
-            {
-                @if (asnv.Students.Contains(std))
-                {
-                    list.Remove(std);
-                } 
             }
 
-    }
-    if(list.Count() > 0)
-    {
-        <h2>Unassigned Students</h2>
-        @foreach (var student in list)
-        {
-            <li>
-                @student.UserName
-                @*
-                <label asp-for="">Assign to:</label>
-                <span asp-validation-for=""></span>
-                <select class="form-control"
-                        asp-items="@(new SelectList(asn.Versions, nameof(AssignmentVersion.Id), nameof(AssignmentVersion.Name)))">
-                </select>
-                *@
-            </li>
+            if (list.Count() > 0)
+            {
+                <h2>Unassigned Students</h2>
+                @foreach (var student in list)
+                {
+                    <li>
+                        @student.UserName
+                        @*
+                    <label asp-for="">Assign to:</label>
+                    <span asp-validation-for=""></span>
+                    <select class="form-control"
+                            asp-items="@(new SelectList(asn.Versions, nameof(AssignmentVersion.Id), nameof(AssignmentVersion.Name)))">
+                    </select>
+                    *@
+                    </li>
+                }
+            }
+
+            <hr/>
         }
     }
-    
-
-    <hr />
-}
+    else
+    {
+        <div class="alert alert-info">
+            You do not currently have any groups created.
+        </div>
+    }
 
 </div>
 <div class="spacer"></div>
