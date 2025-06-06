@@ -15,5 +15,12 @@ namespace PeerReviewApp.Models
         [Display(Name = "Due Date")]
         [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
+        
+        
+        [Required(ErrorMessage = "Review Due date is required")]
+        [Display(Name = "Review Due Date")]
+        public DateTime ReviewDueDate { get; set; }
+        
+        
     }
 }

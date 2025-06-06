@@ -191,17 +191,16 @@ public class SeedData
             context.Classes.Add(class19);
             context.Classes.Add(class20);
 
-
             Document doc1 = new Document() { Uploader = instructor1, Name = "Instructions1", FilePath = "SampleLabInstructions.pdf", FileSize = "1kb", DateUploaded = DateTime.Now};
             Document doc2 = new Document() { Uploader = instructor1, Name = "ReviewForm1", FilePath = "SampleReviewForm.pdf", FileSize = "1kb", DateUploaded = DateTime.Now };
 
             context.Documents.Add(doc1);
             context.Documents.Add(doc2);
 
-            Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, Title = "Lab 1" };
-            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(4), Title = "Lab 2" };
-            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(11), Title = "Lab 3" };
-            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), Title = "Lab 4" };
+            Assignment assignment1 = new Assignment() {Course = course, DueDate = DateTime.Now, ReviewDueDate = DateTime.Now.AddDays(7), Title = "Lab 1" };
+            Assignment assignment2 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(4), ReviewDueDate = DateTime.Now.AddDays(11), Title = "Lab 2" };
+            Assignment assignment3 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(11), ReviewDueDate = DateTime.Now.AddDays(18), Title = "Lab 3" };
+            Assignment assignment4 = new Assignment() { Course = course, DueDate = DateTime.Now.AddDays(19), ReviewDueDate = DateTime.Now.AddDays(26), Title = "Lab 4" };
 
             context.Assignments.Add(assignment1);
             

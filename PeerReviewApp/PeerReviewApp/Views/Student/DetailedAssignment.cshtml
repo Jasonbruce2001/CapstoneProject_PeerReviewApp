@@ -18,6 +18,7 @@
             </div>
             <div class="col">
                 <h5 class="text-end">Due Date: @Model.Assignment.ParentAssignment.DueDate</h5>
+                <h5 class="text-end">Review Due Date: @Model.Assignment.ParentAssignment.ReviewDueDate</h5>
                 @if (Model.HasSubmitted)
                 {
                     <h5 class="text-end text-success">Submitted: @Model.Submission.SubmissionDate</h5>

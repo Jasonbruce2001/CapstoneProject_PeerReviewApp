@@ -24,14 +24,14 @@ namespace PeerReviewApp.Data
 
         public async Task<IList<Assignment>> GetAssignmentsByInstructorAsync(AppUser instructor)
         {
-            var mostAssignments = await _context.Assignments
+            var allAssignments = await _context.Assignments
                 .Include(a => a.Course)
                 .ThenInclude(c => c.Subclasses)
                 .ThenInclude(sc => sc.Instructor)
                 .ToListAsync();
 
             IList<Assignment> assignments = new List<Assignment>();
-            foreach (var assignment in mostAssignments)
+            foreach (var assignment in allAssignments)
             {
                 foreach(var cls in assignment.Course.Subclasses)
                 {

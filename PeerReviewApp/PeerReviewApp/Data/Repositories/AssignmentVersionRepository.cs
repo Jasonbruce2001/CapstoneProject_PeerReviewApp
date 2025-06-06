@@ -70,10 +70,15 @@ namespace PeerReviewApp.Data
             
             return await _context.SaveChangesAsync();
         }
-        public Task<int> DeleteAssignmentVersionAsync(int id)
+        public async Task<int> DeleteAssignmentVersionAsync(int id)
         {
-
-            throw new NotImplementedException();
+            var assignmentVersion = await _context.AssignmentVersions.FindAsync(id);
+            if (assignmentVersion != null)
+            {
+                _context.AssignmentVersions.Remove(assignmentVersion);
+            }
+            
+            return await _context.SaveChangesAsync();
         }
         public async Task<int> DeleteStudentsFromAssignmentVersionAsync(IList<AppUser> students, int assignmentId)
         {

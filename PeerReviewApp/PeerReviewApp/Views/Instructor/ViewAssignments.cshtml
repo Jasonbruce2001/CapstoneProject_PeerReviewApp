@@ -1,4 +1,5 @@
-﻿@model IList<Assignment>
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model IList<Assignment>
 @{
     ViewData["Title"] = "View Assignments";
 }
@@ -32,6 +33,7 @@
             <tr>
                 <th>Title</th>
                 <th>Due Date</th>
+                <th>Review Due Date</th>
                 <th>Actions</th>
                 <th></th>
             </tr>
@@ -45,6 +47,7 @@
                 <tr>
                     <td>@assignment.Title</td>
                     <td>@assignment.DueDate.ToString("MM/dd/yyyy")</td>
+                    <td>@assignment.ReviewDueDate.ToString("MM/dd/yyyy")</td>
                     <td>
                         <a asp-action="ViewSubmissions" asp-route-assignmentId="@assignment.Id" class="btn btn-info btn-sm">View Submissions</a>
                         <a asp-action="EditAssignment" asp-route-assignmentId="@assignment.Id" class="btn btn-warning btn-sm">Edit</a>
@@ -61,13 +64,18 @@
                     </td>
                 </tr>
                 <tr id="@rowId" class="submission-details-row hidden">
-                    <td colspan="4">
+                    <td colspan="5">
                         <ul class="list-group">
                             @if (assignment.Versions.Any())
                             {
                                 @foreach (var version in assignment.Versions)
                                 {
-                                    <li class="list-group-item">@version.Name</li>
+                                    
+                                    <li class="list-group-item">
+                                        @version.Name
+                                        <a class="btn btn-sm btn-danger float-end" asp-action="DeleteAssignmentVersion" asp-route-versionId="@version.Id" asp-route-classId="@ViewBag.ClassId">Delete</a>
+                                        <a class="btn btn-sm btn-warning float-end me-1" asp-action="EditAssignmentVersion" asp-route-versionId="@version.Id">Edit</a>
+                                    </li>
                                 }
                             }
                             else
