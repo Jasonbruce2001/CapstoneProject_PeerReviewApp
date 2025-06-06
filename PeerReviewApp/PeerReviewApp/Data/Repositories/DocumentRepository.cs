@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using PeerReviewApp.Models;
 
 namespace PeerReviewApp.Data
@@ -59,7 +60,6 @@ namespace PeerReviewApp.Data
         }
         public Task<int> UpdateDocumentAsync(Document model)
         {
-
             throw new NotImplementedException();
         }
         public async Task<int> DeleteDocumentAsync(int id)
@@ -67,8 +67,17 @@ namespace PeerReviewApp.Data
             var doc = await _context.Documents.FindAsync(id);
             
             _context.Documents.Remove(doc);
+
+            try
+            {
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
             
-            return await _context.SaveChangesAsync();
+            return 0;
         }
     }
 }

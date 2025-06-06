@@ -517,7 +517,7 @@ namespace PeerReviewApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitReviewGrade(int submissionId, int assignmentId)
+        public async Task<IActionResult> SubmitReviewGrade2(int submissionId, int assignmentId)
         {
             //get submission that is being graded
             var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
