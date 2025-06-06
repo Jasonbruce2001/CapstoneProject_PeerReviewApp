@@ -517,9 +517,33 @@ namespace PeerReviewApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
+        public async Task<IActionResult> SubmitReviewGrade(int submissionId, int assignmentId)
         {
-            return View();
+            //get submission that is being graded
+            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
+
+            var gradeStr = Request.Form[$"submissionGrade_{submissionId}"];
+
+            if (int.TryParse(gradeStr, out int gradeValue))
+            {
+                // Save the grade
+                var model = new Grade
+                {
+                    Value = gradeValue,
+                    Student = updatedSubmission.Submitter
+                };
+
+                //add grade reference
+                await _gradeRepo.AddGradeAsync(model);
+
+                //update model
+                updatedSubmission.AssignmentGrade = model;
+            }
+
+            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
+
+            //redirect back to submission page
+            return RedirectToAction("ViewSubmissions", new { assignmentId });
         }
 
         public async Task<IActionResult> AddStudents(int classId)
@@ -702,8 +726,7 @@ namespace PeerReviewApp.Controllers
 
             return RedirectToAction("ViewAllGroups");
         }
-
-
+        
         public async Task<IActionResult> ReadyForGrading()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -791,6 +814,7 @@ namespace PeerReviewApp.Controllers
         }
 
 
+        
         [HttpPost]
         public async Task<IActionResult> SubmitReviewGrade(int reviewId, int gradeValue, string comments = "")
         {
