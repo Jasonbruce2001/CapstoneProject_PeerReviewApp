@@ -27,8 +27,13 @@ namespace PeerReviewApp.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly IAssignmentSubmissionRepository _submissionRepository;
         private readonly ApplicationDbContext _context;
-        
-        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager, ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo, SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo, IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository, IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository, IGradeRepository gradeRepository)
+
+        public InstructorController(ILogger<InstructorController> logger, UserManager<AppUser> userManager,
+            ICourseRepository courseRepo, IInstitutionRepository instRepo, IClassRepository classRepo,
+            SignInManager<AppUser> signInMngr, IAssignmentVersionRepository assignmentVersionRepo,
+            IAssignmentRepository assignmentRepository, IDocumentRepository documentRepository,
+            IReviewRepository reviewRepository, IAssignmentSubmissionRepository submissionRepository,
+            IGradeRepository gradeRepository)
 
 
         {
@@ -46,17 +51,18 @@ namespace PeerReviewApp.Controllers
             _reviewRepository = reviewRepository;
             _submissionRepository = submissionRepository;
         }
+
         public async Task<IActionResult> Index()
         {
             var user = _userManager.GetUserAsync(User).Result;
-            
+
             // send user to login if not logged in
             if (!_signInManager.IsSignedIn(User))
             {
                 var returnURL = Request.GetEncodedUrl();
                 return RedirectToAction("Login", "Account", returnURL);
             }
-            
+
             var courses = await _classRepo.GetCoursesForInstructorAsync(user);
             var classes = await _classRepo.GetClassesForInstructorAsync(user);
             var students = new List<AppUser>();
@@ -69,8 +75,12 @@ namespace PeerReviewApp.Controllers
 
             var readyForGradingCount = await GetReadyForGradingCountAsync();
 
-            var viewModel = new InstructorDashVM { Instructor = user,  Classes = classes, Courses = courses, Students = students, ReadyForGradingCount = readyForGradingCount };
-            
+            var viewModel = new InstructorDashVM
+            {
+                Instructor = user, Classes = classes, Courses = courses, Students = students,
+                ReadyForGradingCount = readyForGradingCount
+            };
+
             return View("Index", viewModel);
         }
 
@@ -85,7 +95,7 @@ namespace PeerReviewApp.Controllers
 
             //get classes for current instructor
             var classes = await _classRepo.GetClassesAsync(user.Id);
-            
+
             return View(classes);
         }
 
@@ -224,7 +234,10 @@ namespace PeerReviewApp.Controllers
                     return View();
                 }
             }
-            else { return RedirectToAction("ViewCourses"); }
+            else
+            {
+                return RedirectToAction("ViewCourses");
+            }
         }
 
         [HttpGet]
@@ -303,7 +316,7 @@ namespace PeerReviewApp.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var class_ = await _classRepo.GetClassByIdAsync(classId);
-               
+
             if (class_ == null || class_.Instructor.Id != user.Id)
             {
                 return NotFound();
@@ -314,7 +327,8 @@ namespace PeerReviewApp.Controllers
                 ClassId = classId,
                 ClassName = class_.ParentCourse.Name,
                 Term = class_.Term,
-                DueDate = DateTime.Now.AddDays(7)
+                DueDate = DateTime.Now,
+                ReviewDueDate = DateTime.Now.AddDays(7)
             };
 
             return View(model);
@@ -340,6 +354,7 @@ namespace PeerReviewApp.Controllers
             {
                 Title = model.Title,
                 DueDate = model.DueDate,
+                ReviewDueDate = model.ReviewDueDate,
                 Course = class_.ParentCourse
             };
 
@@ -355,18 +370,18 @@ namespace PeerReviewApp.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var _class = await _classRepo.GetClassByIdAsync(classId);
-            
+
             if (_class == null || _class.Instructor.Id != user.Id)
             {
                 return NotFound();
             }
-            
+
             var assignments = await _assignmentRepo.GetAssignmentsByCourseAsync(_class.ParentCourse.Id);
-            
+
             ViewBag.ClassId = classId;
             ViewBag.ClassName = _class.ParentCourse.Name;
             ViewBag.Term = _class.Term;
-            
+
             return View(assignments);
         }
 
@@ -376,9 +391,9 @@ namespace PeerReviewApp.Controllers
             var assignments = await _assignmentRepo.GetAssignmentsByInstructorAsync(currentUser);
 
             var dueVersions = assignments
-            .Where(v => v.DueDate > DateTime.Now
-                     && v.DueDate < DateTime.Now.AddDays(7))
-            .ToList();
+                .Where(v => v.DueDate > DateTime.Now
+                            && v.DueDate < DateTime.Now.AddDays(7))
+                .ToList();
 
             return View(dueVersions);
         }
@@ -393,7 +408,7 @@ namespace PeerReviewApp.Controllers
                 return NotFound();
             }
 
-           
+
             var classes = await _classRepo.GetClassesAsync(user.Id);
             bool hasAccess = classes.Any(c => c.ParentCourse.Id == assignment.Course.Id);
 
@@ -412,8 +427,6 @@ namespace PeerReviewApp.Controllers
 
             return View(model);
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> EditAssignment(EditAssignmentVM model)
@@ -436,7 +449,7 @@ namespace PeerReviewApp.Controllers
 
             await _assignmentRepo.UpdateAssignmentAsync(assignment);
 
-           
+
             return RedirectToAction("ViewAssignments", new { classId = model.ClassId });
         }
 
@@ -453,7 +466,7 @@ namespace PeerReviewApp.Controllers
 
             await _assignmentRepo.DeleteAssignmentAsync(assignmentId);
 
-            
+
             return RedirectToAction("ViewAssignments", new { classId });
         }
 
@@ -469,44 +482,68 @@ namespace PeerReviewApp.Controllers
             ViewBag.ClassId = assignment.Course.Id;
 
             var vm = new ViewSubmissionsVM() { Submissions = submissions };
-            
+
             return View(vm);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> SubmitAssignmentGrade(int submissionId, int assignmentId)
         {
             //get submission that is being graded
             var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
 
-             var gradeStr = Request.Form[$"submissionGrade_{submissionId}"];
+            var gradeStr = Request.Form[$"submissionGrade_{submissionId}"];
 
-             if (int.TryParse(gradeStr, out int gradeValue))
-             {
-                 // Save the grade
-                 var model = new Grade
-                 {
-                     Value = gradeValue,
-                     Student = updatedSubmission.Submitter
-                 };
-                 
-                 //add grade reference
-                 await _gradeRepo.AddGradeAsync(model);
-            
-                 //update model
-                 updatedSubmission.AssignmentGrade = model;
-             }
-             
+            if (int.TryParse(gradeStr, out int gradeValue))
+            {
+                // Save the grade
+                var model = new Grade
+                {
+                    Value = gradeValue,
+                    Student = updatedSubmission.Submitter
+                };
+
+                //add grade reference
+                await _gradeRepo.AddGradeAsync(model);
+
+                //update model
+                updatedSubmission.AssignmentGrade = model;
+            }
+
             await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
-            
+
             //redirect back to submission page
             return RedirectToAction("ViewSubmissions", new { assignmentId });
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> SubmitReviewGrade(Grade model, int id)
+        public async Task<IActionResult> SubmitReviewGrade2(int submissionId, int assignmentId)
         {
-            return View();
+            //get submission that is being graded
+            var updatedSubmission = await _assignmentSubmissionRepo.GetSubmissionByIdAsync(submissionId);
+
+            var gradeStr = Request.Form[$"submissionGrade_{submissionId}"];
+
+            if (int.TryParse(gradeStr, out int gradeValue))
+            {
+                // Save the grade
+                var model = new Grade
+                {
+                    Value = gradeValue,
+                    Student = updatedSubmission.Submitter
+                };
+
+                //add grade reference
+                await _gradeRepo.AddGradeAsync(model);
+
+                //update model
+                updatedSubmission.AssignmentGrade = model;
+            }
+
+            await _assignmentSubmissionRepo.UpdateAssignmentSubmissionAsync(updatedSubmission);
+
+            //redirect back to submission page
+            return RedirectToAction("ViewSubmissions", new { assignmentId });
         }
 
         public async Task<IActionResult> AddStudents(int classId)
@@ -563,12 +600,9 @@ namespace PeerReviewApp.Controllers
                 var returnURL = Request.GetEncodedUrl();
                 return RedirectToAction("Login", "Account", returnURL);
             }
+
             // get appuser for current user
             var user = _userManager.GetUserAsync(User).Result;
-            if (_userManager != null)
-            {
-                user = await _userManager.GetUserAsync(User);
-            }
 
             //Get list of Assignments and Documents to display for class
             IList<Document> documents = new List<Document>();
@@ -591,7 +625,7 @@ namespace PeerReviewApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAssignmentVersion(AssignmentVersionVM model)
         {
-            
+
             //get Assignment linked to version
             Assignment assignment = await _assignmentRepo.GetAssignmentByIdAsync(model.AssignmentId);
             Document instruction = await _documentRepo.GetDocumentByIdAsync(model.InstructionsId);
@@ -618,6 +652,36 @@ namespace PeerReviewApp.Controllers
                 ViewBag.ErrorMessage = "There was an error adding the course.";
                 return RedirectToAction("AddAssignmentVersion");
             }
+        }
+
+        public async Task<IActionResult> EditAssignmentVersion(int versionId)
+        {
+            var version = await _assignmentVersionRepo.GetAssignmentVersionByIdAsync(versionId);
+            
+            // get appuser for current user
+            var user = _userManager.GetUserAsync(User).Result;
+
+            //Get list of Assignments and Documents to display for class
+            var documents = await _documentRepo.GetDocumentsAsync(user.Id);
+            var assignments = await _assignmentRepo.GetAssignmentsByInstructorAsync(user);
+            
+            var vm = new AssignmentVersionVM { Documents = documents, Assignments = assignments, AssnVersion = version };
+            return View(vm);
+        }
+    
+        [HttpPost]
+        public async Task<IActionResult> EditAssignmentVersion(AssignmentVersionVM model)
+        {
+            await _assignmentVersionRepo.UpdateAssignmentVersionAsync(model.AssnVersion);
+
+            return RedirectToAction("Index");
+        }
+        
+        public async Task<IActionResult> DeleteAssignmentVersion(int versionId, int classId)
+        {
+            await _assignmentVersionRepo.DeleteAssignmentVersionAsync(versionId);
+            
+            return RedirectToAction("ViewAssignments", new {classId});
         }
 
         public async Task<IActionResult> ViewGroups(int classId)
@@ -662,8 +726,7 @@ namespace PeerReviewApp.Controllers
 
             return RedirectToAction("ViewAllGroups");
         }
-
-
+        
         public async Task<IActionResult> ReadyForGrading()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -751,6 +814,7 @@ namespace PeerReviewApp.Controllers
         }
 
 
+        
         [HttpPost]
         public async Task<IActionResult> SubmitReviewGrade(int reviewId, int gradeValue, string comments = "")
         {

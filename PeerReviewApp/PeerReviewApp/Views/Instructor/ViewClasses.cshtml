@@ -13,18 +13,8 @@
             <a asp-action="AddClass" class="btn btn-primary">Create New Class</a>
         </div>
     </div>
-
-    <h4 class="mb-3">Your Courses</h4>
+    
     <div class="row">
-        <!-- only shows if an instance of a class is created, kinda need to change the model -->
-        @foreach (var c in Model)
-        {
-            <div class="card mb-3">
-                <div class="card-body">
-                    @c.ParentCourse.Name
-                </div>
-            </div>
-        }
 
         <!-- Active Courses Section -->
         <h4 class="mb-3">Active Classes</h4>
@@ -54,11 +44,6 @@
                                         <a asp-action="ViewGroups" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm me-1">
                                             View Groups
                                         </a>
-                                        <form method="get" asp-action="AddAssignmentVersion" asp-route-Id="@cls.ClassId" class="d-inline me-1">
-                                            <button type="submit" class="btn btn-primary btn-sm">
-                                                Add Assignment Version
-                                            </button>
-                                        </form>
                                         <a asp-action="AddStudents" asp-route-classId="@cls.ClassId" class="btn btn-primary btn-sm">
                                             Manage Students
                                         </a>

@@ -57,6 +57,8 @@ public class AssignmentSubmissionRepository : IAssignmentSubmissionRepository
             .ThenInclude(av => av.ParentAssignment)
             .Include(s => s.Review)
             .ThenInclude(r => r.ReviewGrade)
+            .Include(s => s.Review)
+            .ThenInclude(r => r.ReviewDocument)
             .Include(s => s.AssignmentGrade)
             .ToListAsync();
     }

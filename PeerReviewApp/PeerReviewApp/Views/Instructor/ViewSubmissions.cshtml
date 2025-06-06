@@ -49,21 +49,36 @@
                         }
                         else
                         {
-                            <td>N/A</td>
+                            <td>Not Graded</td>
                         }
 
-                        @if (submission.Review is { ReviewDocument: null })
+                        
+                        @* Review Fields *@
+                        @if (submission.Review != null) //review is not null (Partner assigned)
                         {
-                            <td>@submission.Review.Reviewer.UserName</td>
-                            <td>No Review Added</td>
-                        } else if (submission.Review != null)
+                            if (submission.Review.ReviewDocument != null) //assignment has been reviewed
+                            {
+                                if (submission.Review.ReviewGrade != null)
+                                {
+                                    <td>@submission.Review.Reviewer.UserName</td>
+                                    <td>@submission.Review.ReviewGrade.Value</td>
+                                }
+                                else
+                                {
+                                    <td>@submission.Review.Reviewer.UserName</td>
+                                    <td>Ready to Grade</td>
+                                }
+                            }
+                            else //partner assigned but no review yet
+                            {
+                                <td>@submission.Review.Reviewer.UserName</td>
+                                <td>Not Reviewed</td>
+                            }
+                        }
+                        else //review is null (No partner yet)
                         {
-                            <td>@submission.Review.Reviewer.UserName</td>
-                            <td>0</td>
-                        } else
-                        {
-                            <td>Not Reviewed</td>
-                            <td>N/A</td> 
+                            <td>No Partner Assigned</td>
+                            <td>N/A</td>
                         }
                         
                         <td>
@@ -82,7 +97,7 @@
                                         <a href="@submission.Review.ReviewDocument.FilePath" target="_blank" class="btn btn-info btn-sm">View Review</a>
                                     }
                                 </div>
-                                @if (submission.Review == null)
+                                @if (submission.Review == null || submission.Review.ReviewDocument == null)
                                 {
                                     <div class="col">
                                         <form class="pb-3" method="post" asp-action="SubmitAssignmentGrade" asp-route-submissionId="@submission.Id" asp-route-assignmentId="@ViewBag.AssignmentId">
@@ -100,7 +115,7 @@
                                             <div class="row">
                                                 <div class="col text-end">
                                                     <label for="review">Review Grade</label>
-                                                    <input asp-for="Grade.Value" class="submissionInput" id="review" min="0" max="0" aria-disabled="True" disabled/>
+                                                    <input name="reviewGrade_@submission.Id" class="submissionInput" type="number" min="0" max="100" aria-disabled="True" disabled/>
                                                 </div>
                                                 <div class="col align-content-center">
                                                     <button type="submit" class="btn btn-sm btn-success" aria-disabled="True" disabled>Grade</button>
@@ -112,22 +127,22 @@
                                 else
                                 {
                                     <div class="col">
-                                        <form class="pb-3" method="post" asp-action="SubmitAssignmentGrade">
+                                        <form class="pb-3" method="post" asp-action="SubmitAssignmentGrade" asp-route-submissionId="@submission.Id" asp-route-assignmentId="@ViewBag.AssignmentId">
                                             <div class="row">
                                                 <div class="col text-end">
-                                                    <label for="submission">Submission Score</label>
-                                                    <input id="submission"/>
+                                                    <label for="submission">Submission Grade</label>
+                                                    <input name="submissionGrade_@submission.Id" class="submissionInput" type="number" min="0" max="100" id="submission"/>
                                                 </div>
                                                 <div class="col align-content-center">
                                                     <button type="submit" class="btn btn-sm btn-success">Grade</button>
                                                 </div>
                                             </div>
                                         </form>
-                                        <form method="post" asp-action="SubmitReviewGrade" asp-route-id="@submission.Review.Id">
+                                        <form method="post" asp-action="SubmitReviewGrade2">
                                             <div class="row">
                                                 <div class="col text-end">
-                                                    <label for="review">Review Score</label>
-                                                    <input id="review"/>
+                                                    <label for="review">Review Grade</label>
+                                                    <input name="reviewGrade_@submission.Id" class="submissionInput" type="number" min="0" max="100" id="review"/>
                                                 </div>
                                                 <div class="col align-content-center">
                                                     <button type="submit" class="btn btn-sm btn-success">Grade</button>
