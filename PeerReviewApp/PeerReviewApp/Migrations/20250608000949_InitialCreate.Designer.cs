@@ -12,8 +12,8 @@ using PeerReviewApp.Data;
 namespace PeerReviewApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250605114744_Initial")]
-    partial class Initial
+    [Migration("20250608000949_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,6 +276,9 @@ namespace PeerReviewApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ReviewDueDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
