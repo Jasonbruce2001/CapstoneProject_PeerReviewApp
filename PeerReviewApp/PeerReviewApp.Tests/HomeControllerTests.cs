@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PeerReviewApp.Controllers;
+using PeerReviewApp.Data;
 using PeerReviewApp.Models;
+using System.Security.Claims;
 using Xunit;
 
 namespace PeerReviewApp.Tests
@@ -93,6 +95,55 @@ namespace PeerReviewApp.Tests
 
             // Assert
             Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async Task Documents_ReturnsViewWithUserDocuments()
+        {
+            // Arrange
+            var mockUserManager = new Mock<UserManager<AppUser>>(
+                Mock.Of<IUserStore<AppUser>>(), null, null, null, null, null, null, null, null);
+            var mockDocumentRepo = new Mock<IDocumentRepository>();
+
+            var user = new AppUser { Id = "user-id" };
+            var documents = new List<Document> { new Document { Name = "Test Doc" } };
+
+            mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            mockDocumentRepo.Setup(x => x.GetDocumentsByUserAsync(user)).ReturnsAsync(documents);
+
+            var controller = new HomeController(null, mockUserManager.Object, mockDocumentRepo.Object);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
+            };
+
+            // Act
+            var result = await controller.Documents();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.IsType<List<Document>>(viewResult.Model);
+        }
+
+        [Fact]
+        public async Task DeleteUpload_WithValidId_RedirectsToDocuments()
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<HomeController>>();
+            var mockDocumentRepo = new Mock<IDocumentRepository>();
+            var document = new Document { Id = 1, FilePath = "test.pdf" };
+
+            mockDocumentRepo.Setup(x => x.GetDocumentByIdAsync(1)).ReturnsAsync(document);
+
+            var controller = new HomeController(mockLogger.Object, null, mockDocumentRepo.Object);
+
+            // Act
+            var result = await controller.DeleteUpload(1);
+
+            // Assert
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Documents", redirectResult.ActionName);
         }
     }
 }
